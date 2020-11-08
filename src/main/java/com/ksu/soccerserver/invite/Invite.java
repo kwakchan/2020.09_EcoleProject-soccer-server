@@ -1,4 +1,4 @@
-package com.ksu.soccerserver.grouping;
+package com.ksu.soccerserver.invite;
 
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.team.Team;
@@ -12,34 +12,18 @@ import javax.persistence.*;
 @Entity @Table
 @Getter @Builder
 @NoArgsConstructor @AllArgsConstructor
-public class Grouping {
+public class Invite {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String status;
+    @Enumerated(value = EnumType.STRING)
+    private InviteStatus inviteStatus;
 
     @ManyToOne
     private Account account;
 
     @ManyToOne
     private Team team;
-
-
-    public void joinApply(Account account, Team team){
-        this.account = account;
-        this.team = team;
-    }
-
-    public void joinRequest(Team team, Account account){
-        this.team = team;
-        this.account = account;
-    }
-
-    public void updateStatus(String status){
-        this.status = status;
-    }
-
 }

@@ -1,12 +1,16 @@
 package com.ksu.soccerserver.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ksu.soccerserver.grouping.Grouping;
+import com.ksu.soccerserver.apply.Apply;
+import com.ksu.soccerserver.invite.Invite;
+import com.ksu.soccerserver.team.Team;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity @Table
@@ -26,11 +30,18 @@ public class Account {
 
     @JsonIgnore
     @OneToMany(mappedBy = "account")
-    private Set<Grouping> groups;
+    private Set<Apply> apply = new HashSet<>();
 
+    @ManyToOne
+    private Team team;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    @JsonIgnore
+    @OneToMany(mappedBy = "account")
+    private Set<Invite> invite = new HashSet<>();
 
+    public void updateMyInfo(String name) { this.name = name; }
+
+    public void joinTeam(Team team) { this.team = team; }
+
+    public void withdrawalTeam() { this.team = null; }
 }

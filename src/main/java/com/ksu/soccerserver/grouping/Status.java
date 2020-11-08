@@ -1,5 +1,0 @@
-package com.ksu.soccerserver.grouping;
-
-public enum Status {
-    APPLY_PENDING, APPLY_REJECT, APPLY_ACCEPT, APPLY_CANCEL, INVITE_PENDING, INVITE_REJECT, INVITE_ACCEPT, INVITE_CANCEL
-}

@@ -2,9 +2,6 @@ package com.ksu.soccerserver.invite;
 
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.AccountRepository;
-import com.ksu.soccerserver.apply.Apply;
-import com.ksu.soccerserver.apply.ApplyRepository;
-import com.ksu.soccerserver.apply.ApplyStatus;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -55,10 +52,10 @@ public class InviteController {
 
     //    자신에게 가입요청한 TEAMLIST 출력
     @GetMapping("/accounts/{accountId}/teams")
-    public ResponseEntity<?> teamApplyList(@PathVariable Long teamId) {
+    public ResponseEntity<?> teamApplyList(@PathVariable Long accountId) {
         List<Invite> appliesMember =
                 inviteRepository.findByAccount
-                        (accountRepository.findById(teamId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No_Found_Account")));
+                        (accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No_Found_Account")));
 
         return new ResponseEntity<>(appliesMember, HttpStatus.OK);
     }

@@ -7,7 +7,6 @@ import com.ksu.soccerserver.team.Team;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.persistence.*;
 import java.util.HashSet;

@@ -4,6 +4,7 @@ package com.ksu.soccerserver.account;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.webresources.JarResourceRoot;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -62,7 +63,9 @@ public class AccountController {
     // 회원 탈퇴
     @DeleteMapping("/{accountId}")
     public ResponseEntity<?> deleteAccount(@PathVariable Long accountId){
-        accountRepository.deleteById(accountId);
+        Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
+
+        accountRepository.delete(findAccount);
 
         return new ResponseEntity<>("회원탈퇴 완료", HttpStatus.OK);
     }
@@ -71,7 +74,9 @@ public class AccountController {
     @PutMapping("/{accountId}/withdrawal/{teamId}")
     public ResponseEntity<?> withdrawalTeam(@PathVariable Long accountId, @PathVariable Long teamId) {
         Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
-        findAccount.withdrawalTeam();
+        Team findTeam = teamRepository.findById(teamId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
+
+        findTeam.getAccounts().remove(findAccount);
 
         accountRepository.save(findAccount);
 

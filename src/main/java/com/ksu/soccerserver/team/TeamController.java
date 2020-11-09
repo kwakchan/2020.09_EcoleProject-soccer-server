@@ -29,10 +29,12 @@ public class TeamController {
 
     // 생성되어 있는 모든 팀 GET
     @GetMapping
-    public ResponseEntity getTeams(){
+    public ResponseEntity<?> getTeams(){
         List<Team> teams = teamRepository.findAll();
 
-        return new ResponseEntity(teams, HttpStatus.OK);
+        if (teams.isEmpty()) { return new ResponseEntity<>("생성된 팀이 없습니다.", HttpStatus.NOT_FOUND); }
+
+        return new ResponseEntity<>(teams, HttpStatus.OK);
     }
 
     // 해당 teamId를 가진 팀 GET
@@ -66,7 +68,9 @@ public class TeamController {
     // 팀 삭제
     @DeleteMapping("/{teamId}")
     public ResponseEntity<?> deleteTeam(@PathVariable Long teamId) {
-        teamRepository.deleteById(teamId);
+        Team findTeam = teamRepository.findById(teamId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
+
+        teamRepository.delete(findTeam);
 
         return new ResponseEntity<>("Team Delete Success", HttpStatus.OK);
     }

@@ -28,13 +28,6 @@ public class Apply {
     @ManyToOne
     private Team team;
 
-    public void joinApply(Account account, Team team){
-        this.account = account;
-        this.team = team;
-        this.applyStatus = ApplyStatus.APPLY_PENDING;
-    }
 
-    public void updateStatus(ApplyStatus applyStatus){
-        this.applyStatus = applyStatus;
-    }
+    //TODO 신청에 대한 상태변화 메소드는 상의 후 설계
 }

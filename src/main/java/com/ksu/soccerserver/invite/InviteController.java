@@ -45,11 +45,9 @@ public class InviteController {
     }
 
     //    가입신청삭제 (DELETE)
-    @DeleteMapping("/teams/{teamId}/{inviteId}")
-    public ResponseEntity<?> deleteApply(@PathVariable Long teamId, @PathVariable Long inviteId) {
-
+    @DeleteMapping("/teams/{inviteId}")
+    public ResponseEntity<?> deleteApply(@PathVariable Long inviteId) {
         Invite invite = inviteRepository.findById(inviteId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No_Found_Invite"));
-        invite.updateStatus(InviteStatus.INVITE_CANCEL);
 
         inviteRepository.deleteById(inviteId);
 
@@ -66,15 +64,6 @@ public class InviteController {
         return new ResponseEntity<>(appliesMember, HttpStatus.OK);
     }
 
-    //  자신에게 가입요청을 한 팀에 대하여 수락, 거절 등의 이벤트 api 프론트와 상의 후 진행
-//    @PutMapping("/accounts/{accountId}/{inviteId}")
-//    public ResponseEntity<?> updateApplyStatus(@PathVariable Long accountId, @PathVariable Long inviteId) {
-//
-//        Invite invite = inviteRepository.findById(inviteId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No_Found_Invite"));
-//
-//        invite.updateStatus(InviteStatus.INVITE_ACCEPT); // 가입요청수락
-//        invite.updateStatus(InviteStatus.INVITE_REJECT); // 가입신청거절
-//
-//        return new ResponseEntity<>(invite, HttpStatus.OK);
-//    }
+    // TODO 자신에게 가입요청을 한 팀에 대하여 수락, 거절 등의 이벤트 api 프론트와 상의 후 진행
+
 }

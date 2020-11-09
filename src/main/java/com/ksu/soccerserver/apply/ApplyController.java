@@ -65,15 +65,15 @@ public class ApplyController {
         return new ResponseEntity<>(appliesMember, HttpStatus.OK);
     }
 
-//  가입신청을 받은 팀이 해당 요청에 대하여 수락, 거절 등의 이벤트 api
-    @PutMapping("/teams/{teamId}/{applyId}")
-    public ResponseEntity<?> updateApplyStatus(@PathVariable Long teamId, @PathVariable Long applyId) {
-
-        Apply apply = applyRepository.findById(applyId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No_Found_Apply"));
-
-        apply.updateStatus(ApplyStatus.APPLY_ACCEPT); // 가입신청수락
-        apply.updateStatus(ApplyStatus.APPLY_REJECT); // 가입신청거절
-
-        return new ResponseEntity<>(apply, HttpStatus.OK);
-    }
+//  가입신청을 받은 팀이 해당 요청에 대하여 수락, 거절 등의 이벤트 api 프론트와 상의 후 진행
+//    @PutMapping("/teams/{teamId}/{applyId}")
+//    public ResponseEntity<?> updateApplyStatus(@PathVariable Long teamId, @PathVariable Long applyId) {
+//
+//        Apply apply = applyRepository.findById(applyId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No_Found_Apply"));
+//
+//        apply.updateStatus(ApplyStatus.APPLY_ACCEPT); // 가입신청수락
+//        apply.updateStatus(ApplyStatus.APPLY_REJECT); // 가입신청거절
+//
+//        return new ResponseEntity<>(apply, HttpStatus.OK);
+//    }
 }

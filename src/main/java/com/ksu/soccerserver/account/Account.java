@@ -41,6 +41,4 @@ public class Account {
     public void updateMyInfo(String name) { this.name = name; }
 
     public void joinTeam(Team team) { this.team = team; }
-
-    public void withdrawalTeam() { this.team = null; }
 }

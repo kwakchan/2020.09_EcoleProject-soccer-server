@@ -28,8 +28,5 @@ public class Invite {
     @ManyToOne
     private Team team;
 
-
-    public void updateStatus(InviteStatus inviteStatus){
-        this.inviteStatus = inviteStatus;
-    }
+    //TODO 신청에 대한 상태변화 메소드는 상의 후 설계
 }

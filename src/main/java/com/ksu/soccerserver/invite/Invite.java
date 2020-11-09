@@ -1,6 +1,7 @@
 package com.ksu.soccerserver.invite;
 
 import com.ksu.soccerserver.account.Account;
+import com.ksu.soccerserver.apply.ApplyStatus;
 import com.ksu.soccerserver.team.Team;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,4 +27,9 @@ public class Invite {
 
     @ManyToOne
     private Team team;
+
+
+    public void updateStatus(InviteStatus inviteStatus){
+        this.inviteStatus = inviteStatus;
+    }
 }

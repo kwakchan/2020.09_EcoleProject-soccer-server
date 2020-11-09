@@ -1,6 +1,5 @@
 package com.ksu.soccerserver.apply;
 
-
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.AccountRepository;
 import com.ksu.soccerserver.team.Team;
@@ -48,12 +47,15 @@ public class ApplyController {
 //  가입신청삭제 (DELETE)
     @DeleteMapping("/accounts/{accountId}/{applyId}")
     public ResponseEntity<?> deleteApply(@PathVariable Long accountId, @PathVariable Long applyId) {
+
+        Apply apply = applyRepository.findById(applyId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No_Found_Apply"));
+        apply.updateStatus(ApplyStatus.APPLY_CANCEL);
         applyRepository.deleteById(applyId);
 
         return new ResponseEntity<>("Success delete", HttpStatus.OK);
     }
 
-//    TEAM기준으로 자신의 TEAM에 가입신청을 한 USERLIST 출력
+//  TEAM기준으로 자신의 TEAM에 가입신청을 한 USERLIST 출력
     @GetMapping("/teams/{teamId}/accounts")
     public ResponseEntity<?> teamApplyList(@PathVariable Long teamId) {
         List<Apply> appliesMember =
@@ -63,4 +65,15 @@ public class ApplyController {
         return new ResponseEntity<>(appliesMember, HttpStatus.OK);
     }
 
+//  가입신청을 받은 팀이 해당 요청에 대하여 수락, 거절 등의 이벤트 api
+    @PutMapping("/teams/{teamId}/{applyId}")
+    public ResponseEntity<?> updateApplyStatus(@PathVariable Long teamId, @PathVariable Long applyId) {
+
+        Apply apply = applyRepository.findById(applyId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No_Found_Apply"));
+
+        apply.updateStatus(ApplyStatus.APPLY_ACCEPT); // 가입신청수락
+        apply.updateStatus(ApplyStatus.APPLY_REJECT); // 가입신청거절
+
+        return new ResponseEntity<>(apply, HttpStatus.OK);
+    }
 }

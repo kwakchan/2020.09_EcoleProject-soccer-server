@@ -2,6 +2,7 @@ package com.ksu.soccerserver.invite;
 
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.AccountRepository;
+import com.ksu.soccerserver.apply.ApplyStatus;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class InviteController {
     private final AccountRepository accountRepository;
     private final TeamRepository teamRepository;
 
+//   TEAM -> USER 가입요청
     @PostMapping("/teams/{teamId}/{accountId}")
     public ResponseEntity<?> teamInviteUser(@PathVariable Long teamId, @PathVariable Long accountId) {
         Team findTeam = teamRepository.findById(teamId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No_Found_Team"));
@@ -45,6 +47,10 @@ public class InviteController {
     //    가입신청삭제 (DELETE)
     @DeleteMapping("/teams/{teamId}/{inviteId}")
     public ResponseEntity<?> deleteApply(@PathVariable Long teamId, @PathVariable Long inviteId) {
+
+        Invite invite = inviteRepository.findById(inviteId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No_Found_Invite"));
+        invite.updateStatus(InviteStatus.INVITE_CANCEL);
+
         inviteRepository.deleteById(inviteId);
 
         return new ResponseEntity<>("Success delete", HttpStatus.OK);
@@ -58,5 +64,17 @@ public class InviteController {
                         (accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No_Found_Account")));
 
         return new ResponseEntity<>(appliesMember, HttpStatus.OK);
+    }
+
+    //  자신에게 가입요청을 한 팀에 대하여 수락, 거절 등의 이벤트 api
+    @PutMapping("/accounts/{accountId}/{inviteId}")
+    public ResponseEntity<?> updateApplyStatus(@PathVariable Long accountId, @PathVariable Long inviteId) {
+
+        Invite invite = inviteRepository.findById(inviteId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No_Found_Invite"));
+
+        invite.updateStatus(InviteStatus.INVITE_ACCEPT); // 가입요청수락
+        invite.updateStatus(InviteStatus.INVITE_REJECT); // 가입신청거절
+
+        return new ResponseEntity<>(invite, HttpStatus.OK);
     }
 }

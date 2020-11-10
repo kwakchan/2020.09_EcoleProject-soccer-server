@@ -14,12 +14,26 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Entity
-@Getter
-@Builder
-@NoArgsConstructor @AllArgsConstructor
 
-public class Account implements UserDetails {
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ksu.soccerserver.apply.Apply;
+import com.ksu.soccerserver.invite.Invite;
+import com.ksu.soccerserver.team.Team;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+
+@Builder
+@Entity @Table
+@Getter
+@NoArgsConstructor @AllArgsConstructor
+public class Account implements UserDetails{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,8 +43,23 @@ public class Account implements UserDetails {
     @Column(length = 100, nullable = false, unique = true)
     private String email;
 
+    //Password 길이=400, UNIQUE, Not NULL
     @Column(length = 400, nullable = false)
     private String password;
+
+    @Column
+    private String name;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "account")
+    private Set<Apply> apply = new HashSet<>();
+
+    @ManyToOne
+    private Team team;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "account")
+    private Set<Invite> invite = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
@@ -42,6 +71,11 @@ public class Account implements UserDetails {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
+
+    public void updateMyInfo(String name) { this.name = name; }
+
+    public void joinTeam(Team team) { this.team = team; }
+
 
     @Override
     public String getUsername() {
@@ -67,4 +101,7 @@ public class Account implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+
+
 }

@@ -1,5 +1,6 @@
 package com.ksu.soccerserver.config.account;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ksu.soccerserver.account.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

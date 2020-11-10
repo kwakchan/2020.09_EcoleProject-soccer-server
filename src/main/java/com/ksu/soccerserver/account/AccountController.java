@@ -32,27 +32,28 @@ public class AccountController {
 
     // 회원가입
     @PostMapping("/join")
-    public ResponseEntity<?> join(@RequestBody Map<String, String> account) {
+    public ResponseEntity<?> join(@RequestBody Account account) {
          Account joinAccount = accountRepository.save(Account.builder()
-                                    .email(account.get("email"))
-                                    .password(passwordEncoder.encode(account.get("password")))
+                                    .email(account.getEmail())
+                                    .password(passwordEncoder.encode(account.getPassword()))
                                     .roles(Collections.singletonList("ROLE_USER")) // 최초 가입시 USER 로 설정
-                                    .name(account.get("name"))
+                                    .name(account.getName())
                                     //Column 추가사항 생기면 추가해주세요
                                     .build());
 
-        return new ResponseEntity<>("Create Account ", HttpStatus.CREATED);
+        return new ResponseEntity<>(joinAccount, HttpStatus.CREATED);
     }
 
     // 로그인
     @PostMapping("/login")
-    public String login(@RequestBody Map<String, String> account) {
-        Account member = accountRepository.findByEmail(account.get("email"))
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
-        if (!passwordEncoder.matches(account.get("password"), member.getPassword())) {
-            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+    public ResponseEntity<?> login(@RequestBody Account account) {
+        Account member = accountRepository.findByEmail(account.getEmail())
+                .orElseThrow(() -> new ResponseStatusException (HttpStatus.NOT_FOUND, "가입되지 않은 E-MAIL 입니다."));
+        if (!passwordEncoder.matches(account.getPassword(), member.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 비밀번호입니다.");
         }
-        return jwtTokenProvider.createToken(member.getUsername(), member.getRoles());
+
+        return new ResponseEntity<> (jwtTokenProvider.createToken(member.getName(), member.getRoles()), HttpStatus.OK);
     }
 
 
@@ -73,7 +74,7 @@ public class AccountController {
         findAccount.updateMyInfo(account.getName());
         accountRepository.save(findAccount);
 
-        return new ResponseEntity<>("회원정보 수정완료", HttpStatus.OK);
+        return new ResponseEntity<>(findAccount, HttpStatus.OK);
     }
 
     // 팀 가입
@@ -88,7 +89,7 @@ public class AccountController {
         accountRepository.save(findAccount);
         teamRepository.save(findTeam);
 
-        return new ResponseEntity<>("Success", HttpStatus.OK);
+        return new ResponseEntity<>(findAccount, HttpStatus.OK);
     }
 
     // 회원 탈퇴
@@ -98,7 +99,7 @@ public class AccountController {
 
         accountRepository.delete(findAccount);
 
-        return new ResponseEntity<>("회원탈퇴 완료", HttpStatus.OK);
+        return new ResponseEntity<>(findAccount, HttpStatus.OK);
     }
 
     // 팀 탈퇴
@@ -111,6 +112,6 @@ public class AccountController {
 
         accountRepository.save(findAccount);
 
-        return new ResponseEntity<>("Success Team withdrawal", HttpStatus.OK);
+        return new ResponseEntity<>(findAccount, HttpStatus.OK);
     }
 }

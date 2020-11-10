@@ -1,30 +1,24 @@
 package com.ksu.soccerserver.account;
 
-
 import com.ksu.soccerserver.config.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.Collections;
-import java.util.Map;
-
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
-import lombok.RequiredArgsConstructor;
-import org.apache.catalina.webresources.JarResourceRoot;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
 @RestController
 public class AccountController {
+
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AccountRepository accountRepository;
@@ -53,23 +47,31 @@ public class AccountController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 비밀번호입니다.");
         }
 
-        return new ResponseEntity<> (jwtTokenProvider.createToken(member.getName(), member.getRoles()), HttpStatus.OK);
+        return new ResponseEntity<> (jwtTokenProvider.createToken(member.getEmail(), member.getRoles()), HttpStatus.OK);
     }
 
 
 
     // 회원정보 출력
     @GetMapping("/{accountId}")
-    public ResponseEntity<?> getAccount(@PathVariable Long accountId){
+    public ResponseEntity<?> getAccount(@PathVariable Long accountId, @CurrentAccount Account currentAccount){
         Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
+
+        if(!currentAccount.getId().equals(findAccount.getId())) {
+            return new ResponseEntity<>("권한이 없습니다.", HttpStatus.BAD_REQUEST);
+        }
 
         return new ResponseEntity<>(findAccount, HttpStatus.OK);
     }
 
     // 회원정보 수정
     @PutMapping("/{accountId}")
-    public ResponseEntity<?> postAccount(@PathVariable Long accountId, @RequestBody Account account) {
+    public ResponseEntity<?> postAccount(@PathVariable Long accountId, @RequestBody Account account, @CurrentAccount Account currentAccount) {
         Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
+
+        if(!currentAccount.getId().equals(findAccount.getId())) {
+            return new ResponseEntity<>("권한이 없습니다.", HttpStatus.BAD_REQUEST);
+        }
 
         findAccount.updateMyInfo(account.getName());
         accountRepository.save(findAccount);
@@ -94,8 +96,12 @@ public class AccountController {
 
     // 회원 탈퇴
     @DeleteMapping("/{accountId}")
-    public ResponseEntity<?> deleteAccount(@PathVariable Long accountId){
+    public ResponseEntity<?> deleteAccount(@PathVariable Long accountId, @CurrentAccount Account currentAccount){
         Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
+
+        if(!currentAccount.getId().equals(findAccount.getId())) {
+            return new ResponseEntity<>("권한이 없습니다.", HttpStatus.BAD_REQUEST);
+        }
 
         accountRepository.delete(findAccount);
 

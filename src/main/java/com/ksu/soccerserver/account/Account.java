@@ -4,28 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-
-
-
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ksu.soccerserver.apply.Apply;
 import com.ksu.soccerserver.invite.Invite;
 import com.ksu.soccerserver.team.Team;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,7 +18,7 @@ import java.util.Set;
 @Entity @Table
 @Getter
 @NoArgsConstructor @AllArgsConstructor
-public class Account implements UserDetails{
+public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,49 +50,8 @@ public class Account implements UserDetails{
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
-    @JsonIgnore
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-    }
-
     public void updateMyInfo(String name) { this.name = name; }
 
     public void joinTeam(Team team) { this.team = team; }
-
-
-    @JsonIgnore
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-
 
 }

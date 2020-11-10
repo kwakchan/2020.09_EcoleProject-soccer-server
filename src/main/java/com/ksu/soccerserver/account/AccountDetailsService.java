@@ -1,6 +1,7 @@
-package com.ksu.soccerserver.config.account;
+package com.ksu.soccerserver.account;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ksu.soccerserver.account.Account;
+import com.ksu.soccerserver.account.AccountAdapter;
 import com.ksu.soccerserver.account.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,8 +17,8 @@ public class AccountDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return accountRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+        Account account = accountRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
+        return new AccountAdapter(account);
     }
 }

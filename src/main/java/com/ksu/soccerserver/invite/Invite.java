@@ -1,13 +1,11 @@
 package com.ksu.soccerserver.invite;
 
 import com.ksu.soccerserver.account.Account;
-import com.ksu.soccerserver.apply.ApplyStatus;
 import com.ksu.soccerserver.team.Team;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 
 @Entity @Table

@@ -41,7 +41,7 @@ public class AccountController {
                                     //Column 추가사항 생기면 추가해주세요
                                     .build());
 
-        return new ResponseEntity<>("Create Account " + joinAccount.toString(), HttpStatus.CREATED);
+        return new ResponseEntity<>("Create Account ", HttpStatus.CREATED);
     }
 
     // 로그인

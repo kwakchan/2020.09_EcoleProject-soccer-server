@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Collections;
+import java.util.Optional;
+
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import org.springframework.http.HttpStatus;
@@ -27,15 +29,25 @@ public class AccountController {
     // 회원가입
     @PostMapping("/join")
     public ResponseEntity<?> join(@RequestBody Account account) {
-         Account joinAccount = accountRepository.save(Account.builder()
-                                    .email(account.getEmail())
-                                    .password(passwordEncoder.encode(account.getPassword()))
-                                    .roles(Collections.singletonList("ROLE_USER")) // 최초 가입시 USER 로 설정
-                                    .name(account.getName())
-                                    //Column 추가사항 생기면 추가해주세요
-                                    .build());
+        Optional<Account> isJoinedAccount = accountRepository.findByEmail(account.getEmail());
 
-        return new ResponseEntity<>(joinAccount, HttpStatus.CREATED);
+        if(!isJoinedAccount.isPresent()){
+            Account joinAccount = accountRepository.save(Account.builder()
+                    .email(account.getEmail())
+                    .password(passwordEncoder.encode(account.getPassword()))
+                    .roles(Collections.singletonList("ROLE_USER")) // 최초 가입시 USER 로 설정
+                    .name(account.getName())
+                    //Column 추가사항 생기면 추가해주세요
+                    .build());
+            return new ResponseEntity<>(joinAccount, HttpStatus.CREATED);
+        }
+        else {
+            Account alreadyJoinedAccount = isJoinedAccount.get();
+            return new ResponseEntity<>(alreadyJoinedAccount, HttpStatus.BAD_REQUEST);
+        }
+
+
+
     }
 
     // 로그인

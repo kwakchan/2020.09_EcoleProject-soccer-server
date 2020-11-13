@@ -22,13 +22,12 @@ import org.springframework.web.server.ResponseStatusException;
 public class AccountController {
 
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
     private final AccountRepository accountRepository;
     private final TeamRepository teamRepository;
 
     // 회원가입
-    @PostMapping("/join")
-    public ResponseEntity<?> join(@RequestBody Account account) {
+    @PostMapping
+    public ResponseEntity<?> createAccount(@RequestBody Account account) {
         Optional<Account> isJoinedAccount = accountRepository.findByEmail(account.getEmail());
 
         if(!isJoinedAccount.isPresent()){
@@ -37,7 +36,9 @@ public class AccountController {
                     .password(passwordEncoder.encode(account.getPassword()))
                     .roles(Collections.singletonList("ROLE_USER")) // 최초 가입시 USER 로 설정
                     .name(account.getName())
-                    //Column 추가사항 생기면 추가해주세요
+                    .phoneNum(account.getPhoneNum())
+                    .birth(account.getBirth())
+                    .sex(account.getSex())
                     .build());
             return new ResponseEntity<>(joinAccount, HttpStatus.CREATED);
         }
@@ -45,28 +46,20 @@ public class AccountController {
             Account alreadyJoinedAccount = isJoinedAccount.get();
             return new ResponseEntity<>(alreadyJoinedAccount, HttpStatus.BAD_REQUEST);
         }
-
-
-
     }
 
-    // 로그인
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Account account) {
-        Account member = accountRepository.findByEmail(account.getEmail())
-                .orElseThrow(() -> new ResponseStatusException (HttpStatus.NOT_FOUND, "가입되지 않은 E-MAIL 입니다."));
-        if (!passwordEncoder.matches(account.getPassword(), member.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 비밀번호입니다.");
-        }
+    // 비밀번호 변경
+    @PutMapping("/changePW")
+    public ResponseEntity<?> changePW(@RequestBody Account account) {
+        Account changeAccount = accountRepository.findByEmail(account.getEmail()).get();
+        changeAccount.changePW(passwordEncoder.encode(account.getPassword()));
 
-        return new ResponseEntity<> (jwtTokenProvider.createToken(member.getEmail(), member.getRoles()), HttpStatus.OK);
+        return new ResponseEntity<> (accountRepository.save(changeAccount), HttpStatus.OK);
     }
-
-
 
     // 회원정보 출력
     @GetMapping("/{accountId}")
-    public ResponseEntity<?> getAccount(@PathVariable Long accountId, @CurrentAccount Account currentAccount){
+    public ResponseEntity<?> loadAccount(@PathVariable Long accountId, @CurrentAccount Account currentAccount){
         Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
         if(!currentAccount.getId().equals(findAccount.getId())) {
@@ -78,7 +71,7 @@ public class AccountController {
 
     // 회원정보 수정
     @PutMapping("/{accountId}")
-    public ResponseEntity<?> postAccount(@PathVariable Long accountId, @RequestBody Account account, @CurrentAccount Account currentAccount) {
+    public ResponseEntity<?> modifyAccount(@PathVariable Long accountId, @RequestBody Account account, @CurrentAccount Account currentAccount) {
         Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
         if(!currentAccount.getId().equals(findAccount.getId())) {
@@ -108,7 +101,7 @@ public class AccountController {
 
     // 회원 탈퇴
     @DeleteMapping("/{accountId}")
-    public ResponseEntity<?> deleteAccount(@PathVariable Long accountId, @CurrentAccount Account currentAccount){
+    public ResponseEntity<?> removeAccount(@PathVariable Long accountId, @CurrentAccount Account currentAccount){
         Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
         if(!currentAccount.getId().equals(findAccount.getId())) {

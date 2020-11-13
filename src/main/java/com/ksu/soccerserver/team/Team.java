@@ -2,9 +2,10 @@ package com.ksu.soccerserver.team;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ksu.soccerserver.account.Account;
-import com.ksu.soccerserver.apply.Apply;
-import com.ksu.soccerserver.invite.Invite;
+import com.ksu.soccerserver.application.ApplicationAccount;
+import com.ksu.soccerserver.invitation.InvitationAccount;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
@@ -12,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity @Table
-@Getter
+@Getter @Builder
 @NoArgsConstructor @AllArgsConstructor
 public class Team {
 
@@ -26,9 +27,12 @@ public class Team {
     @Column
     private String location;
 
+    @OneToOne
+    Account owner;
+
     @JsonIgnore
     @OneToMany(mappedBy = "team")
-    Set<Apply> applies = new HashSet<>();
+    Set<ApplicationAccount> applies = new HashSet<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "team")
@@ -36,7 +40,7 @@ public class Team {
 
     @JsonIgnore
     @OneToMany(mappedBy = "team")
-    Set<Invite> invite = new HashSet<>();
+    Set<InvitationAccount> invitationAccount = new HashSet<>();
 
     public void updateTeamInfo(String name, String location) {
         this.name = name;

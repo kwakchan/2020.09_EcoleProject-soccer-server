@@ -45,6 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //세션 사용 X
                 .and()
                 .authorizeRequests() //요청에 대한 사용권한 체크
+                .antMatchers("/api/**").permitAll()//test 용 test 후 지워야함
                 .antMatchers("/api/admin/**").hasRole("ADMIN") //인증요구
                 .antMatchers("/api/accounts/join").permitAll() //인증요구
                 .antMatchers("/api/accounts/login").permitAll() //인증요구

@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter @Builder
@@ -29,7 +30,10 @@ public class Board {
     private String content;
 
     @Column
-    private String time;
+    private LocalDateTime updatedatetime;
+
+    @Column
+    private String boardtype;
 
 
     public void boardaccount (Account account){
@@ -44,8 +48,12 @@ public class Board {
         this.content = content;
     }
 
-    public void setTime(String format) {
-        this.time = format;
+    public void setTime(LocalDateTime localDateTime) {
+        this.updatedatetime = localDateTime;
+    }
+
+    public void setBoardtype(String boardtype) {
+        this.boardtype = boardtype;
     }
 
     /*

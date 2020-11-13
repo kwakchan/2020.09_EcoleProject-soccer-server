@@ -6,9 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequestMapping("/api/boards")
@@ -17,17 +18,16 @@ import java.util.List;
 public class BoardController {
     private final AccountRepository accountRepository;
     private final BoardRepository boardRepository;
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    @PostMapping("{accountId}")
+    @PostMapping("/{accountId}")
     ResponseEntity<?> postBoard(@RequestBody Board board, @PathVariable Long accountId){
-        Date date = new Date();
 
         Account account = accountRepository.findById(accountId).get();
         Board saveboard = boardRepository.save(Board.builder()
                 .title(board.getTitle())
                 .content(board.getContent())
-                .time(format.format(date))
+                .updatedatetime(LocalDateTime.now())
+                .boardtype(board.getBoardtype())
                 .build());
 
         saveboard.boardaccount(account);
@@ -39,36 +39,66 @@ public class BoardController {
     @GetMapping
     ResponseEntity<?> getBoard() {
         List<Board> boards = boardRepository.findAll();
+        if(boards.isEmpty()){
+            return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(boards, HttpStatus.OK);
     }
 
     @GetMapping("/{accountId}")
     ResponseEntity<?> getaccountsBoard(@PathVariable Long accountId) {
         List<Board> boards = boardRepository.findByAccount(accountRepository.findById(accountId));
+        if(boards.isEmpty()){
+            return new ResponseEntity<>(accountRepository.findById(accountId).get().getName()+"님이 작성한 개시글이 없습니다.", HttpStatus.NOT_FOUND);
+        }
 
         return new ResponseEntity<>(boards, HttpStatus.OK);
     }
 
+    //게시판 keyword포함 제목 검색
+    @GetMapping("/search")
+    ResponseEntity<?> getsearchBoard(@RequestParam(value = "keyword") String keyword, Board board){
+        List<Board> boards = boardRepository.findByTitleContaining(keyword);
+        if(boards.isEmpty()){
+            return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(boards, HttpStatus.OK);
+    }
+
+    //boardType 게시판 출력
+    @GetMapping("/boardType")
+    ResponseEntity<?> getfilterdBoard(@RequestParam(value = "keyword")String keyword, Board board){
+        List<Board> boards = boardRepository.findByBoardtype(keyword);
+        if(boards.isEmpty()){
+            return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(boards, HttpStatus.OK);
+    }
+
+
+
     @PutMapping("/{boardId}")
     ResponseEntity<?> putBoard(@PathVariable Long boardId, @RequestBody Board board){
-
-        Date date = new Date();
-        Board findBoard = boardRepository.findById(boardId).get();
+        Board findBoard = boardRepository.findById(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시판입니다."));
 
 
         findBoard.setTitle(board.getTitle());
         findBoard.setContent(board.getContent());
-        findBoard.setTime(format.format(date));
+        findBoard.setTime(LocalDateTime.now());
+        findBoard.setBoardtype(board.getBoardtype());
 
         boardRepository.save(findBoard);
         return new ResponseEntity<>(board, HttpStatus.OK);
 
     }
 
-    @DeleteMapping("{boardId}")
+    @DeleteMapping("/{boardId}")
     ResponseEntity<?> deleteBoard(@PathVariable Long boardId){
-        Board board = boardRepository.findById(boardId).get();
-        boardRepository.deleteById(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시판입니다."));
+
+        boardRepository.delete(board);
         return new ResponseEntity<>("Delete board title : " + board.getTitle(), HttpStatus.OK);
     }
 

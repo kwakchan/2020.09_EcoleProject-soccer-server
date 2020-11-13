@@ -8,9 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequestMapping("/api/boards")
@@ -20,17 +21,15 @@ public class CommentController {
     private final CommentRepository commentRepository;
     private final AccountRepository accountRepository;
     private final BoardRepository boardRepository;
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @PostMapping("/{boardId}/comment/{accountId}")
     ResponseEntity<?> postComment(@RequestBody Comment comment, @PathVariable Long boardId, @PathVariable Long accountId) {
-        Date date = new Date();
 
         Account account = accountRepository.findById(accountId).get();
         Board board = boardRepository.findById(boardId).get();
         Comment savecomment = commentRepository.save(Comment.builder()
                 .content(comment.getContent())
-                .time(format.format(date))
+                .updatedatetime(LocalDateTime.now())
                 .build());
 
         savecomment.commentAccount(account);
@@ -44,17 +43,19 @@ public class CommentController {
     @GetMapping("/{boardId}/comment")
     ResponseEntity<?> getComment(@PathVariable Long boardId){
         List<Comment> comments = commentRepository.findByBoard(boardRepository.findById(boardId));
+        if(comments.isEmpty()){
+            return new ResponseEntity<>("댓글이 없습니다.", HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 
     @PutMapping("/{boardId}/comment/{commentId}")
     ResponseEntity<?> putComment(@RequestBody Comment comment,@PathVariable Long boardId, @PathVariable Long commentId){
-        Date date = new Date();
-        Board board = boardRepository.findById(boardId).get();
-        Comment findcomment = commentRepository.findById(commentId).get();
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시판입니다."));
+        Comment findcomment = commentRepository.findById(commentId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."));
 
         findcomment.setContent(comment.getContent());
-        findcomment.setTime(format.format(date));
+        findcomment.setTime(LocalDateTime.now());
 
         commentRepository.save(findcomment);
         return new ResponseEntity<>(comment, HttpStatus.OK);
@@ -62,11 +63,13 @@ public class CommentController {
 
     }
 
-    @DeleteMapping("/{boardId}/comment/commentId}")
+    @DeleteMapping("/{boardId}/comment/{commentId}")
     ResponseEntity<?> deleteComment(@PathVariable Long boardId, @PathVariable Long commentId){
-        Comment comment = commentRepository.findById(commentId).get();
-        boardRepository.deleteById(commentId);
-        return new ResponseEntity<>("Delete comment : " + comment.getContent(), HttpStatus.OK );
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시판입니다."));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."));
+
+        commentRepository.delete(comment);
+        return new ResponseEntity<>(board.getTitle()+"의 댓글 Delete : " + comment.getContent(), HttpStatus.OK );
     }
 
 

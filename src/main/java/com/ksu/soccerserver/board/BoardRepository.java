@@ -8,4 +8,8 @@ import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findByAccount(Optional<Account> account);
+
+    List<Board> findByTitleContaining(String keyword);
+
+    List<Board> findByBoardtype(String keyword);
 }

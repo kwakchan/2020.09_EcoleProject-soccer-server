@@ -5,6 +5,7 @@ import com.ksu.soccerserver.board.Board;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -28,7 +29,7 @@ public class Comment {
     private String content;
 
     @Column
-    private String time;
+    private LocalDateTime updatedatetime;
 
     public void commentAccount (Account account) { this.account = account;}
     public void commentBoard (Board board) { this.board = board;}
@@ -37,7 +38,7 @@ public class Comment {
         this.content = content;
     }
 
-    public void setTime(String format) {
-        this.time = time;
+    public void setTime(LocalDateTime localDateTime) {
+        this.updatedatetime = localDateTime;
     }
 }

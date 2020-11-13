@@ -42,7 +42,7 @@ public class Account {
     private String birth;
 
     @Column
-    private String sex;
+    private String gender;
 
     @JsonIgnore
     @OneToMany(mappedBy = "account")

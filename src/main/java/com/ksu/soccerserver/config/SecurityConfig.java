@@ -68,4 +68,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //JwtAuthenticationFilter를 UserPasswordAuthenticationFilter전에 넣는다.
                 .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
     }
+
 }

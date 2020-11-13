@@ -38,7 +38,7 @@ public class AccountController {
                     .name(account.getName())
                     .phoneNum(account.getPhoneNum())
                     .birth(account.getBirth())
-                    .sex(account.getSex())
+                    .gender(account.getGender())
                     .build());
             return new ResponseEntity<>(joinAccount, HttpStatus.CREATED);
         }

@@ -35,6 +35,15 @@ public class Account {
     @Column
     private String name;
 
+    @Column
+    private String phoneNum;
+
+    @Column
+    private String birth;
+
+    @Column
+    private String gender;
+
     @JsonIgnore
     @OneToMany(mappedBy = "account")
     private Set<Apply> apply = new HashSet<>();
@@ -53,5 +62,7 @@ public class Account {
     public void updateMyInfo(String name) { this.name = name; }
 
     public void joinTeam(Team team) { this.team = team; }
+
+    public void changePW(String password) { this.password = password;}
 
 }

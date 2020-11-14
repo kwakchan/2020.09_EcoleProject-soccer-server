@@ -1,4 +1,4 @@
-package com.ksu.soccerserver.apply;
+package com.ksu.soccerserver.invitation;
 
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.team.Team;
@@ -11,14 +11,14 @@ import javax.persistence.*;
 @Entity @Table
 @Getter @Builder
 @NoArgsConstructor @AllArgsConstructor
-public class Apply {
+public class InvitationAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(value = EnumType.STRING)
-    private ApplyStatus applyStatus;
+    private InvitationStatus invitationStatus;
 
     @ManyToOne
     private Account account;
@@ -26,6 +26,8 @@ public class Apply {
     @ManyToOne
     private Team team;
 
-
-    //TODO 신청에 대한 상태변화 메소드는 상의 후 설계
+    public void updateStatus(InvitationStatus invitationStatus)
+    {
+        this.invitationStatus = invitationStatus;
+    }
 }

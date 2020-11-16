@@ -1,5 +1,7 @@
-package com.ksu.soccerserver.account;
+package com.ksu.soccerserver.find;
 
+import com.ksu.soccerserver.account.Account;
+import com.ksu.soccerserver.account.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

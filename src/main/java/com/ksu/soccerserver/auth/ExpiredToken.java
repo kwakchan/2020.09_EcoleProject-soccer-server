@@ -1,4 +1,4 @@
-package com.ksu.soccerserver.account;
+package com.ksu.soccerserver.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Table
 @Getter
 @NoArgsConstructor  @AllArgsConstructor
-public class LogoutAccount {
+public class ExpiredToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

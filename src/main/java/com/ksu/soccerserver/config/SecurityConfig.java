@@ -1,6 +1,6 @@
 package com.ksu.soccerserver.config;
 
-import com.ksu.soccerserver.account.LogoutAccountRepository;
+import com.ksu.soccerserver.auth.ExpiredTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final LogoutAccountRepository logoutAccountRepository;
+    private final ExpiredTokenRepository expiredTokenRepository;
 
     //Bean - Spring FW를 통해 생성되고 관리되는 객체
     //암호화에 필요한 PasswordEncoder를 Bean등록한다.
@@ -65,7 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/h2-console/**").permitAll() //개발 편의상 permitAll
                 .and().headers().frameOptions().disable()
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, logoutAccountRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, expiredTokenRepository), UsernamePasswordAuthenticationFilter.class)
                 //JwtAuthenticationFilter를 UserPasswordAuthenticationFilter전에 넣는다.
                 .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
     }

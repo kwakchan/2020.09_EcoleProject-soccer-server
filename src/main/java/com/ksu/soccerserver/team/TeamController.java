@@ -26,7 +26,11 @@ public class TeamController {
         Team makingTeam = Team.builder().name(team.getName())
                 .location(team.getLocation()).owner(nowAccount).build();
 
+        nowAccount.setLeadingTeam(makingTeam);
+        nowAccount.setTeam(makingTeam);
+
         teamRepository.save(makingTeam);
+        accountRepository.save(nowAccount);
 
         return new ResponseEntity<>(makingTeam, HttpStatus.CREATED);
     }

@@ -68,4 +68,8 @@ public class Account {
 
     public void changePW(String password) { this.password = password;}
 
+    public void setLeadingTeam(Team team) { this.leadingTeam = team; }
+
+    public void setTeam(Team team) { this.team = team; }
+
 }

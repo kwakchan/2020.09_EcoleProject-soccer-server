@@ -1,31 +1,32 @@
 package com.ksu.soccerserver.application;
 
-import com.ksu.soccerserver.account.Account;
+
 import com.ksu.soccerserver.team.Team;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 @Entity @Table
 @Getter @Builder
 @NoArgsConstructor @AllArgsConstructor
-public class ApplicationAccount {
+public class ApplicationTeam {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(value = EnumType.STRING)
     private ApplicationStatus applicationStatus;
 
     @ManyToOne
-    private Account account;
+    Team applicationHomeTeam;
 
     @ManyToOne
-    private Team team;
+    Team applicationAwayTeam;
 
-    public void updateStatus(ApplicationStatus applicationStatus) {this.applicationStatus = applicationStatus;}
+    public void updateStatus(ApplicationStatus applicationStatus) { this.applicationStatus = applicationStatus; }
 
 }

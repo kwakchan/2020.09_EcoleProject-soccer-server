@@ -26,7 +26,7 @@ public class BoardController {
         Board saveboard = boardRepository.save(Board.builder()
                 .title(board.getTitle())
                 .content(board.getContent())
-                .updatedatetime(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .boardtype(board.getBoardtype())
                 .build());
 
@@ -47,7 +47,8 @@ public class BoardController {
 
     @GetMapping("/{accountId}")
     ResponseEntity<?> getaccountsBoard(@PathVariable Long accountId) {
-        List<Board> boards = boardRepository.findByAccount(accountRepository.findById(accountId));
+        List<Board> boards = boardRepository.findByAccount(accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No_Found_Account")));
+
         if(boards.isEmpty()){
             return new ResponseEntity<>(accountRepository.findById(accountId).get().getName()+"님이 작성한 개시글이 없습니다.", HttpStatus.NOT_FOUND);
         }

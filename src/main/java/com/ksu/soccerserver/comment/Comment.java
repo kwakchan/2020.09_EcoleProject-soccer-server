@@ -29,7 +29,10 @@ public class Comment {
     private String content;
 
     @Column
-    private LocalDateTime updatedatetime;
+    private LocalDateTime createdAt;
+
+    @Column
+    private LocalDateTime modifiedAt;
 
     public void commentAccount (Account account) { this.account = account;}
     public void commentBoard (Board board) { this.board = board;}
@@ -39,6 +42,6 @@ public class Comment {
     }
 
     public void setTime(LocalDateTime localDateTime) {
-        this.updatedatetime = localDateTime;
+        this.modifiedAt = localDateTime;
     }
 }

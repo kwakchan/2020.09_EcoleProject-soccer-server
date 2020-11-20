@@ -42,6 +42,9 @@ public class Account {
     @ManyToOne
     private Team team;
 
+    @Column
+    private String image;
+
     @JsonIgnore
     @OneToMany(mappedBy = "account")
     private Set<Invite> invite = new HashSet<>();
@@ -53,5 +56,7 @@ public class Account {
     public void updateMyInfo(String name) { this.name = name; }
 
     public void joinTeam(Team team) { this.team = team; }
+
+    public void setImage(String image) { this.image = image; }
 
 }

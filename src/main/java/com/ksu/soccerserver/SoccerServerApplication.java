@@ -10,8 +10,5 @@ public class SoccerServerApplication {
     public static void main(String[] args) {
         SpringApplication.run(SoccerServerApplication.class, args);
     }
-    @Bean(name = "uploadPath")
-    public String uploadPath() {
-        return "d:/image/";
-    }
+
 }

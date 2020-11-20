@@ -26,6 +26,9 @@ public class Team {
     @Column
     private String location;
 
+    @Column
+    private String logopath;
+
     @JsonIgnore
     @OneToMany(mappedBy = "team")
     Set<Apply> applies = new HashSet<>();
@@ -46,4 +49,6 @@ public class Team {
     public void joinMember(Account account) {
         accounts.add(account);
     }
+
+    public void setLogo(String logo) { this.logopath = logo; }
 }

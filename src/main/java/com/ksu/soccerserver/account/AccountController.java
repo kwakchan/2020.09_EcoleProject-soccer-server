@@ -1,6 +1,7 @@
 package com.ksu.soccerserver.account;
 
 import com.ksu.soccerserver.account.dto.AccountModifyRequest;
+import com.ksu.soccerserver.account.dto.AccountPasswordRequest;
 import com.ksu.soccerserver.account.dto.AccountRequest;
 import com.ksu.soccerserver.account.dto.AccountResponse;
 import com.ksu.soccerserver.config.JwtTokenProvider;
@@ -83,17 +84,16 @@ public class AccountController {
 
     @PutMapping("/password")
     public ResponseEntity<?> changeNewPW(
-                        @RequestParam(value = "oldPW")String oldPW,
-                        @RequestParam(value = "newPW")String newPW,
+                        @RequestBody AccountPasswordRequest accountPasswordRequest,
                         @CurrentAccount Account currentAccount) {
         Account changingAccount = accountRepository.findById(currentAccount.getId()).get();
-        if(passwordEncoder.matches(oldPW, changingAccount.getPassword())) {
-            changingAccount.changePW(passwordEncoder.encode(newPW));
+        if(passwordEncoder.matches(accountPasswordRequest.getOldPW(), changingAccount.getPassword())) {
+            changingAccount.changePW(passwordEncoder.encode(accountPasswordRequest.getNewPW()));
             accountRepository.save(changingAccount);
             return new ResponseEntity<>("Success", HttpStatus.OK);
         }
         else
-            return new ResponseEntity<>(changingAccount.getPassword()+"      "+passwordEncoder.encode(oldPW), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Fail", HttpStatus.BAD_REQUEST);
     }
 
 

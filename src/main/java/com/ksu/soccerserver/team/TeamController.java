@@ -82,6 +82,11 @@ public class TeamController {
 //
 //        return new ResponseEntity<>(teams, HttpStatus.OK);
 //    }
+    //모든팀 Get
+    //@GetMapping
+    //public ResponseEntity<?> loadFilteredTeam() {
+
+    //}
 
     // 해당 teamId를 가진 팀 GET
     @GetMapping("/{teamId}")

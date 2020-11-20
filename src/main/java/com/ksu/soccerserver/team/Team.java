@@ -35,8 +35,6 @@ public class Team {
     @Column(length = 200)
     private String description;
 
-    @Column
-    private String description;
 
     // 팀의 주장을 나타내는 관계성
     @JsonIgnore

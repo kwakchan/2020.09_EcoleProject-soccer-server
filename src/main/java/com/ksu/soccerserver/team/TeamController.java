@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.awt.print.Pageable;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -36,15 +37,27 @@ public class TeamController {
 
         Team makingTeam = teamRequest.toEntity(currentAccount);
 
-        currentAccount.setLeadingTeam(makingTeam);
-        currentAccount.setTeam(makingTeam);
+        /*
+        Team 중복 검사
+         */
+        Optional<Team> isMadeTeam = teamRepository.findByNameAndStateAndDistrict(
+                makingTeam.getName(), makingTeam.getState(), makingTeam.getDistrict());
 
-        Team makedTeam = teamRepository.save(makingTeam);
-        accountRepository.save(currentAccount);
+        if(!isMadeTeam.isPresent()) {
+            currentAccount.setLeadingTeam(makingTeam);
+            currentAccount.setTeam(makingTeam);
 
-        TeamResponse response = modelMapper.map(makedTeam, TeamResponse.class);
+            Team madeTeam = teamRepository.save(makingTeam);
+            currentAccount.addRoles("ROLE_LEADER");
+            accountRepository.save(currentAccount);
 
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+            TeamResponse response = modelMapper.map(madeTeam, TeamResponse.class);
+
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        }
+        else{
+            return new ResponseEntity<>("이미 존재하는 팀입니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     // 생성되어 있는 모든 팀 GET

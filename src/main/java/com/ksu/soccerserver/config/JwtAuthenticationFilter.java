@@ -34,6 +34,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         try{
             chain.doFilter(request, response);
         } catch (RuntimeException e) {
+            
             //throw new BadCredentialsException("Not used Token");
         }
     }

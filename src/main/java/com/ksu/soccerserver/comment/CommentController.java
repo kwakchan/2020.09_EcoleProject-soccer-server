@@ -49,35 +49,43 @@ public class CommentController {
     ResponseEntity<?> getComment(@PathVariable Long boardId){
         List<Comment> comments = commentRepository.findByBoard(boardRepository.findById(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시판입니다.")));
         if(comments.isEmpty()){
-            return new ResponseEntity<>("댓글이 없습니다.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("댓글이 없습니다.", HttpStatus.NOT_FOUND);.x
         }
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
     */
 
     @PutMapping("/{commentId}")
-    ResponseEntity<?> putComment(@RequestBody CommentRequest commentRequest, @PathVariable Long commentId){
+    ResponseEntity<?> putComment(@RequestBody CommentRequest commentRequest, @PathVariable Long commentId, @CurrentAccount Account currentAccount){
         Comment findComment = commentRepository.findById(commentId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."));
+        if(!currentAccount.getId().equals(findComment.getAccount().getId())){
+            return new ResponseEntity<>("수정권한이 없습니다.", HttpStatus.BAD_REQUEST);
+        }else {
 
-        findComment.setContent(commentRequest.getContent());
-        findComment.setTime(LocalDateTime.now());
+            findComment.setContent(commentRequest.getContent());
+            findComment.setTime(LocalDateTime.now());
 
-        Comment updatedComment = commentRepository.save(findComment);
+            Comment updatedComment = commentRepository.save(findComment);
 
-        CommentResponse response = modelMaapper.map(updatedComment, CommentResponse.class);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+            CommentResponse response = modelMaapper.map(updatedComment, CommentResponse.class);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
 
     }
 
     @DeleteMapping("/{commentId}")
-    ResponseEntity<?> deleteComment(@PathVariable Long commentId){
+    ResponseEntity<?> deleteComment(@PathVariable Long commentId,@CurrentAccount Account currentAccount){
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."));
+        if(!currentAccount.getId().equals(comment.getAccount().getId())){
+            return new ResponseEntity<>("삭제권한이 없습니다.",HttpStatus.BAD_REQUEST);
+        }else {
 
-        commentRepository.delete(comment);
+            commentRepository.delete(comment);
 
-        CommentResponse response = modelMaapper.map(comment, CommentResponse.class);
+            CommentResponse response = modelMaapper.map(comment, CommentResponse.class);
 
-        return new ResponseEntity<>(response, HttpStatus.OK );
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
     }
 
 

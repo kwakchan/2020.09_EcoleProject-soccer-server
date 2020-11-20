@@ -1,5 +1,6 @@
 package com.ksu.soccerserver.account;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ksu.soccerserver.account.dto.AccountModifyRequest;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -29,7 +30,7 @@ public class Account {
     private String email;
 
     //Password 길이=400, UNIQUE, Not NULL
-    //@JsonIgnore
+    @JsonIgnore
     @Column(length = 400, nullable = false)
     private String password;
 

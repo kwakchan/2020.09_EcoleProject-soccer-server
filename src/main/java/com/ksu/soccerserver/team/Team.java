@@ -31,6 +31,8 @@ public class Team {
     private String state;
 
     @Column
+    private String logopath;
+
     private String district;
 
     @Column(length = 200)
@@ -83,4 +85,6 @@ public class Team {
     public void joinMember(Account account) {
         accounts.add(account);
     }
+
+    public void setLogo(String logo) { this.logopath = logo; }
 }

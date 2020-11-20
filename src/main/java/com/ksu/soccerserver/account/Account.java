@@ -71,6 +71,9 @@ public class Account {
     @ManyToOne
     private Team team;
 
+    @Column
+    private String image;
+
     @OneToOne
     Team leadingTeam;
 
@@ -91,6 +94,8 @@ public class Account {
         this.height = modifyRequest.getHeight();
         this.foot = modifyRequest.getFoot();
     }
+
+    public void setImage(String image) { this.image = image; }
 
     public void changePW(String password) { this.password = password;}
 

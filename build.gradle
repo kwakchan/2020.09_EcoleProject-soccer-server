@@ -24,6 +24,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+    // https://mvnrepository.com/artifact/org.modelmapper/modelmapper
+    compile group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'    //for jwt
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compileOnly 'org.projectlombok:lombok'

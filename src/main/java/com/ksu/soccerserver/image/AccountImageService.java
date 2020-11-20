@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -125,6 +126,18 @@ public class AccountImageService {
         } catch (MalformedURLException e) {
             return new ResponseEntity<>("findError", HttpStatus.BAD_REQUEST);
         }
+    }
+    // 유저 기본 이미지
+    public ResponseEntity<?> setuserImage(Long accountId, HttpServletRequest request) {
+        ServletUriComponentsBuilder defaultPath = ServletUriComponentsBuilder.fromCurrentContextPath();
+        String image = defaultPath.toUriString() + request.getRequestURI() + "/images/default.jpg";
+
+        Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
+
+        findAccount.setImage(image);
+        Account updatedAccount = accountRepository.save(findAccount);
+
+        return new ResponseEntity<>(updatedAccount, HttpStatus.OK);
     }
 
     Path load(String imageName) {

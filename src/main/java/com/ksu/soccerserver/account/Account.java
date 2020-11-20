@@ -1,23 +1,23 @@
 package com.ksu.soccerserver.account;
 
+import com.ksu.soccerserver.account.dto.AccountModifyRequest;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.*;
 import com.ksu.soccerserver.application.ApplicationAccount;
 import com.ksu.soccerserver.invitation.InvitationAccount;
 import com.ksu.soccerserver.team.Team;
-import java.util.HashSet;
-import java.util.Set;
 
 @Builder
 @Entity @Table
 @Getter
 @NoArgsConstructor @AllArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Account {
 
     @Id
@@ -29,11 +29,15 @@ public class Account {
     private String email;
 
     //Password 길이=400, UNIQUE, Not NULL
+    //@JsonIgnore
     @Column(length = 400, nullable = false)
     private String password;
 
     @Column
     private String name;
+
+    @Column
+    private String image;
 
     @Column
     private String phoneNum;
@@ -44,30 +48,49 @@ public class Account {
     @Column
     private String gender;
 
-    @JsonIgnore
+    @Column
+    private String position;
+
+    @Column
+    private String height;
+
+    @Column
+    private String weight;
+
+    @Column
+    private String foot;
+
+    @Column
+    private String state;
+
+    @Column
+    private String district;
+
     @OneToMany(mappedBy = "account")
-    private Set<ApplicationAccount> apply = new HashSet<>();
+    private final Set<ApplicationAccount> apply = new HashSet<>();
 
     @ManyToOne
     private Team team;
 
-    @Column
-    private String image;
-
     @OneToOne
     Team leadingTeam;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "account")
-    private Set<InvitationAccount> invitationAccount = new HashSet<>();
+    private final Set<InvitationAccount> invitationAccount = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
-    public void updateMyInfo(String name) { this.name = name; }
-
-    public void joinTeam(Team team) { this.team = team; }
+    public void updateMyInfo(AccountModifyRequest modifyRequest) {
+        this.password = modifyRequest.getPassword();
+        this.position = modifyRequest.getPosition();
+        this.state = modifyRequest.getState();
+        this.district = modifyRequest.getDistrict();
+        this.weight = modifyRequest.getWeight();
+        this.height = modifyRequest.getHeight();
+        this.foot = modifyRequest.getFoot();
+    }
 
     public void setImage(String image) { this.image = image; }
 

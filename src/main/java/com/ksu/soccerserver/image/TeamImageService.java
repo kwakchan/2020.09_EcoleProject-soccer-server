@@ -2,9 +2,12 @@ package com.ksu.soccerserver.image;
 
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.AccountRepository;
+import com.ksu.soccerserver.account.CurrentAccount;
 import com.ksu.soccerserver.config.JwtTokenProvider;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
+import com.ksu.soccerserver.team.dto.TeamModifyRequest;
+import com.ksu.soccerserver.team.dto.TeamResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -13,7 +16,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -120,6 +126,26 @@ public class TeamImageService {
             }
         } catch (MalformedURLException e) {
             return new ResponseEntity<>("findError", HttpStatus.BAD_REQUEST);
+        }
+    }
+    // 이미지 초기화(팀장 권한)
+    public ResponseEntity<?> setTeamLogo(@PathVariable Long teamId, @CurrentAccount Account nowAccount,
+                                         HttpServletRequest request) {
+
+        ServletUriComponentsBuilder defaultPath = ServletUriComponentsBuilder.fromCurrentContextPath();
+        String image = defaultPath.toUriString() + request.getRequestURI() + "/images/default.jpg";
+
+        Team findTeam = teamRepository.findById(teamId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다"));
+
+        if(!findTeam.getOwner().getId().equals(nowAccount.getId())){
+            return new ResponseEntity<>("해당 유저는 팀장이 아닙니다.", HttpStatus.BAD_REQUEST);
+        } else{
+            findTeam.setLogo(image);
+
+            Team updatedTeam = teamRepository.save(findTeam);
+
+            return new ResponseEntity<>(updatedTeam, HttpStatus.OK);
         }
     }
 

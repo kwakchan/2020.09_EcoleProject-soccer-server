@@ -1,18 +1,22 @@
 package com.ksu.soccerserver.board;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.ksu.soccerserver.account.Account;
+import com.ksu.soccerserver.comment.Comment;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter @Builder
 @Entity
 @Table
 @NoArgsConstructor @AllArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Board {
-
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +38,10 @@ public class Board {
     private LocalDateTime modifiedAt;
 
     @Enumerated(value =  EnumType.STRING)
-    private BoardType boardtype;
+    private BoardType boardType;
+
+    @OneToMany(mappedBy = "board")
+    private final Set<Comment> comment = new HashSet<>();
 
 
     public void boardaccount (Account account){
@@ -53,8 +60,8 @@ public class Board {
         this.modifiedAt = localDateTime;
     }
 
-    public void setBoardtype(BoardType boardtype) {
-        this.boardtype = boardtype;
+    public void setBoardtype(BoardType boardType) {
+        this.boardType = boardType;
     }
 
     /*

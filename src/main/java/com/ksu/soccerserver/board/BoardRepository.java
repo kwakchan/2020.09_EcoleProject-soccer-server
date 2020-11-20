@@ -14,12 +14,12 @@ public interface BoardRepository extends JpaRepository<Board, Long>{
 
     List<Board> findByTitleContaining(String keyword);
 
-    List<Board> findByBoardtype(String keyword);
+//    List<Board> findByBoardtype(String keyword);
 
     //pagination
     Page<Board> findAllByAccount(Account account, Pageable pageable);
 
     Page<Board> findAllByTitleContaining(String keyword, Pageable pageable);
 
-    Page<Board> findAllByBoardtype(String keyword, Pageable pageable);
+    Page<Board> findAllByBoardType(String keyword, Pageable pageable);
 }

@@ -4,6 +4,7 @@ import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.AccountRepository;
 import com.ksu.soccerserver.board.Board;
 import com.ksu.soccerserver.board.BoardRepository;
+import com.ksu.soccerserver.comment.dto.CommentRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,21 +24,20 @@ public class CommentController {
     private final BoardRepository boardRepository;
 
     @PostMapping("/{boardId}/comment/{accountId}")
-    ResponseEntity<?> postComment(@RequestBody Comment comment, @PathVariable Long boardId, @PathVariable Long accountId) {
+    ResponseEntity<?> postComment(@RequestBody CommentRequest commentRequest, @PathVariable Long boardId, @PathVariable Long accountId) {
 
         Account account = accountRepository.findById(accountId).get();
         Board board = boardRepository.findById(boardId).get();
-        Comment savecomment = commentRepository.save(Comment.builder()
-                .content(comment.getContent())
+        Comment saveComment = commentRepository.save(Comment.builder()
+                .content(commentRequest.getContent())
                 .createdAt(LocalDateTime.now())
                 .build());
 
-        savecomment.commentAccount(account);
-        savecomment.commentBoard(board);
+        saveComment.commentAccount(account);
+        saveComment.commentBoard(board);
 
-        commentRepository.save(savecomment);
+        commentRepository.save(saveComment);
         return new ResponseEntity<>("Create new Comments" + board.getId() + "번째 게시판", HttpStatus.CREATED);
-
     }
 
     @GetMapping("/{boardId}/comment")
@@ -50,16 +50,15 @@ public class CommentController {
     }
 
     @PutMapping("/{boardId}/comment/{commentId}")
-    ResponseEntity<?> putComment(@RequestBody Comment comment,@PathVariable Long boardId, @PathVariable Long commentId){
+    ResponseEntity<?> putComment(@RequestBody CommentRequest commentRequest, @PathVariable Long boardId, @PathVariable Long commentId){
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시판입니다."));
-        Comment findcomment = commentRepository.findById(commentId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."));
+        Comment findComment = commentRepository.findById(commentId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."));
 
-        findcomment.setContent(comment.getContent());
-        findcomment.setTime(LocalDateTime.now());
+        findComment.setContent(commentRequest.getContent());
+        findComment.setTime(LocalDateTime.now());
 
-        commentRepository.save(findcomment);
-        return new ResponseEntity<>(findcomment, HttpStatus.OK);
-
+        commentRepository.save(findComment);
+        return new ResponseEntity<>(findComment, HttpStatus.OK);
 
     }
 

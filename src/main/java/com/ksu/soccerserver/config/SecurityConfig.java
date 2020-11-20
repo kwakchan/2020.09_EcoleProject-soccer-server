@@ -52,6 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/teams/**").hasRole("USER") //인증요구
                 .antMatchers("/api/apply/**").hasRole("USER") //인증요구
                 .antMatchers("/api/invite/**").hasRole("USER") //인증요구
+                .antMatchers("/api/boards/**").hasRole("USER") //인증요구
                 .antMatchers("/h2-console/**").permitAll() //개발 편의상 permitAll
                 .and().headers().frameOptions().disable()
                 .and()

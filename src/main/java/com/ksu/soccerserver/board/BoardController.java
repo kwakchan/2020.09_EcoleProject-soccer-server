@@ -2,6 +2,7 @@ package com.ksu.soccerserver.board;
 
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.AccountRepository;
+import com.ksu.soccerserver.account.CurrentAccount;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,10 +22,10 @@ public class BoardController {
     private final AccountRepository accountRepository;
     private final BoardRepository boardRepository;
 
-    @PostMapping("/{accountId}")
-    ResponseEntity<?> postBoard(@RequestBody Board board, @PathVariable Long accountId){
+    @PostMapping()
+    ResponseEntity<?> postBoard(@RequestBody Board board, @CurrentAccount Account currentAccount){
 
-        Account account = accountRepository.findById(accountId).get();
+        Account account = accountRepository.findById(currentAccount.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"NO_FOUND_ACCOUNT"));
         Board saveboard = boardRepository.save(Board.builder()
                 .title(board.getTitle())
                 .content(board.getContent())

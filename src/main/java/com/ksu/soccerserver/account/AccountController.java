@@ -2,8 +2,10 @@ package com.ksu.soccerserver.account;
 
 import com.ksu.soccerserver.account.dto.AccountModifyRequest;
 import com.ksu.soccerserver.account.dto.AccountRequest;
+import com.ksu.soccerserver.account.dto.AccountResponse;
 import com.ksu.soccerserver.config.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,23 +28,20 @@ public class AccountController {
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
     private final TeamRepository teamRepository;
+    private final ModelMapper modelMapper;
 
     // 회원가입
     @PostMapping
-    public ResponseEntity<?> createAccount(@RequestBody AccountRequest account) {
-        Optional<Account> isJoinedAccount = accountRepository.findByEmail(account.getEmail());
+    public ResponseEntity<?> createAccount(@RequestBody AccountRequest accountRequest) {
+        Optional<Account> isJoinedAccount = accountRepository.findByEmail(accountRequest.getEmail());
 
         if(!isJoinedAccount.isPresent()){
-            Account joinAccount = accountRepository.save(Account.builder()
-                    .email(account.getEmail())
-                    .password(passwordEncoder.encode(account.getPassword()))
-                    .roles(Collections.singletonList("ROLE_USER")) // 최초 가입시 USER 로 설정
-                    .name(account.getName())
-                    .phoneNum(account.getPhoneNum())
-                    .birth(account.getBirth())
-                    .gender(account.getGender())
-                    .build());
-            return new ResponseEntity<>(joinAccount, HttpStatus.CREATED);
+            Account account = accountRequest.toEntity(passwordEncoder);
+            Account joinAccount = accountRepository.save(account);
+
+            AccountResponse response = modelMapper.map(joinAccount, AccountResponse.class);
+
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
         }
         else {
             Account alreadyJoinedAccount = isJoinedAccount.get();
@@ -55,7 +54,9 @@ public class AccountController {
     public ResponseEntity<?> loadProfile(@CurrentAccount Account currentAccount){
         Account account = accountRepository.findByEmail(currentAccount.getEmail()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
 
-        return new ResponseEntity<>(account, HttpStatus.OK);
+        AccountResponse response = modelMapper.map(account, AccountResponse.class);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // 회원정보 출력
@@ -67,7 +68,9 @@ public class AccountController {
             return new ResponseEntity<>("권한이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(findAccount, HttpStatus.OK);
+        AccountResponse response = modelMapper.map(findAccount, AccountResponse.class);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // 회원정보 수정
@@ -80,9 +83,11 @@ public class AccountController {
         }
 
         findAccount.updateMyInfo(modifyRequest);
-        accountRepository.save(findAccount);
+        Account updatedAccount = accountRepository.save(findAccount);
 
-        return new ResponseEntity<>(findAccount, HttpStatus.OK);
+        AccountResponse response = modelMapper.map(updatedAccount, AccountResponse.class);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // 회원 탈퇴
@@ -96,7 +101,9 @@ public class AccountController {
 
         accountRepository.delete(findAccount);
 
-        return new ResponseEntity<>(findAccount, HttpStatus.OK);
+        AccountResponse response = modelMapper.map(findAccount, AccountResponse.class);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // 팀 탈퇴
@@ -107,8 +114,10 @@ public class AccountController {
 
         findTeam.getAccounts().remove(findAccount);
 
-        accountRepository.save(findAccount);
+        Account withdrawalAccount = accountRepository.save(findAccount);
 
-        return new ResponseEntity<>(findAccount, HttpStatus.OK);
+        AccountResponse response = modelMapper.map(withdrawalAccount, AccountResponse.class);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

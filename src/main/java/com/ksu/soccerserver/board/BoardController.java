@@ -3,7 +3,10 @@ package com.ksu.soccerserver.board;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.AccountRepository;
 import com.ksu.soccerserver.account.CurrentAccount;
+import com.ksu.soccerserver.board.dto.BoardRequest;
+import com.ksu.soccerserver.board.dto.BoardResponse;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,22 +24,21 @@ import java.util.List;
 public class BoardController {
     private final AccountRepository accountRepository;
     private final BoardRepository boardRepository;
+    private final ModelMapper modelMapper;
 
     @PostMapping
-    ResponseEntity<?> postBoard(@RequestBody Board board, @CurrentAccount Account currentAccount){
+    ResponseEntity<?> postBoard(@RequestBody BoardRequest boardRequest, @CurrentAccount Account currentAccount){
 
-        Account account = accountRepository.findById(currentAccount.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"NO_FOUND_ACCOUNT"));
-        Board saveboard = boardRepository.save(Board.builder()
-                .title(board.getTitle())
-                .content(board.getContent())
-                .createdAt(LocalDateTime.now())
-                .boardtype(board.getBoardtype())
-                .build());
+        Account account = accountRepository.findById(currentAccount.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"NO_FOUND_ACCOUNT"));
 
-        saveboard.boardaccount(account);
+        Board postBoard = boardRequest.toEntity(account);
 
-        boardRepository.save(saveboard);
-        return new ResponseEntity<>("Create new board", HttpStatus.CREATED);
+        Board saveBoard = boardRepository.save(postBoard);
+
+        BoardResponse response = modelMapper.map(saveBoard, BoardResponse.class);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -45,11 +47,14 @@ public class BoardController {
         if(boards.isEmpty()){
             return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
         }
+
+
+
         return new ResponseEntity<>(boards, HttpStatus.OK);
     }
 
     @GetMapping("/myBoard")
-    ResponseEntity<?> getaccountsBoard(@CurrentAccount Account currentAccount) {
+    ResponseEntity<?> getAccountsBoard(@CurrentAccount Account currentAccount) {
         Account Account = accountRepository.findById(currentAccount.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"NO_FOUND_ACCOUNT"));
         List<Board> boards = boardRepository.findByAccount(Account);
 
@@ -62,18 +67,22 @@ public class BoardController {
 
     //게시판 keyword포함 제목 검색
     @GetMapping("/search")
-    ResponseEntity<?> getsearchBoard(@RequestParam(value = "keyword") String keyword){
+    ResponseEntity<?> getSearchBoard(@RequestParam(value = "keyword") String keyword){
         List<Board> boards = boardRepository.findByTitleContaining(keyword);
         if(boards.isEmpty()){
             return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
         }
+
+
+
+
 
         return new ResponseEntity<>(boards, HttpStatus.OK);
     }
 
     //boardType 게시판 출력
     @GetMapping("/boardType")
-    ResponseEntity<?> getfilterdBoard(@RequestParam(value = "keyword")String keyword){
+    ResponseEntity<?> getFilteredBoard(@RequestParam(value = "keyword")String keyword){
         List<Board> boards = boardRepository.findByBoardtype(keyword);
         if(boards.isEmpty()){
             return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
@@ -85,8 +94,9 @@ public class BoardController {
     //////////////////////////
     //boardPagination
     @GetMapping("/page")
-    ResponseEntity<?> getpaginationBoard(Pageable pageable){
+    ResponseEntity<?> getPaginationBoard(Pageable pageable){
         Page<Board> boardPage = boardRepository.findAll(pageable);
+
         if(boardPage.isEmpty()) {
             return new ResponseEntity<>("게시글이 없습니다", HttpStatus.NOT_FOUND);
         }
@@ -94,7 +104,7 @@ public class BoardController {
     }
 
     @GetMapping("/myBoard/page")
-    ResponseEntity<?> getpaginationaccountsBoard(@CurrentAccount Account currentAccount, Pageable pageable) {
+    ResponseEntity<?> getPaginationAccountsBoard(@CurrentAccount Account currentAccount, Pageable pageable) {
         Page<Board> boardPage = boardRepository.findAllByAccount(accountRepository.findById(currentAccount.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"NOT ACCOUNT")), pageable);
         if(boardPage.isEmpty()){
             return new ResponseEntity<>(currentAccount.getName()+"님이 작성한 개시글이 없습니다.", HttpStatus.NOT_FOUND);
@@ -104,7 +114,7 @@ public class BoardController {
     }
 
     @GetMapping("/search/page")
-    ResponseEntity<?> getpaginationsearchBoard(@RequestParam(value = "keyword") String keyword, Pageable pageable) {
+    ResponseEntity<?> getPaginationSearchBoard(@RequestParam(value = "keyword") String keyword, Pageable pageable) {
         Page<Board> boardPage = boardRepository.findAllByTitleContaining(keyword, pageable);
         if (boardPage.isEmpty()) {
             return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
@@ -114,7 +124,7 @@ public class BoardController {
     }
 
     @GetMapping("/boardType/page")
-    ResponseEntity<?> getpaginationfilterdBoard(@RequestParam(value = "keyword")String keyword, Pageable pageable){
+    ResponseEntity<?> getPaginationFilteredBoard(@RequestParam(value = "keyword")String keyword, Pageable pageable){
         Page<Board> boardPage = boardRepository.findAllByBoardtype(keyword, pageable);
         if(boardPage.isEmpty()){
             return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
@@ -123,17 +133,16 @@ public class BoardController {
     }
 
 
-
-
     @PutMapping("/{boardId}")
-    ResponseEntity<?> putBoard(@PathVariable Long boardId, @RequestBody Board board){
-        Board findBoard = boardRepository.findById(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시판입니다."));
+    ResponseEntity<?> putBoard(@PathVariable Long boardId, @RequestBody BoardRequest boardRequest){
+        Board findBoard = boardRepository.findById(boardId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시판입니다."));
 
 
-        findBoard.setTitle(board.getTitle());
-        findBoard.setContent(board.getContent());
+        findBoard.setTitle(boardRequest.getTitle());
+        findBoard.setContent(boardRequest.getContent());
         findBoard.setTime(LocalDateTime.now());
-        findBoard.setBoardtype(board.getBoardtype());
+        findBoard.setBoardtype(boardRequest.getBoardType());
 
         boardRepository.save(findBoard);
         return new ResponseEntity<>(findBoard, HttpStatus.OK);

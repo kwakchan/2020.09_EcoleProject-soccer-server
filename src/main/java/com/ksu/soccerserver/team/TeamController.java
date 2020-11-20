@@ -5,7 +5,9 @@ import com.ksu.soccerserver.account.AccountRepository;
 import com.ksu.soccerserver.account.CurrentAccount;
 import com.ksu.soccerserver.team.dto.TeamModifyRequest;
 import com.ksu.soccerserver.team.dto.TeamRequest;
+import com.ksu.soccerserver.team.dto.TeamResponse;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ public class TeamController {
 
     private final TeamRepository teamRepository;
     private final AccountRepository accountRepository;
+    private final ModelMapper modelMapper;
 
     // 팀 생성
     @PostMapping
@@ -31,17 +34,17 @@ public class TeamController {
         Account currentAccount = accountRepository.findByEmail(nowAccount.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
-        Team makingTeam = Team.builder().name(teamRequest.getName())
-                .state(teamRequest.getState()).district(teamRequest.getDistrict())
-                .description(teamRequest.getDescription()).owner(nowAccount).build();
+        Team makingTeam = teamRequest.toEntity(currentAccount);
 
         currentAccount.setLeadingTeam(makingTeam);
         currentAccount.setTeam(makingTeam);
 
-        teamRepository.save(makingTeam);
+        Team makedTeam = teamRepository.save(makingTeam);
         accountRepository.save(currentAccount);
 
-        return new ResponseEntity<>(makingTeam, HttpStatus.CREATED);
+        TeamResponse response = modelMapper.map(makedTeam, TeamResponse.class);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     // 생성되어 있는 모든 팀 GET
@@ -66,7 +69,9 @@ public class TeamController {
         Team findTeam = teamRepository.findById(teamId).orElseThrow
                 (() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
 
-        return new ResponseEntity<>(findTeam, HttpStatus.OK);
+        TeamResponse response = modelMapper.map(findTeam, TeamResponse.class);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // 해당 팀의 정보 수정
@@ -81,9 +86,11 @@ public class TeamController {
         } else{
             findTeam.updateTeamInfo(teamModifyRequest);
 
-            teamRepository.save(findTeam);
+            Team updatedTeam = teamRepository.save(findTeam);
 
-            return new ResponseEntity<>(findTeam, HttpStatus.OK);
+            TeamResponse response = modelMapper.map(updatedTeam, TeamResponse.class);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }
 
@@ -97,7 +104,9 @@ public class TeamController {
         }else {
             teamRepository.delete(findTeam);
 
-            return new ResponseEntity<>(findTeam, HttpStatus.OK);
+            TeamResponse response = modelMapper.map(findTeam, TeamResponse.class);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }
 }

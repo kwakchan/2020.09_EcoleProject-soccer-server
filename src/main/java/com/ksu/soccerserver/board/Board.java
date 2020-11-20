@@ -20,8 +20,6 @@ import java.util.Set;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Board {
 
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,7 +40,7 @@ public class Board {
     private LocalDateTime modifiedAt;
 
     @Enumerated(value =  EnumType.STRING)
-    private BoardType boardtype;
+    private BoardType boardType;
 
     @OneToMany(mappedBy = "board")
     private final Set<Comment> comment = new HashSet<>();
@@ -64,8 +62,8 @@ public class Board {
         this.modifiedAt = localDateTime;
     }
 
-    public void setBoardtype(BoardType boardtype) {
-        this.boardtype = boardtype;
+    public void setBoardtype(BoardType boardType) {
+        this.boardType = boardType;
     }
 
     /*

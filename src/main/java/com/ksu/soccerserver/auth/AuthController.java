@@ -3,8 +3,10 @@ package com.ksu.soccerserver.auth;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.AccountRepository;
 import com.ksu.soccerserver.auth.dto.LoginRequest;
+import com.ksu.soccerserver.auth.dto.LoginResponse;
 import com.ksu.soccerserver.config.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,6 +31,7 @@ public class AuthController {
     //DB에서 사용자 인증정보를 가져오는 객체
     //private final UserDetailsService userDetailsService = null; //?
     private final UserDetailsService userDetailsService;
+    private final ModelMapper modelMapper;
 
     // 로그인
     @PostMapping("/login")
@@ -39,7 +42,9 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 비밀번호입니다.");
         }
 
-        return new ResponseEntity<> (jwtTokenProvider.createToken(member.getEmail(), member.getRoles()), HttpStatus.CREATED);
+        String token = jwtTokenProvider.createToken(member.getEmail(), member.getRoles());
+
+        return new ResponseEntity<> (new LoginResponse(token), HttpStatus.CREATED);
     }
 
     @PostMapping("/logout")

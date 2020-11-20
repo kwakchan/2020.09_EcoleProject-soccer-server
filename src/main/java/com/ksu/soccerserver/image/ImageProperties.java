@@ -1,4 +1,4 @@
-package com.ksu.soccerserver.account;
+package com.ksu.soccerserver.image;
 
 
 import lombok.Getter;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "image")
 @Component
 @Getter @Setter
-public class AccountImageProperties {
+public class ImageProperties {
 
     private String location;
 }

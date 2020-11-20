@@ -1,6 +1,6 @@
-package com.ksu.soccerserver.account;
+package com.ksu.soccerserver.image;
 
-import com.ksu.soccerserver.service.ImageService;
+import com.ksu.soccerserver.image.AccountImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,21 +10,21 @@ import javax.servlet.http.HttpServletRequest;
 
 
 @RestController
-@RequestMapping(value = "/api/images")
+@RequestMapping(value = "/api/accounts/images")
 @RequiredArgsConstructor
 public class AccountImageController {
 
-    private final ImageService imageService;
+    private final AccountImageService accountImageService;
 
     @PostMapping
     ResponseEntity<?> saveImage(@RequestParam("image") MultipartFile image, HttpServletRequest request) {
-        return imageService.saveImage(image, request);
+        return accountImageService.saveImage(image, request);
     }
 
 
     @GetMapping(value = "/{imageName:.+}")
     ResponseEntity<?> getImage(@PathVariable String imageName, HttpServletRequest request) {
-        return imageService.loadAsResource(imageName, request);
+        return accountImageService.loadAsResource(imageName, request);
     }
 
 }

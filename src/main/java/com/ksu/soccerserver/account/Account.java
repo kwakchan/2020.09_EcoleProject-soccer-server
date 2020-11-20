@@ -8,8 +8,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ksu.soccerserver.apply.Apply;
-import com.ksu.soccerserver.invite.Invite;
+import com.ksu.soccerserver.application.ApplicationAccount;
+import com.ksu.soccerserver.invitation.InvitationAccount;
 import com.ksu.soccerserver.team.Team;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,9 +35,18 @@ public class Account {
     @Column
     private String name;
 
+    @Column
+    private String phoneNum;
+
+    @Column
+    private String birth;
+
+    @Column
+    private String gender;
+
     @JsonIgnore
     @OneToMany(mappedBy = "account")
-    private Set<Apply> apply = new HashSet<>();
+    private Set<ApplicationAccount> apply = new HashSet<>();
 
     @ManyToOne
     private Team team;
@@ -45,9 +54,12 @@ public class Account {
     @Column
     private String image;
 
+    @OneToOne
+    Team leadingTeam;
+
     @JsonIgnore
     @OneToMany(mappedBy = "account")
-    private Set<Invite> invite = new HashSet<>();
+    private Set<InvitationAccount> invitationAccount = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
@@ -58,5 +70,11 @@ public class Account {
     public void joinTeam(Team team) { this.team = team; }
 
     public void setImage(String image) { this.image = image; }
+
+    public void changePW(String password) { this.password = password;}
+
+    public void setLeadingTeam(Team team) { this.leadingTeam = team; }
+
+    public void setTeam(Team team) { this.team = team; }
 
 }

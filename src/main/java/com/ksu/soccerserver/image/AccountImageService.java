@@ -1,4 +1,4 @@
-package com.ksu.soccerserver.service;
+package com.ksu.soccerserver.image;
 
 import com.ksu.soccerserver.account.*;
 import com.ksu.soccerserver.config.JwtTokenProvider;
@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class ImageService {
+public class AccountImageService {
 
     private final Path rootLocation;
 
@@ -32,9 +32,9 @@ public class ImageService {
 
     private final AccountRepository accountRepository;
 
-    public ImageService(AccountImageProperties accountImageProperties, JwtTokenProvider jwtProvider,
-                        AccountRepository accountRepository) {
-        this.rootLocation = Paths.get(accountImageProperties.getLocation()).toAbsolutePath().normalize();
+    public AccountImageService(ImageProperties imageProperties, JwtTokenProvider jwtProvider,
+                               AccountRepository accountRepository) {
+        this.rootLocation = Paths.get(imageProperties.getLocation()).toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.rootLocation);
         }catch(Exception e) {
@@ -76,7 +76,7 @@ public class ImageService {
         Account account = accountOptional.get();
         String newImagePath = UriComponentsBuilder
                 .fromUriString("http://localhost:8080")
-                .path("/api/images/")
+                .path("/api/accounts/images/")
                 .path(imageName)
                 .toUriString();
 

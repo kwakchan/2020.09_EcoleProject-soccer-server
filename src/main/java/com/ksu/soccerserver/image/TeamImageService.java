@@ -1,11 +1,9 @@
-package com.ksu.soccerserver.service;
+package com.ksu.soccerserver.image;
 
 import com.ksu.soccerserver.account.Account;
-import com.ksu.soccerserver.account.AccountImageProperties;
 import com.ksu.soccerserver.account.AccountRepository;
 import com.ksu.soccerserver.config.JwtTokenProvider;
 import com.ksu.soccerserver.team.Team;
-import com.ksu.soccerserver.team.TeamImageProperties;
 import com.ksu.soccerserver.team.TeamRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.UrlResource;
@@ -40,9 +38,9 @@ public class TeamImageService {
 
     private final AccountRepository accountRepository;
 
-    public TeamImageService(TeamImageProperties teamImageProperties, JwtTokenProvider jwtProvider,
+    public TeamImageService(ImageProperties imageProperties, JwtTokenProvider jwtProvider,
                             TeamRepository teamRepository, AccountRepository accountRepository) {
-        this.rootLocation = Paths.get(teamImageProperties.getLocation()).toAbsolutePath().normalize();
+        this.rootLocation = Paths.get(imageProperties.getLocation()).toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.rootLocation);
         }catch(Exception e) {
@@ -85,7 +83,7 @@ public class TeamImageService {
         Team team = accountOptional.get().getTeam();
         String newLogoPath = UriComponentsBuilder
                 .fromUriString("http://localhost:8080")
-                .path("/api/teamlogo/")
+                .path("/api/teams/images/")
                 .path(imageName)
                 .toUriString();
 

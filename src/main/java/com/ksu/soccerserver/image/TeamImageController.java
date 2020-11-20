@@ -1,9 +1,6 @@
-package com.ksu.soccerserver.team;
+package com.ksu.soccerserver.image;
 
-import com.ksu.soccerserver.account.Account;
-import com.ksu.soccerserver.account.CurrentAccount;
-import com.ksu.soccerserver.service.ImageService;
-import com.ksu.soccerserver.service.TeamImageService;
+import com.ksu.soccerserver.image.TeamImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping(value = "/api/teamlogo")
+@RequestMapping(value = "/api/teams/images")
 @RequiredArgsConstructor
 public class TeamImageController {
 

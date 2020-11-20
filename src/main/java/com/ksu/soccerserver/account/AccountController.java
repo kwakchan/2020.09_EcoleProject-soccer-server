@@ -19,6 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
@@ -32,12 +35,14 @@ public class AccountController {
 
     // 회원가입
     @PostMapping
-    public ResponseEntity<?> createAccount(@RequestBody AccountRequest accountRequest) {
+    public ResponseEntity<?> createAccount(@RequestBody AccountRequest accountRequest,  HttpServletRequest request) {
         Optional<Account> isJoinedAccount = accountRepository.findByEmail(accountRequest.getEmail());
 
+        ServletUriComponentsBuilder defaultPath = ServletUriComponentsBuilder.fromCurrentContextPath();
+        String image = defaultPath.toUriString() + request.getRequestURI() + "/images/default.jpg";
 
         if(!isJoinedAccount.isPresent()){
-            Account account = accountRequest.toEntity(passwordEncoder);
+            Account account = accountRequest.toEntity(passwordEncoder, image);
             Account joinAccount = accountRepository.save(account);
 
             AccountResponse response = modelMapper.map(joinAccount, AccountResponse.class);

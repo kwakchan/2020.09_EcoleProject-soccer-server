@@ -37,6 +37,9 @@ public class Account {
     private String name;
 
     @Column
+    private String image;
+
+    @Column
     private String phoneNum;
 
     @Column
@@ -68,9 +71,6 @@ public class Account {
 
     @ManyToOne
     private Team team;
-
-    @Column
-    private String image;
 
     @OneToOne
     Team leadingTeam;

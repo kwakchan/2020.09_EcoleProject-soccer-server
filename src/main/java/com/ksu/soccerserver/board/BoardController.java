@@ -127,7 +127,7 @@ public class BoardController {
 
     @GetMapping("/boardType/page")
     ResponseEntity<?> getPaginationFilteredBoard(@RequestParam(value = "keyword")String keyword, Pageable pageable){
-        Page<Board> boardPage = boardRepository.findAllByBoardtype(keyword, pageable);
+        Page<Board> boardPage = boardRepository.findAllByBoardType(keyword, pageable);
         if(boardPage.isEmpty()){
             return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
         }

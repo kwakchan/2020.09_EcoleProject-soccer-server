@@ -14,7 +14,7 @@ public class AccountResponse {
     private String phoneNum;
     private String birth;
     private String gender;
-//  private String image;
+    private String image;
     private String position;
     private String state;
     private String district;

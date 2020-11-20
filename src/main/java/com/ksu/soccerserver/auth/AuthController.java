@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -43,8 +44,11 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest req) {
-        String token = req.getHeader("X-AUTH-TOKEN");
-        expiredTokenRepository.save(ExpiredToken.builder().token(token).build());
+        String token = req.getHeader("Authorization");
+        expiredTokenRepository.save(ExpiredToken.builder()
+                                .token(token)
+                                .expiredTime(LocalDateTime.now())
+                                .build());
         return new ResponseEntity<>("", HttpStatus.OK);
     }
 }

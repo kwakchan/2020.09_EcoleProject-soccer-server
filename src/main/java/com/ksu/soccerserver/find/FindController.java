@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
 @RequestMapping("/api/find")
 @RequiredArgsConstructor
 @RestController
@@ -35,15 +37,13 @@ public class FindController {
         Account foundAccount = accountRepository.findByEmailAndNameAndPhoneNum(email, name, phoneNum)
                 .orElseThrow(() -> new ResponseStatusException (HttpStatus.NOT_FOUND, "해당하는 사용자 정보를 찾을 수 없습니다."));
 
-        return new ResponseEntity<>(foundAccount, HttpStatus.OK);
+        String tempPW = UUID.randomUUID().toString();;
+
+
+        foundAccount.changePW(passwordEncoder.encode(tempPW));
+        accountRepository.save(foundAccount);
+
+        return new ResponseEntity<>(tempPW, HttpStatus.OK);
     }
 
-    // 비밀번호 변경
-    @PutMapping("/changePW")
-    public ResponseEntity<?> changePW(@RequestBody Account account) {
-        Account changeAccount = accountRepository.findByEmail(account.getEmail()).get();
-        changeAccount.changePW(passwordEncoder.encode(account.getPassword()));
-
-        return new ResponseEntity<> (accountRepository.save(changeAccount), HttpStatus.OK);
-    }
 }

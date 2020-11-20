@@ -30,7 +30,9 @@ public class AccountController {
     public ResponseEntity<?> createAccount(@RequestBody Account account) {
         Optional<Account> isJoinedAccount = accountRepository.findByEmail(account.getEmail());
 
+
         if(!isJoinedAccount.isPresent()){
+//            Account save = accountRepository.save(request.toEntity(passwordEncoder));
             Account joinAccount = accountRepository.save(Account.builder()
                     .email(account.getEmail())
                     .password(passwordEncoder.encode(account.getPassword()))
@@ -53,7 +55,8 @@ public class AccountController {
     // 회원정보 출력
     @GetMapping("/profile")
     public ResponseEntity<?> loadProfile(@CurrentAccount Account currentAccount){
-        Account account = accountRepository.findByEmail(currentAccount.getEmail()).orElseThrow(() -> new ResponseStatusException(HttpStatus.OK));
+        Account account = accountRepository.findByEmail(currentAccount.getEmail()).orElseThrow(()
+                -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
 
         return new ResponseEntity<>(account, HttpStatus.OK);
     }

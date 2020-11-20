@@ -1,6 +1,8 @@
 package com.ksu.soccerserver.team;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.application.ApplicationAccount;
 import com.ksu.soccerserver.application.ApplicationTeam;
@@ -17,6 +19,7 @@ import java.util.Set;
 @Entity @Table
 @Getter @Builder
 @NoArgsConstructor @AllArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Team {
 
     @Id
@@ -38,42 +41,40 @@ public class Team {
     private String description;
 
     // 팀의 주장을 나타내는 관계성
-    @JsonIgnore
+    //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @OneToOne
     Account owner;
 
     // 팀에 소속된 인원들과의 관계성
-    @JsonIgnore
+    //@JsonIgnore
     @OneToMany(mappedBy = "team")
     Set<Account> accounts = new HashSet<>();
 
     // 팀에 가입신청한 유저들의 리스트를 나타내는 관계성
-    @JsonIgnore
+    //@JsonIgnore
     @OneToMany(mappedBy = "team")
     Set<ApplicationAccount> applicationAccounts = new HashSet<>();
 
     // 팀에서 가입요청한 유저들의 리스트를 나타내는 관계성
-    @JsonIgnore
+    //@JsonIgnore
     @OneToMany(mappedBy = "team")
     Set<InvitationAccount> invitationAccounts = new HashSet<>();
 
     // 팀에게 경기요청을 받은 리스트를 나타내는 관계성
-    @JsonIgnore
+    //@JsonIgnore
     @OneToMany(mappedBy = "applicationHomeTeam")
     Set<ApplicationTeam> applicationHomeTeams = new HashSet<>();
 
     // 자신의 팀이 경기신청을 보낸 리스트를 나타내는 관계성
-    @JsonIgnore
     @OneToMany(mappedBy = "applicationAwayTeam")
     Set<ApplicationTeam> applicationAwayTeams = new HashSet<>();
 
     // 팀에게 경기요청을 받은 리스트를 나타내는 관계성성
-    @JsonIgnore
     @OneToMany(mappedBy = "invitationHomeTeam")
     Set<InvitationTeam> invitationHomeTeams = new HashSet<>();
 
     // 팀에게 경기요청을 보낸 리스트를 나타내는 관계성
-    @JsonIgnore
+    //@JsonIgnore
     @OneToMany(mappedBy = "invitationAwayTeam")
     Set<InvitationTeam> invitationAwayTeams = new HashSet<>();
 

@@ -1,23 +1,24 @@
 package com.ksu.soccerserver.account;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ksu.soccerserver.application.ApplicationAccount;
 import com.ksu.soccerserver.invitation.InvitationAccount;
 import com.ksu.soccerserver.team.Team;
-import java.util.HashSet;
-import java.util.Set;
 
 @Builder
 @Entity @Table
 @Getter
 @NoArgsConstructor @AllArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Account {
 
     @Id
@@ -29,6 +30,7 @@ public class Account {
     private String email;
 
     //Password 길이=400, UNIQUE, Not NULL
+    @JsonIgnore
     @Column(length = 400, nullable = false)
     private String password;
 
@@ -44,9 +46,9 @@ public class Account {
     @Column
     private String gender;
 
-    @JsonIgnore
+
     @OneToMany(mappedBy = "account")
-    private Set<ApplicationAccount> apply = new HashSet<>();
+    private final Set<ApplicationAccount> apply = new HashSet<>();
 
     @ManyToOne
     private Team team;
@@ -57,9 +59,8 @@ public class Account {
     @OneToOne
     Team leadingTeam;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "account")
-    private Set<InvitationAccount> invitationAccount = new HashSet<>();
+    private final Set<InvitationAccount> invitationAccount = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default

@@ -13,9 +13,10 @@ public class TeamRequest {
     private String district;
     private String description;
 
-    public Team toEntity(Account nowAccount) {
+    public Team toEntity(Account nowAccount, String image) {
         return Team.builder().name(this.getName())
                 .state(this.getState()).district(this.getDistrict())
+                .logopath(image)
                 .description(this.getDescription()).owner(nowAccount).build();
     }
 }

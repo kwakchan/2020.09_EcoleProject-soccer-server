@@ -13,11 +13,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.awt.print.Pageable;
-import java.util.List;
+
 import java.util.Optional;
-import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
+
 
 @RestController
 @RequestMapping("/api/teams")
@@ -30,12 +31,17 @@ public class TeamController {
 
     // 팀 생성
     @PostMapping
-    public ResponseEntity<?> createTeam(@CurrentAccount Account nowAccount, @RequestBody TeamRequest teamRequest){
+    public ResponseEntity<?> createTeam(@CurrentAccount Account nowAccount, HttpServletRequest request,
+                                        @RequestBody TeamRequest teamRequest){
+
+        ServletUriComponentsBuilder defaultPath = ServletUriComponentsBuilder.fromCurrentContextPath();
+        String requestUri = defaultPath.toUriString() + request.getRequestURI() + "/images/default.jpg";
 
         Account currentAccount = accountRepository.findByEmail(nowAccount.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
-        Team makingTeam = teamRequest.toEntity(currentAccount);
+
+        Team makingTeam = teamRequest.toEntity(currentAccount, requestUri);
         /* 방장의 팀 여부 검사 && Team 이름 중복 검사 */
         Optional<Team> isMadeTeam = teamRepository.findByName(makingTeam.getName());
         Optional<Team> isAccountJoinedTeam = teamRepository.findByAccounts(currentAccount);
@@ -113,7 +119,7 @@ public class TeamController {
     public ResponseEntity<?> deleteTeam(@PathVariable Long teamId, @CurrentAccount Account nowAccount) {
         Team findTeam = teamRepository.findById(teamId).orElseThrow
                 (() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
-        if(findTeam.getOwner().getId().equals(nowAccount.getId())){
+        if(!findTeam.getOwner().getId().equals(nowAccount.getId())){
             return new ResponseEntity<>("해당 유저는 팀장이 아닙니다.", HttpStatus.BAD_REQUEST);
         }else {
             teamRepository.delete(findTeam);

@@ -17,11 +17,12 @@ public class AccountRequest {
     private String gender;
     private String birth;
 
-    public Account toEntity(PasswordEncoder passwordEncoder) {
+    public Account toEntity(PasswordEncoder passwordEncoder, String image) {
         return Account.builder()
                 .email(this.getEmail())
                 .password(passwordEncoder.encode(this.getPassword()))
                 .roles(Collections.singletonList("ROLE_USER")) // 최초 가입시 USER 로 설정
+                .image(image)
                 .name(this.getName())
                 .phoneNum(this.getPhoneNum())
                 .birth(this.getBirth())

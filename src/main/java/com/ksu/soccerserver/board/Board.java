@@ -44,10 +44,6 @@ public class Board {
     private final Set<Comment> comment = new HashSet<>();
 
 
-    public void boardaccount (Account account){
-        this.account = account;
-    }
-
     public void setTitle(String title) {
         this.title = title;
     }

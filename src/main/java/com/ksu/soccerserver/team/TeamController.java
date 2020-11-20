@@ -22,9 +22,10 @@ public class TeamController {
     // 팀 생성
     @PostMapping()
     public ResponseEntity<?> createTeam(@CurrentAccount Account nowAccount, @RequestBody Team team){
-
+        
         Team makingTeam = Team.builder().name(team.getName())
-                .location(team.getLocation()).owner(nowAccount).build();
+                .state(team.getState()).district(team.getDistrict())
+                .description(team.getDescription()).owner(nowAccount).build();
 
         nowAccount.setLeadingTeam(makingTeam);
         nowAccount.setTeam(makingTeam);
@@ -67,11 +68,12 @@ public class TeamController {
         return new ResponseEntity<>(members, HttpStatus.OK);
     }
 
-    // 해당 팀의 name, location 수정
+    // 해당 팀의 정보 수정
+    // TODO Front-End와 협의 후 진행
     @PutMapping("/{teamId}")
     public ResponseEntity<?> putTeam(@PathVariable Long teamId, @RequestBody Team team) {
         Team findTeam = teamRepository.findById(teamId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
-        findTeam.updateTeamInfo(team.getName(), team.getLocation());
+
         teamRepository.save(findTeam);
 
         return new ResponseEntity<>(findTeam, HttpStatus.OK);

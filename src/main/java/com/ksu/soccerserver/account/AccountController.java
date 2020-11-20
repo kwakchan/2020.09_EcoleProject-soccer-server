@@ -85,21 +85,6 @@ public class AccountController {
         return new ResponseEntity<>(findAccount, HttpStatus.OK);
     }
 
-    // 팀 가입
-    @PutMapping("/{accountId}/join/{teamId}")
-    public ResponseEntity<?> joinTeam(@PathVariable Long accountId, @PathVariable Long teamId){
-        Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
-        Team findTeam = teamRepository.findById(teamId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
-
-        findAccount.joinTeam(findTeam);
-        findTeam.joinMember(findAccount);
-
-        accountRepository.save(findAccount);
-        teamRepository.save(findTeam);
-
-        return new ResponseEntity<>(findAccount, HttpStatus.OK);
-    }
-
     // 회원 탈퇴
     @DeleteMapping("/{accountId}")
     public ResponseEntity<?> removeAccount(@PathVariable Long accountId, @CurrentAccount Account currentAccount){

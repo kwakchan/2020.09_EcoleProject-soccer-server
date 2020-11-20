@@ -81,6 +81,7 @@ public class BoardController {
     }
 
     //boardType 게시판 출력
+    /*
     @GetMapping("/boardType")
     ResponseEntity<?> getFilteredBoard(@RequestParam(value = "keyword")String keyword){
         List<Board> boards = boardRepository.findByBoardtype(keyword);
@@ -90,6 +91,7 @@ public class BoardController {
 
         return new ResponseEntity<>(boards, HttpStatus.OK);
     }
+    */
 
     //////////////////////////
     //boardPagination

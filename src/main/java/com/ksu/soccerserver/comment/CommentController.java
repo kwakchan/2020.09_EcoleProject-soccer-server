@@ -58,7 +58,7 @@ public class CommentController {
         findcomment.setTime(LocalDateTime.now());
 
         commentRepository.save(findcomment);
-        return new ResponseEntity<>(comment, HttpStatus.OK);
+        return new ResponseEntity<>(findcomment, HttpStatus.OK);
 
 
     }

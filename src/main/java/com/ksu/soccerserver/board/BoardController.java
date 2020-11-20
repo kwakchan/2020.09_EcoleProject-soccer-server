@@ -91,7 +91,7 @@ public class BoardController {
         findBoard.setBoardtype(board.getBoardtype());
 
         boardRepository.save(findBoard);
-        return new ResponseEntity<>(board, HttpStatus.OK);
+        return new ResponseEntity<>(findBoard, HttpStatus.OK);
 
     }
 

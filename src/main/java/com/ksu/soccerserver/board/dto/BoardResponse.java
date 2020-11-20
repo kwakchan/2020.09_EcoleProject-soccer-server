@@ -2,6 +2,7 @@ package com.ksu.soccerserver.board.dto;
 
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.board.BoardType;
+import com.ksu.soccerserver.comment.Comment;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,4 +18,5 @@ public class BoardResponse {
     private LocalDateTime modifiedAt;
     private BoardType boardType;
     private Account account;
+    private Comment comment;
 }

@@ -136,27 +136,37 @@ public class BoardController {
 
 
     @PutMapping("/{boardId}")
-    ResponseEntity<?> putBoard(@PathVariable Long boardId, @RequestBody BoardRequest boardRequest){
+    ResponseEntity<?> putBoard(@PathVariable Long boardId, @RequestBody BoardRequest boardRequest,@CurrentAccount Account currentAccount){
         Board findBoard = boardRepository.findById(boardId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시판입니다."));
 
+        if(!currentAccount.getId().equals(findBoard.getAccount().getId())){
+            return new ResponseEntity<>("수정권한이 없습니다.", HttpStatus.BAD_REQUEST);
+        }else {
 
-        findBoard.setTitle(boardRequest.getTitle());
-        findBoard.setContent(boardRequest.getContent());
-        findBoard.setTime(LocalDateTime.now());
-        findBoard.setBoardtype(boardRequest.getBoardType());
 
-        boardRepository.save(findBoard);
-        return new ResponseEntity<>(findBoard, HttpStatus.OK);
+            findBoard.setTitle(boardRequest.getTitle());
+            findBoard.setContent(boardRequest.getContent());
+            findBoard.setTime(LocalDateTime.now());
+            findBoard.setBoardtype(boardRequest.getBoardType());
+
+            boardRepository.save(findBoard);
+            BoardResponse response = modelMapper.map(findBoard, BoardResponse.class);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
 
     }
 
     @DeleteMapping("/{boardId}")
-    ResponseEntity<?> deleteBoard(@PathVariable Long boardId){
+    ResponseEntity<?> deleteBoard(@PathVariable Long boardId, @CurrentAccount Account currentAccount){
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시판입니다."));
-
-        boardRepository.delete(board);
-        return new ResponseEntity<>("Delete board title : " + board.getTitle(), HttpStatus.OK);
+        if(!currentAccount.getId().equals(board.getAccount().getId())){
+            return new ResponseEntity<>("삭제권한이 없습니다.", HttpStatus.BAD_REQUEST);
+        }else {
+            boardRepository.delete(board);
+            BoardResponse response = modelMapper.map(board, BoardResponse.class);
+            return new ResponseEntity(response, HttpStatus.OK);
+        }
     }
 
 }

@@ -81,15 +81,17 @@ public class BoardController {
     }
 
     //boardType 게시판 출력
-//    @GetMapping("/boardType")
-//    ResponseEntity<?> getFilteredBoard(@RequestParam(value = "keyword")String keyword){
-//        List<Board> boards = boardRepository.findByBoardtype(keyword);
-//        if(boards.isEmpty()){
-//            return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
-//        }
-//
-//        return new ResponseEntity<>(boards, HttpStatus.OK);
-//    }
+    /*
+    @GetMapping("/boardType")
+    ResponseEntity<?> getFilteredBoard(@RequestParam(value = "keyword")String keyword){
+        List<Board> boards = boardRepository.findByBoardtype(keyword);
+        if(boards.isEmpty()){
+            return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(boards, HttpStatus.OK);
+    }
+    */
 
     //////////////////////////
     //boardPagination

@@ -10,6 +10,7 @@ import java.util.List;
 public interface BoardRepository extends JpaRepository<Board, Long>{
 
 
+
     List<Board> findByAccount(Account account);
 
     List<Board> findByTitleContaining(String keyword);

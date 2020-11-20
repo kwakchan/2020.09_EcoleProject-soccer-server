@@ -84,7 +84,7 @@ public class Account {
     private List<String> roles = new ArrayList<>();
 
     public void updateMyInfo(AccountModifyRequest modifyRequest) {
-        this.password = modifyRequest.getPassword();
+        //this.password = modifyRequest.getPassword();
         this.position = modifyRequest.getPosition();
         this.state = modifyRequest.getState();
         this.district = modifyRequest.getDistrict();
@@ -100,5 +100,7 @@ public class Account {
     public void setLeadingTeam(Team team) { this.leadingTeam = team; }
 
     public void setTeam(Team team) { this.team = team; }
+
+    public void addRoles(String roles) { this.roles.add(roles);}
 
 }

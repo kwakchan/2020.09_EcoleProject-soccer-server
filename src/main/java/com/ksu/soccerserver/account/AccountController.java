@@ -23,6 +23,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 
+import javax.xml.ws.ResponseWrapper;
+
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
 @RestController
@@ -51,7 +53,7 @@ public class AccountController {
         }
         else {
             Account alreadyJoinedAccount = isJoinedAccount.get();
-            return new ResponseEntity<>(alreadyJoinedAccount, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("이미 존재하는 아이디입니다.", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -78,6 +80,18 @@ public class AccountController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+/*
+    @PutMapping("/password")
+    public ResponseEntity<?> changeNewPW(
+                        @RequestParam(value = "oldPW")String oldPW,
+                        @RequestParam(value = "newPW")String newPW,
+                        @CurrentAccount Account currentAccount) {
+        Account changingAccount = accountRepository.findById(currentAccount.getId()).get();
+        //changingAccount.getPassword().equals(passwordEncoder.encode(oldPW));
+
+    }
+
+ */
 
     // 회원정보 수정
     @PutMapping("/{accountId}")

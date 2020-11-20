@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
 
@@ -21,10 +24,16 @@ public class TeamController {
 
     // 팀 생성
     @PostMapping()
-    public ResponseEntity<?> createTeam(@CurrentAccount Account nowAccount, @RequestBody Team team){
-        
-        Team makingTeam = Team.builder().name(team.getName())
+    public ResponseEntity<?> createTeam(@CurrentAccount Account nowAccount, HttpServletRequest request,
+                                        @RequestBody Team team){
+
+        ServletUriComponentsBuilder defaultPath = ServletUriComponentsBuilder.fromCurrentContextPath();
+        String requestUri = request.getRequestURI() + "/images/";
+
+        Team makingTeam = Team.builder()
+                .name(team.getName())
                 .state(team.getState()).district(team.getDistrict())
+                .logopath(defaultPath + requestUri + "default.jpg")
                 .description(team.getDescription()).owner(nowAccount).build();
 
         nowAccount.setLeadingTeam(makingTeam);

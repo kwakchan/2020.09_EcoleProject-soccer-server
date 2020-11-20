@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -80,10 +81,12 @@ public class TeamImageService {
         if (!accountOptional.isPresent()) {
             return new ResponseEntity<>("userError", HttpStatus.BAD_REQUEST);
         }
+
+        String requestUri = request.getRequestURI() + "/";
         Team team = accountOptional.get().getTeam();
-        String newLogoPath = UriComponentsBuilder
-                .fromUriString("http://localhost:8080")
-                .path("/api/teams/images/")
+        String newLogoPath = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path(requestUri)
                 .path(imageName)
                 .toUriString();
 

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,10 +74,12 @@ public class AccountImageService {
         if (!accountOptional.isPresent()) {
             return new ResponseEntity<>("userError", HttpStatus.BAD_REQUEST);
         }
+        // uri 앞부분 가져오기
+        String requestUri = request.getRequestURI() + "/";
         Account account = accountOptional.get();
-        String newImagePath = UriComponentsBuilder
-                .fromUriString("http://localhost:8080")
-                .path("/api/accounts/images/")
+        String newImagePath = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path(requestUri)
                 .path(imageName)
                 .toUriString();
 
@@ -105,15 +108,26 @@ public class AccountImageService {
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                         .body(resource);
             } else {
-                // 데이터가 존재 하지 않을 경우 오류 출력
-                return new ResponseEntity<>("Nullerror", HttpStatus.BAD_REQUEST);
+                // 데이터가 존재 하지 않을 경우 기본 이미지 주소 전달
+                String requestUri = request.getRequestURI() + "/";
+                Account account = new Account();
+                String newImagePath = ServletUriComponentsBuilder
+                        .fromCurrentContextPath()
+                        .path(requestUri)
+                        .path("default.jpg")
+                        .toUriString();
+                account.setImage(newImagePath);
+                // 기본 이미지 출력
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "default.jpg" + "\"")
+                        .body(resource);
             }
         } catch (MalformedURLException e) {
             return new ResponseEntity<>("findError", HttpStatus.BAD_REQUEST);
         }
     }
 
-    private Path load(String imageName) {
+    Path load(String imageName) {
         return this.rootLocation.resolve(imageName).normalize();
     }
     

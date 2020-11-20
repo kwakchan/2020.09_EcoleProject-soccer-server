@@ -101,7 +101,7 @@ public class TeamController {
         Team findTeam = teamRepository.findById(teamId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다"));
 
-        if(findTeam.getOwner().getId().equals(nowAccount.getId())){
+        if(!findTeam.getOwner().getId().equals(nowAccount.getId())){
             return new ResponseEntity<>("해당 유저는 팀장이 아닙니다.", HttpStatus.BAD_REQUEST);
         } else{
             findTeam.updateTeamInfo(teamModifyRequest);

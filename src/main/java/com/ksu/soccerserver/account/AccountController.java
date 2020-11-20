@@ -1,5 +1,7 @@
 package com.ksu.soccerserver.account;
 
+import com.ksu.soccerserver.account.dto.AccountModifyRequest;
+import com.ksu.soccerserver.account.dto.AccountRequest;
 import com.ksu.soccerserver.config.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +29,7 @@ public class AccountController {
 
     // 회원가입
     @PostMapping
-    public ResponseEntity<?> createAccount(@RequestBody Account account) {
+    public ResponseEntity<?> createAccount(@RequestBody AccountRequest account) {
         Optional<Account> isJoinedAccount = accountRepository.findByEmail(account.getEmail());
 
         if(!isJoinedAccount.isPresent()){
@@ -48,12 +50,10 @@ public class AccountController {
         }
     }
 
-
-
     // 회원정보 출력
     @GetMapping("/profile")
     public ResponseEntity<?> loadProfile(@CurrentAccount Account currentAccount){
-        Account account = accountRepository.findByEmail(currentAccount.getEmail()).orElseThrow(() -> new ResponseStatusException(HttpStatus.OK));
+        Account account = accountRepository.findByEmail(currentAccount.getEmail()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
 
         return new ResponseEntity<>(account, HttpStatus.OK);
     }
@@ -72,14 +72,14 @@ public class AccountController {
 
     // 회원정보 수정
     @PutMapping("/{accountId}")
-    public ResponseEntity<?> modifyAccount(@PathVariable Long accountId, @RequestBody Account account, @CurrentAccount Account currentAccount) {
+    public ResponseEntity<?> modifyAccount(@PathVariable Long accountId, @RequestBody AccountModifyRequest modifyRequest, @CurrentAccount Account currentAccount) {
         Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
         if(!currentAccount.getId().equals(findAccount.getId())) {
             return new ResponseEntity<>("권한이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        findAccount.updateMyInfo(account.getName());
+        findAccount.updateMyInfo(modifyRequest);
         accountRepository.save(findAccount);
 
         return new ResponseEntity<>(findAccount, HttpStatus.OK);

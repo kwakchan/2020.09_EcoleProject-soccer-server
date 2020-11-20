@@ -2,6 +2,7 @@ package com.ksu.soccerserver.auth;
 
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.AccountRepository;
+import com.ksu.soccerserver.auth.dto.LoginRequest;
 import com.ksu.soccerserver.config.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,10 +32,10 @@ public class AuthController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Account account) {
-        Account member = accountRepository.findByEmail(account.getEmail())
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        Account member = accountRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "가입되지 않은 E-MAIL 입니다."));
-        if (!passwordEncoder.matches(account.getPassword(), member.getPassword())) {
+        if (!passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 비밀번호입니다.");
         }
 

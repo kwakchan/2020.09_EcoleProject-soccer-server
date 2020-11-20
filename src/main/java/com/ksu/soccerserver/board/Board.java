@@ -4,9 +4,7 @@ import com.ksu.soccerserver.account.Account;
 import lombok.*;
 
 import javax.persistence.*;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter @Builder
 @Entity
@@ -35,8 +33,8 @@ public class Board {
     @Column
     private LocalDateTime modifiedAt;
 
-    @Column
-    private String boardtype;
+    @Enumerated(value =  EnumType.STRING)
+    private BoardType boardtype;
 
 
     public void boardaccount (Account account){
@@ -55,7 +53,7 @@ public class Board {
         this.modifiedAt = localDateTime;
     }
 
-    public void setBoardtype(String boardtype) {
+    public void setBoardtype(BoardType boardtype) {
         this.boardtype = boardtype;
     }
 

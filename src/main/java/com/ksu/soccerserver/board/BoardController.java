@@ -2,7 +2,10 @@ package com.ksu.soccerserver.board;
 
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.AccountRepository;
+import com.ksu.soccerserver.account.CurrentAccount;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +22,10 @@ public class BoardController {
     private final AccountRepository accountRepository;
     private final BoardRepository boardRepository;
 
-    @PostMapping("/{accountId}")
-    ResponseEntity<?> postBoard(@RequestBody Board board, @PathVariable Long accountId){
+    @PostMapping
+    ResponseEntity<?> postBoard(@RequestBody Board board, @CurrentAccount Account currentAccount){
 
-        Account account = accountRepository.findById(accountId).get();
+        Account account = accountRepository.findById(currentAccount.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"NO_FOUND_ACCOUNT"));
         Board saveboard = boardRepository.save(Board.builder()
                 .title(board.getTitle())
                 .content(board.getContent())
@@ -58,7 +61,7 @@ public class BoardController {
 
     //게시판 keyword포함 제목 검색
     @GetMapping("/search")
-    ResponseEntity<?> getsearchBoard(@RequestParam(value = "keyword") String keyword, Board board){
+    ResponseEntity<?> getsearchBoard(@RequestParam(value = "keyword") String keyword){
         List<Board> boards = boardRepository.findByTitleContaining(keyword);
         if(boards.isEmpty()){
             return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
@@ -69,7 +72,7 @@ public class BoardController {
 
     //boardType 게시판 출력
     @GetMapping("/boardType")
-    ResponseEntity<?> getfilterdBoard(@RequestParam(value = "keyword")String keyword, Board board){
+    ResponseEntity<?> getfilterdBoard(@RequestParam(value = "keyword")String keyword){
         List<Board> boards = boardRepository.findByBoardtype(keyword);
         if(boards.isEmpty()){
             return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
@@ -77,6 +80,47 @@ public class BoardController {
 
         return new ResponseEntity<>(boards, HttpStatus.OK);
     }
+
+    //////////////////////////
+    //boardPagination
+    @GetMapping("/page")
+    ResponseEntity<?> getpaginationBoard(Pageable pageable){
+        Page<Board> boardPage = boardRepository.findAll(pageable);
+        if(boardPage.isEmpty()) {
+            return new ResponseEntity<>("게시글이 없습니다", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(boardPage, HttpStatus.OK);
+    }
+
+    @GetMapping("/{accountId}/page")
+    ResponseEntity<?> getpaginationaccountsBoard(@PathVariable Long accountId, Pageable pageable) {
+        Page<Board> boardPage = boardRepository.findAllByAccount(accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"NOT ACCOUNT")), pageable);
+        if(boardPage.isEmpty()){
+            return new ResponseEntity<>(accountRepository.findById(accountId).get().getName()+"님이 작성한 개시글이 없습니다.", HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(boardPage, HttpStatus.OK);
+    }
+
+    @GetMapping("/search/page")
+    ResponseEntity<?> getpaginationsearchBoard(@RequestParam(value = "keyword") String keyword, Pageable pageable) {
+        Page<Board> boardPage = boardRepository.findAllByTitleContaining(keyword, pageable);
+        if (boardPage.isEmpty()) {
+            return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(boardPage,HttpStatus.OK);
+    }
+
+    @GetMapping("/boardType/page")
+    ResponseEntity<?> getpaginationfilterdBoard(@RequestParam(value = "keyword")String keyword, Pageable pageable){
+        Page<Board> boardPage = boardRepository.findAllByBoardtype(keyword, pageable);
+        if(boardPage.isEmpty()){
+            return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(boardPage,HttpStatus.OK);
+    }
+
 
 
 

@@ -61,6 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //아래는 위 코드 pull받은 후 추가 및 변경사항에 대해 hasRole해줄 것.
                 .antMatchers("/api/apply/**").hasRole("USER") //인증요구
                 .antMatchers("/api/invite/**").hasRole("USER") //인증요구
+                .antMatchers("/api/boards/**").hasRole("USER") //인증요구
                 .antMatchers("/h2-console/**").permitAll() //개발 편의상 permitAll
                 .and().headers().frameOptions().disable()
                 .and()

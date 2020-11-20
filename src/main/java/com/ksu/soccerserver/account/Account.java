@@ -46,7 +46,7 @@ public class Account {
 
     @JsonIgnore
     @OneToMany(mappedBy = "account")
-    private Set<ApplicationAccount> apply = new HashSet<>();
+    private final Set<ApplicationAccount> apply = new HashSet<>();
 
     @ManyToOne
     private Team team;
@@ -56,7 +56,7 @@ public class Account {
 
     @JsonIgnore
     @OneToMany(mappedBy = "account")
-    private Set<InvitationAccount> invitationAccount = new HashSet<>();
+    private final Set<InvitationAccount> invitationAccount = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default

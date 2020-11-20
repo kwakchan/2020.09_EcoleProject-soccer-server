@@ -37,9 +37,6 @@ public class Comment {
     @Column
     private LocalDateTime modifiedAt;
 
-    public void commentAccount (Account account) { this.account = account;}
-    public void commentBoard (Board board) { this.board = board;}
-
     public void setContent(String content) {
         this.content = content;
     }

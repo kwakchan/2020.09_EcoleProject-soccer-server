@@ -1,6 +1,5 @@
 package com.ksu.soccerserver.account;
 
-import com.ksu.soccerserver.account.dto.AccountRequest;
 import com.ksu.soccerserver.config.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

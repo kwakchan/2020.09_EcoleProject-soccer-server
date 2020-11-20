@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
 @RequestMapping("/api/find")
 @RequiredArgsConstructor
 @RestController
@@ -35,7 +37,8 @@ public class FindController {
         Account foundAccount = accountRepository.findByEmailAndNameAndPhoneNum(email, name, phoneNum)
                 .orElseThrow(() -> new ResponseStatusException (HttpStatus.NOT_FOUND, "해당하는 사용자 정보를 찾을 수 없습니다."));
 
-        String tempPW = getRandomStr();
+        String tempPW = UUID.randomUUID().toString();;
+
 
         foundAccount.changePW(passwordEncoder.encode(tempPW));
         accountRepository.save(foundAccount);
@@ -43,17 +46,4 @@ public class FindController {
         return new ResponseEntity<>(tempPW, HttpStatus.OK);
     }
 
-    private String getRandomStr() {
-        char[] tmp = new char[12];
-        for(int i=0; i<12; i++) {
-            int div = (int) Math.floor( Math.random() * 2 );
-
-            if(div == 0) { // 0이면 숫자로
-                tmp[i] = (char) (Math.random() * 10 + '0') ;
-            }else { //1이면 알파벳
-                tmp[i] = (char) (Math.random() * 26 + 'A') ;
-            }
-        }
-        return new String(tmp);
-    }
 }

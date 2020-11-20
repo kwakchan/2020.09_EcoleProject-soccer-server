@@ -8,8 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ksu.soccerserver.application.ApplicationAccount;
 import com.ksu.soccerserver.invitation.InvitationAccount;
 import com.ksu.soccerserver.team.Team;

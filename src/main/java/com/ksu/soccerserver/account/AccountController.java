@@ -58,6 +58,14 @@ public class AccountController {
     }
 
     // 회원정보 출력
+    @GetMapping("/profile")
+    public ResponseEntity<?> loadProfile(@CurrentAccount Account currentAccount){
+        Account account = accountRepository.findByEmail(currentAccount.getEmail()).orElseThrow(() -> new ResponseStatusException(HttpStatus.OK));
+
+        return new ResponseEntity<>(account, HttpStatus.OK);
+    }
+
+    // 회원정보 출력
     @GetMapping("/{accountId}")
     public ResponseEntity<?> loadAccount(@PathVariable Long accountId, @CurrentAccount Account currentAccount){
         Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
@@ -104,8 +112,8 @@ public class AccountController {
     public ResponseEntity<?> removeAccount(@PathVariable Long accountId, @CurrentAccount Account currentAccount){
         Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
-        if(!currentAccount.getId().equals(findAccount.getId())) {
-            return new ResponseEntity<>("권한이 없습니다.", HttpStatus.BAD_REQUEST);
+        if((currentAccount == null) || !currentAccount.getId().equals(findAccount.getId())) {
+            return new ResponseEntity<>("권한이 없습니다.", HttpStatus.UNAUTHORIZED);
         }
 
         accountRepository.delete(findAccount);

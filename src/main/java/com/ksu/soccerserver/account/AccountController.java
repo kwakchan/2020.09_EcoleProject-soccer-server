@@ -20,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.xml.ws.ResponseWrapper;
+
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
 @RestController
@@ -73,6 +75,18 @@ public class AccountController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+/*
+    @PutMapping("/password")
+    public ResponseEntity<?> changeNewPW(
+                        @RequestParam(value = "oldPW")String oldPW,
+                        @RequestParam(value = "newPW")String newPW,
+                        @CurrentAccount Account currentAccount) {
+        Account changingAccount = accountRepository.findById(currentAccount.getId()).get();
+        //changingAccount.getPassword().equals(passwordEncoder.encode(oldPW));
+
+    }
+
+ */
 
     // 회원정보 수정
     @PutMapping("/{accountId}")

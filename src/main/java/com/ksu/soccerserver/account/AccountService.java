@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class AccountDetailsService implements UserDetailsService {
+public class AccountService implements UserDetailsService {
 
     private final AccountRepository accountRepository;
 

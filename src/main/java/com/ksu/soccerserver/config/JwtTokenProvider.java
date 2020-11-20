@@ -22,7 +22,6 @@ import java.util.List;
 public class JwtTokenProvider {
 
     private String secretKey = "ecole-KS";
-
     //토큰 유효시간 30분
     private long tokenValidTime = 30 * 60 * 1000L;
 
@@ -42,6 +41,7 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(userPk); //등록된 클레임(subject)
         claims.put("roles", roles); //비공개 클레임 'key : value'
         Date now = new Date();
+
         return Jwts.builder()
                 .setClaims(claims) //정보 저장
                 .setIssuedAt(now) //토큰 발행 시간 정보(iat)

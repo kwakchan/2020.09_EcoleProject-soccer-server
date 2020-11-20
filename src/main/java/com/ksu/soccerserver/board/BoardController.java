@@ -48,12 +48,13 @@ public class BoardController {
         return new ResponseEntity<>(boards, HttpStatus.OK);
     }
 
-    @GetMapping("/{accountId}")
-    ResponseEntity<?> getaccountsBoard(@PathVariable Long accountId) {
-        List<Board> boards = boardRepository.findByAccount(accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No_Found_Account")));
+    @GetMapping("/myBoard")
+    ResponseEntity<?> getaccountsBoard(@CurrentAccount Account currentAccount) {
+        Account Account = accountRepository.findById(currentAccount.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"NO_FOUND_ACCOUNT"));
+        List<Board> boards = boardRepository.findByAccount(Account);
 
         if(boards.isEmpty()){
-            return new ResponseEntity<>(accountRepository.findById(accountId).get().getName()+"님이 작성한 개시글이 없습니다.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(currentAccount.getName()+"님이 작성한 개시글이 없습니다.", HttpStatus.NOT_FOUND);
         }
 
         return new ResponseEntity<>(boards, HttpStatus.OK);
@@ -92,11 +93,11 @@ public class BoardController {
         return new ResponseEntity<>(boardPage, HttpStatus.OK);
     }
 
-    @GetMapping("/{accountId}/page")
-    ResponseEntity<?> getpaginationaccountsBoard(@PathVariable Long accountId, Pageable pageable) {
-        Page<Board> boardPage = boardRepository.findAllByAccount(accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"NOT ACCOUNT")), pageable);
+    @GetMapping("/myBoard/page")
+    ResponseEntity<?> getpaginationaccountsBoard(@CurrentAccount Account currentAccount, Pageable pageable) {
+        Page<Board> boardPage = boardRepository.findAllByAccount(accountRepository.findById(currentAccount.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"NOT ACCOUNT")), pageable);
         if(boardPage.isEmpty()){
-            return new ResponseEntity<>(accountRepository.findById(accountId).get().getName()+"님이 작성한 개시글이 없습니다.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(currentAccount.getName()+"님이 작성한 개시글이 없습니다.", HttpStatus.NOT_FOUND);
         }
 
         return new ResponseEntity<>(boardPage, HttpStatus.OK);

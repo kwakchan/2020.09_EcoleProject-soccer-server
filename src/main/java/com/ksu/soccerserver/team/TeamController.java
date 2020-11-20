@@ -36,24 +36,25 @@ public class TeamController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
         Team makingTeam = teamRequest.toEntity(currentAccount);
-
-        /*
-        Team 중복 검사
-         */
-        Optional<Team> isMadeTeam = teamRepository.findByNameAndStateAndDistrict(
-                makingTeam.getName(), makingTeam.getState(), makingTeam.getDistrict());
-
+        /* 방장의 팀 여부 검사 && Team 이름 중복 검사 */
+        Optional<Team> isMadeTeam = teamRepository.findByName(makingTeam.getName());
+        Optional<Team> isAccountJoinedTeam = teamRepository.findByAccounts(currentAccount);
         if(!isMadeTeam.isPresent()) {
-            currentAccount.setLeadingTeam(makingTeam);
-            currentAccount.setTeam(makingTeam);
+            if(!isAccountJoinedTeam.isPresent()) {
+                currentAccount.setLeadingTeam(makingTeam);
+                currentAccount.setTeam(makingTeam);
 
-            Team madeTeam = teamRepository.save(makingTeam);
-            currentAccount.addRoles("ROLE_LEADER");
-            accountRepository.save(currentAccount);
+                Team madeTeam = teamRepository.save(makingTeam);
+                currentAccount.addRoles("ROLE_LEADER");
+                accountRepository.save(currentAccount);
 
-            TeamResponse response = modelMapper.map(madeTeam, TeamResponse.class);
+                TeamResponse response = modelMapper.map(madeTeam, TeamResponse.class);
 
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
+                return new ResponseEntity<>(response, HttpStatus.CREATED);
+            }
+            else {
+                return new ResponseEntity<>("이미 가입한 팀이 있습니다.", HttpStatus.BAD_REQUEST);
+            }
         }
         else{
             return new ResponseEntity<>("이미 존재하는 팀입니다.", HttpStatus.BAD_REQUEST);

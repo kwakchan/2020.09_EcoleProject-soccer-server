@@ -46,7 +46,7 @@ public class AccountController {
         }
         else {
             Account alreadyJoinedAccount = isJoinedAccount.get();
-            return new ResponseEntity<>(alreadyJoinedAccount, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("이미 존재하는 아이디입니다.", HttpStatus.BAD_REQUEST);
         }
     }
 

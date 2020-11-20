@@ -27,7 +27,13 @@ public class Team {
     private String name;
 
     @Column
-    private String location;
+    private String state;
+
+    @Column
+    private String district;
+
+    @Column(length = 200)
+    private String description;
 
     // 팀의 주장을 나타내는 관계성
     @JsonIgnore
@@ -69,11 +75,7 @@ public class Team {
     @OneToMany(mappedBy = "invitationAwayTeam")
     Set<InvitationTeam> invitationAwayTeams = new HashSet<>();
 
-
-    public void updateTeamInfo(String name, String location) {
-        this.name = name;
-        this.location = location;
-    }
+    // TODO Modify Team infomation Method
 
     public void joinMember(Account account) {
         accounts.add(account);

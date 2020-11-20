@@ -30,11 +30,12 @@ public class Team {
     private String state;
 
     @Column
+    private String logopath;
+
     private String district;
 
     @Column(length = 200)
     private String description;
-
 
     // 팀의 주장을 나타내는 관계성
     @JsonIgnore
@@ -81,4 +82,6 @@ public class Team {
     public void joinMember(Account account) {
         accounts.add(account);
     }
+
+    public void setLogo(String logo) { this.logopath = logo; }
 }

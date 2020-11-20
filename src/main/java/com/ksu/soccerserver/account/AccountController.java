@@ -80,18 +80,23 @@ public class AccountController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-/*
+
     @PutMapping("/password")
     public ResponseEntity<?> changeNewPW(
                         @RequestParam(value = "oldPW")String oldPW,
                         @RequestParam(value = "newPW")String newPW,
                         @CurrentAccount Account currentAccount) {
         Account changingAccount = accountRepository.findById(currentAccount.getId()).get();
-        //changingAccount.getPassword().equals(passwordEncoder.encode(oldPW));
-
+        if(passwordEncoder.matches(oldPW, changingAccount.getPassword())) {
+            changingAccount.changePW(passwordEncoder.encode(newPW));
+            accountRepository.save(changingAccount);
+            return new ResponseEntity<>("Success", HttpStatus.OK);
+        }
+        else
+            return new ResponseEntity<>(changingAccount.getPassword()+"      "+passwordEncoder.encode(oldPW), HttpStatus.BAD_REQUEST);
     }
 
- */
+
 
     // 회원정보 수정
     @PutMapping("/{accountId}")

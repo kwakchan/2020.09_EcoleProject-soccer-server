@@ -29,7 +29,7 @@ public class CommentController {
         Board board = boardRepository.findById(boardId).get();
         Comment savecomment = commentRepository.save(Comment.builder()
                 .content(comment.getContent())
-                .updatedatetime(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .build());
 
         savecomment.commentAccount(account);
@@ -42,7 +42,7 @@ public class CommentController {
 
     @GetMapping("/{boardId}/comment")
     ResponseEntity<?> getComment(@PathVariable Long boardId){
-        List<Comment> comments = commentRepository.findByBoard(boardRepository.findById(boardId));
+        List<Comment> comments = commentRepository.findByBoard(boardRepository.findById(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시판입니다.")));
         if(comments.isEmpty()){
             return new ResponseEntity<>("댓글이 없습니다.", HttpStatus.NOT_FOUND);
         }
@@ -58,7 +58,7 @@ public class CommentController {
         findcomment.setTime(LocalDateTime.now());
 
         commentRepository.save(findcomment);
-        return new ResponseEntity<>(comment, HttpStatus.OK);
+        return new ResponseEntity<>(findcomment, HttpStatus.OK);
 
 
     }

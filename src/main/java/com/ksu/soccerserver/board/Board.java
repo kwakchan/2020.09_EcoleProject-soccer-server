@@ -30,7 +30,10 @@ public class Board {
     private String content;
 
     @Column
-    private LocalDateTime updatedatetime;
+    private LocalDateTime createdAt;
+
+    @Column
+    private LocalDateTime modifiedAt;
 
     @Column
     private String boardtype;
@@ -49,7 +52,7 @@ public class Board {
     }
 
     public void setTime(LocalDateTime localDateTime) {
-        this.updatedatetime = localDateTime;
+        this.modifiedAt = localDateTime;
     }
 
     public void setBoardtype(String boardtype) {

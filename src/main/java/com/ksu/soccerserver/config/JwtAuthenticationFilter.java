@@ -2,6 +2,7 @@ package com.ksu.soccerserver.config;
 
 import com.ksu.soccerserver.auth.ExpiredTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
@@ -33,7 +34,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         try{
             chain.doFilter(request, response);
         } catch (RuntimeException e) {
-
+            //throw new BadCredentialsException("Not used Token");
         }
     }
 }

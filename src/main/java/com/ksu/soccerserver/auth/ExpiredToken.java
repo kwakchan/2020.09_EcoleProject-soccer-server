@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Builder
 @Entity
@@ -21,4 +22,6 @@ public class ExpiredToken {
     @Column
     private String token;
 
+    @Column
+    private LocalDateTime expiredTime;
 }

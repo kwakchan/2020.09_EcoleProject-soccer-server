@@ -35,6 +35,7 @@ public class AccountController {
     public ResponseEntity<?> createAccount(@RequestBody AccountRequest accountRequest) {
         Optional<Account> isJoinedAccount = accountRepository.findByEmail(accountRequest.getEmail());
 
+
         if(!isJoinedAccount.isPresent()){
             Account account = accountRequest.toEntity(passwordEncoder);
             Account joinAccount = accountRepository.save(account);
@@ -55,7 +56,7 @@ public class AccountController {
         Account account = accountRepository.findByEmail(currentAccount.getEmail()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
 
         AccountResponse response = modelMapper.map(account, AccountResponse.class);
-
+        
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

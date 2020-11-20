@@ -101,7 +101,7 @@ public class BoardController {
         return new ResponseEntity<>(boardPage, HttpStatus.OK);
     }
 
-    @GetMapping("/search.page")
+    @GetMapping("/search/page")
     ResponseEntity<?> getpaginationsearchBoard(@RequestParam(value = "keyword") String keyword, Pageable pageable) {
         Page<Board> boardPage = boardRepository.findAllByTitleContaining(keyword, pageable);
         if (boardPage.isEmpty()) {
@@ -111,7 +111,7 @@ public class BoardController {
         return new ResponseEntity<>(boardPage,HttpStatus.OK);
     }
 
-    @GetMapping("/boardType.page")
+    @GetMapping("/boardType/page")
     ResponseEntity<?> getpaginationfilterdBoard(@RequestParam(value = "keyword")String keyword, Pageable pageable){
         Page<Board> boardPage = boardRepository.findAllByBoardtype(keyword, pageable);
         if(boardPage.isEmpty()){

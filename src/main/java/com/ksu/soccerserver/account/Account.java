@@ -1,5 +1,7 @@
 package com.ksu.soccerserver.account;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,6 +20,7 @@ import java.util.Set;
 @Entity @Table
 @Getter
 @NoArgsConstructor @AllArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Account {
 
     @Id
@@ -29,6 +32,7 @@ public class Account {
     private String email;
 
     //Password 길이=400, UNIQUE, Not NULL
+    @JsonIgnore
     @Column(length = 400, nullable = false)
     private String password;
 
@@ -44,7 +48,7 @@ public class Account {
     @Column
     private String gender;
 
-    @JsonIgnore
+
     @OneToMany(mappedBy = "account")
     private final Set<ApplicationAccount> apply = new HashSet<>();
 
@@ -54,7 +58,6 @@ public class Account {
     @OneToOne
     Team leadingTeam;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "account")
     private final Set<InvitationAccount> invitationAccount = new HashSet<>();
 

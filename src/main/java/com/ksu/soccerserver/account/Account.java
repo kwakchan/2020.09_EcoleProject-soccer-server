@@ -1,5 +1,6 @@
 package com.ksu.soccerserver.account;
 
+import com.ksu.soccerserver.account.dto.AccountModifyRequest;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
@@ -44,6 +45,23 @@ public class Account {
     @Column
     private String gender;
 
+    @Column
+    private String position;
+
+    @Column
+    private String height;
+
+    @Column
+    private String weight;
+
+    @Column
+    private String foot;
+
+    @Column
+    private String state;
+
+    @Column
+    private String district;
 
     @OneToMany(mappedBy = "account")
     private final Set<ApplicationAccount> apply = new HashSet<>();
@@ -64,9 +82,15 @@ public class Account {
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
-    public void updateMyInfo(String name) { this.name = name; }
-
-    public void joinTeam(Team team) { this.team = team; }
+    public void updateMyInfo(AccountModifyRequest modifyRequest) {
+        this.password = modifyRequest.getPassword();
+        this.position = modifyRequest.getPosition();
+        this.state = modifyRequest.getState();
+        this.district = modifyRequest.getDistrict();
+        this.weight = modifyRequest.getWeight();
+        this.height = modifyRequest.getHeight();
+        this.foot = modifyRequest.getFoot();
+    }
 
     public void setImage(String image) { this.image = image; }
 

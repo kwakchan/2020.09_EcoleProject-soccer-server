@@ -2,7 +2,9 @@ package com.ksu.soccerserver.find;
 
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.AccountRepository;
+import com.ksu.soccerserver.find.dto.FindEmailResponse;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +20,7 @@ public class FindController {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
     @GetMapping("/email")
     public ResponseEntity<?> findEmail(
@@ -25,7 +28,10 @@ public class FindController {
             @RequestParam(value = "phoneNum")String phoneNum){
         Account foundAccount = accountRepository.findByNameAndPhoneNum(name, phoneNum)
                 .orElseThrow(() -> new ResponseStatusException (HttpStatus.NOT_FOUND, "가입되지 않은 사용자입니다."));
-        return new ResponseEntity<>(foundAccount, HttpStatus.OK);
+
+        String email = foundAccount.getEmail();
+
+        return new ResponseEntity<>(new FindEmailResponse(email), HttpStatus.OK);
     }
 
     @GetMapping("/password")

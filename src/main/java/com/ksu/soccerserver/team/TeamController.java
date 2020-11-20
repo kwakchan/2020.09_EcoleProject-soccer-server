@@ -3,11 +3,18 @@ package com.ksu.soccerserver.team;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.AccountRepository;
 import com.ksu.soccerserver.account.CurrentAccount;
+import com.ksu.soccerserver.team.dto.TeamModifyRequest;
+import com.ksu.soccerserver.team.dto.TeamRequest;
+import com.ksu.soccerserver.team.dto.TeamResponse;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Set;
 
@@ -18,76 +25,88 @@ public class TeamController {
 
     private final TeamRepository teamRepository;
     private final AccountRepository accountRepository;
+    private final ModelMapper modelMapper;
 
     // 팀 생성
-    @PostMapping()
-    public ResponseEntity<?> createTeam(@CurrentAccount Account nowAccount, @RequestBody Team team){
-        
-        Team makingTeam = Team.builder().name(team.getName())
-                .state(team.getState()).district(team.getDistrict())
-                .description(team.getDescription()).owner(nowAccount).build();
+    @PostMapping
+    public ResponseEntity<?> createTeam(@CurrentAccount Account nowAccount, @RequestBody TeamRequest teamRequest){
 
-        nowAccount.setLeadingTeam(makingTeam);
-        nowAccount.setTeam(makingTeam);
+        Account currentAccount = accountRepository.findByEmail(nowAccount.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
-        teamRepository.save(makingTeam);
-        accountRepository.save(nowAccount);
+        Team makingTeam = teamRequest.toEntity(currentAccount);
 
-        return new ResponseEntity<>(makingTeam, HttpStatus.CREATED);
+        currentAccount.setLeadingTeam(makingTeam);
+        currentAccount.setTeam(makingTeam);
+
+        Team makedTeam = teamRepository.save(makingTeam);
+        accountRepository.save(currentAccount);
+
+        TeamResponse response = modelMapper.map(makedTeam, TeamResponse.class);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     // 생성되어 있는 모든 팀 GET
-    @GetMapping
-    public ResponseEntity<?> getTeams(){
-        List<Team> teams = teamRepository.findAll();
-
-        if (teams.isEmpty()) {
-            return new ResponseEntity<>("생성된 팀이 없습니다.", HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(teams, HttpStatus.OK);
-    }
+//    @GetMapping
+//    public ResponseEntity<?> loadAllFilteredTeams(@RequestParam(required = false) String teamName,
+//                                                  @RequestParam String state,
+//                                                  @RequestParam String district,
+//                                                  Pageable pageable){
+//
+//        Page<Team> teams = teamRepository.findByTeamName(teamName);
+//
+//        if (teams.isEmpty()) {
+//            return new ResponseEntity<>("생성된 팀이 없습니다.", HttpStatus.NOT_FOUND);
+//        }
+//
+//        return new ResponseEntity<>(teams, HttpStatus.OK);
+//    }
 
     // 해당 teamId를 가진 팀 GET
     @GetMapping("/{teamId}")
-    public ResponseEntity<?> getTeam(@PathVariable Long teamId){
+    public ResponseEntity<?> loadTeam(@PathVariable Long teamId){
         Team findTeam = teamRepository.findById(teamId).orElseThrow
                 (() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
 
-        return new ResponseEntity<>(findTeam, HttpStatus.OK);
-    }
+        TeamResponse response = modelMapper.map(findTeam, TeamResponse.class);
 
-    // 해당 팀의 팀원들을 GET
-    @GetMapping("/{teamId}/memberList")
-    public ResponseEntity<?> getMembers(@PathVariable Long teamId){
-        Team findTeam = teamRepository.findById(teamId).orElseThrow
-                (() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
-
-        Set<Account> members = findTeam.getAccounts();
-
-        return new ResponseEntity<>(members, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // 해당 팀의 정보 수정
-    // TODO Front-End와 협의 후 진행
     @PutMapping("/{teamId}")
-    public ResponseEntity<?> putTeam(@PathVariable Long teamId, @RequestBody Team team) {
-        Team findTeam = teamRepository.findById(teamId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
+    public ResponseEntity<?> putTeam(@PathVariable Long teamId, @CurrentAccount Account nowAccount,
+                                     @RequestBody TeamModifyRequest teamModifyRequest) {
+        Team findTeam = teamRepository.findById(teamId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다"));
 
-        teamRepository.save(findTeam);
+        if(findTeam.getOwner().getId().equals(nowAccount.getId())){
+            return new ResponseEntity<>("해당 유저는 팀장이 아닙니다.", HttpStatus.BAD_REQUEST);
+        } else{
+            findTeam.updateTeamInfo(teamModifyRequest);
 
-        return new ResponseEntity<>(findTeam, HttpStatus.OK);
+            Team updatedTeam = teamRepository.save(findTeam);
+
+            TeamResponse response = modelMapper.map(updatedTeam, TeamResponse.class);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
     }
 
     // 팀 삭제
     @DeleteMapping("/{teamId}")
-    public ResponseEntity<?> deleteTeam(@PathVariable Long teamId) {
+    public ResponseEntity<?> deleteTeam(@PathVariable Long teamId, @CurrentAccount Account nowAccount) {
         Team findTeam = teamRepository.findById(teamId).orElseThrow
                 (() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
+        if(findTeam.getOwner().getId().equals(nowAccount.getId())){
+            return new ResponseEntity<>("해당 유저는 팀장이 아닙니다.", HttpStatus.BAD_REQUEST);
+        }else {
+            teamRepository.delete(findTeam);
 
-        teamRepository.delete(findTeam);
+            TeamResponse response = modelMapper.map(findTeam, TeamResponse.class);
 
-        return new ResponseEntity<>(findTeam, HttpStatus.OK);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
     }
-
 }

@@ -35,15 +35,25 @@ public class FindController {
         Account foundAccount = accountRepository.findByEmailAndNameAndPhoneNum(email, name, phoneNum)
                 .orElseThrow(() -> new ResponseStatusException (HttpStatus.NOT_FOUND, "해당하는 사용자 정보를 찾을 수 없습니다."));
 
-        return new ResponseEntity<>(foundAccount, HttpStatus.OK);
+        String tempPW = getRandomStr();
+
+        foundAccount.changePW(passwordEncoder.encode(tempPW));
+        accountRepository.save(foundAccount);
+
+        return new ResponseEntity<>(tempPW, HttpStatus.OK);
     }
 
-    // 비밀번호 변경
-    @PutMapping("/changePW")
-    public ResponseEntity<?> changePW(@RequestBody Account account) {
-        Account changeAccount = accountRepository.findByEmail(account.getEmail()).get();
-        changeAccount.changePW(passwordEncoder.encode(account.getPassword()));
+    private String getRandomStr() {
+        char[] tmp = new char[12];
+        for(int i=0; i<12; i++) {
+            int div = (int) Math.floor( Math.random() * 2 );
 
-        return new ResponseEntity<> (accountRepository.save(changeAccount), HttpStatus.OK);
+            if(div == 0) { // 0이면 숫자로
+                tmp[i] = (char) (Math.random() * 10 + '0') ;
+            }else { //1이면 알파벳
+                tmp[i] = (char) (Math.random() * 26 + 'A') ;
+            }
+        }
+        return new String(tmp);
     }
 }

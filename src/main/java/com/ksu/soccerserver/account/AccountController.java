@@ -28,22 +28,22 @@ public class AccountController {
 
     // 회원가입
     @PostMapping
-    public ResponseEntity<?> createAccount(@RequestBody AccountRequest request) {
-        Optional<Account> isJoinedAccount = accountRepository.findByEmail(request.getEmail());
+    public ResponseEntity<?> createAccount(@RequestBody Account account) {
+        Optional<Account> isJoinedAccount = accountRepository.findByEmail(account.getEmail());
 
 
         if(!isJoinedAccount.isPresent()){
-            Account save = accountRepository.save(request.toEntity(passwordEncoder));
-//            Account joinAccount = accountRepository.save(Account.builder()
-//                    .email(account.getEmail())
-//                    .password(passwordEncoder.encode(account.getPassword()))
-//                    .roles(Collections.singletonList("ROLE_USER")) // 최초 가입시 USER 로 설정
-//                    .name(account.getName())
-//                    .phoneNum(account.getPhoneNum())
-//                    .birth(account.getBirth())
-//                    .gender(account.getGender())
-//                    .build());
-            return new ResponseEntity<>(save, HttpStatus.CREATED);
+//            Account save = accountRepository.save(request.toEntity(passwordEncoder));
+            Account joinAccount = accountRepository.save(Account.builder()
+                    .email(account.getEmail())
+                    .password(passwordEncoder.encode(account.getPassword()))
+                    .roles(Collections.singletonList("ROLE_USER")) // 최초 가입시 USER 로 설정
+                    .name(account.getName())
+                    .phoneNum(account.getPhoneNum())
+                    .birth(account.getBirth())
+                    .gender(account.getGender())
+                    .build());
+            return new ResponseEntity<>(joinAccount, HttpStatus.CREATED);
         }
         else {
             Account alreadyJoinedAccount = isJoinedAccount.get();

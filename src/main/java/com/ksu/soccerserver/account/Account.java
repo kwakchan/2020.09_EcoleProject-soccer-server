@@ -7,14 +7,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ksu.soccerserver.application.ApplicationAccount;
 import com.ksu.soccerserver.invitation.InvitationAccount;
 import com.ksu.soccerserver.team.Team;
-import java.util.HashSet;
-import java.util.Set;
 
 @Builder
 @Entity @Table

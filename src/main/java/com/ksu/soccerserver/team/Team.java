@@ -29,6 +29,9 @@ public class Team {
     @Column
     private String location;
 
+    @Column
+    private String description;
+
     // 팀의 주장을 나타내는 관계성
     @JsonIgnore
     @OneToOne

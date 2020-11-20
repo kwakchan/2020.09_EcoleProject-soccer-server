@@ -48,14 +48,7 @@ public class AccountController {
         }
     }
 
-    // 비밀번호 변경
-    @PutMapping("/changePW")
-    public ResponseEntity<?> changePW(@RequestBody Account account) {
-        Account changeAccount = accountRepository.findByEmail(account.getEmail()).get();
-        changeAccount.changePW(passwordEncoder.encode(account.getPassword()));
 
-        return new ResponseEntity<> (accountRepository.save(changeAccount), HttpStatus.OK);
-    }
 
     // 회원정보 출력
     @GetMapping("/profile")

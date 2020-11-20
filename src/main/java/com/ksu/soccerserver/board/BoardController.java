@@ -22,7 +22,7 @@ public class BoardController {
     private final AccountRepository accountRepository;
     private final BoardRepository boardRepository;
 
-    @PostMapping()
+    @PostMapping
     ResponseEntity<?> postBoard(@RequestBody Board board, @CurrentAccount Account currentAccount){
 
         Account account = accountRepository.findById(currentAccount.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"NO_FOUND_ACCOUNT"));

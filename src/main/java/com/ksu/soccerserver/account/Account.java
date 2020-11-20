@@ -30,7 +30,7 @@ public class Account {
     private String email;
 
     //Password 길이=400, UNIQUE, Not NULL
-    @JsonIgnore
+    //@JsonIgnore
     @Column(length = 400, nullable = false)
     private String password;
 

@@ -37,11 +37,12 @@ public class FindController {
         Account foundAccount = accountRepository.findByEmailAndNameAndPhoneNum(email, name, phoneNum)
                 .orElseThrow(() -> new ResponseStatusException (HttpStatus.NOT_FOUND, "해당하는 사용자 정보를 찾을 수 없습니다."));
 
-        String tempPW = UUID.randomUUID().toString();;
+        String tempPW = UUID.randomUUID().toString().substring(0,6);;
 
 
         foundAccount.changePW(passwordEncoder.encode(tempPW));
         accountRepository.save(foundAccount);
+
 
         return new ResponseEntity<>(tempPW, HttpStatus.OK);
     }

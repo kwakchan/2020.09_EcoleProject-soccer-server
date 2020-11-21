@@ -3,19 +3,19 @@ package com.ksu.soccerserver.team;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.AccountRepository;
 import com.ksu.soccerserver.account.CurrentAccount;
-import com.ksu.soccerserver.team.dto.TeamModifyRequest;
-import com.ksu.soccerserver.team.dto.TeamRequest;
-import com.ksu.soccerserver.team.dto.TeamResponse;
+import com.ksu.soccerserver.team.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
+import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
@@ -82,11 +82,38 @@ public class TeamController {
 //
 //        return new ResponseEntity<>(teams, HttpStatus.OK);
 //    }
-    //모든팀 Get
-    //@GetMapping
-    //public ResponseEntity<?> loadFilteredTeam() {
 
-    //}
+
+    @PostMapping("/{id}/{teamId}")
+    public ResponseEntity<?> practiceTeam(@CurrentAccount Account nowAccount, @PathVariable Long id, @PathVariable Long teamId){
+        Team team = teamRepository.findById(teamId).get();
+        Account joiningAccount = accountRepository.findById(id).get();
+        team.setAccounts(joiningAccount);
+        return new ResponseEntity(teamRepository.save(team), HttpStatus.OK);
+    }
+
+
+
+    //모든팀 Get
+    @GetMapping
+    public ResponseEntity<?> loadFilteredTeam() {
+        List<Team> teams = teamRepository.findAll();
+        TeamDTO teamDTO = new TeamDTO();
+        FilteredTeamsDTO filteredTeamsDTO = new FilteredTeamsDTO();
+        for(int i=0; i<teams.size(); i++)
+        {
+            teamDTO.setId(teams.get(i).getId());
+            teamDTO.setName(teams.get(i).getName());
+            teamDTO.setState(teams.get(i).getState());
+            teamDTO.setDistrict(teamDTO.getDistrict());
+            teamDTO.setDescription(teamDTO.getDescription());
+            teamDTO.setLogopath(teamDTO.getLogopath());
+            filteredTeamsDTO.getFilteredTeamsDTO().add(teamDTO);
+        }
+
+        return new ResponseEntity<>(filteredTeamsDTO, HttpStatus.OK);
+
+    }
 
     // 해당 teamId를 가진 팀 GET
     @GetMapping("/{teamId}")

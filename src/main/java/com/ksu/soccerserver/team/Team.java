@@ -88,4 +88,8 @@ public class Team {
     }
     // Logo 수정
     public void setLogo(String logo) { this.logopath = logo; }
+
+    public void setAccounts(Account account){
+        this.accounts.add(account);
+    }
 }

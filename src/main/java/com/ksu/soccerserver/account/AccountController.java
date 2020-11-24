@@ -132,17 +132,21 @@ public class AccountController {
     }
 
     // 팀 탈퇴
-    @PutMapping("/{accountId}/withdrawal/{teamId}")
-    public ResponseEntity<?> withdrawalTeam(@PathVariable Long accountId, @PathVariable Long teamId) {
-        Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
+    @PutMapping("/withdrawal/{teamId}")
+    public ResponseEntity<?> withdrawalTeam(@CurrentAccount Account currentAccount, @PathVariable Long teamId) {
+        Account findAccount = accountRepository.findById(currentAccount.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
         Team findTeam = teamRepository.findById(teamId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
-        findTeam.getAccounts().remove(findAccount);
+        if(teamRepository.findByAccounts(findAccount).isPresent()){
+            findTeam.getAccounts().remove(findAccount);
+            findAccount.withdrawTeam();
 
-        Account withdrawalAccount = accountRepository.save(findAccount);
-
-        AccountResponse response = modelMapper.map(withdrawalAccount, AccountResponse.class);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+            Account withdrawalAccount = accountRepository.save(findAccount);
+            teamRepository.save(findTeam);
+            AccountResponse response = modelMapper.map(withdrawalAccount, AccountResponse.class);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        else
+            return new ResponseEntity<>("해당 팀에 회원님이 가입되어 있지 않습니다.", HttpStatus.BAD_REQUEST);
     }
 }

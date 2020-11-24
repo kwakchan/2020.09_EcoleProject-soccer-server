@@ -1,8 +1,6 @@
 package com.ksu.soccerserver.invitation;
 
 
-import com.ksu.soccerserver.application.ApplicationStatus;
-import com.ksu.soccerserver.application.ApplicationTeam;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;

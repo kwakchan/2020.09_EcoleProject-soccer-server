@@ -24,8 +24,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 
-import javax.xml.ws.ResponseWrapper;
-
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
 @RestController
@@ -38,7 +36,7 @@ public class AccountController {
 
     // 회원가입
     @PostMapping
-    public ResponseEntity<?> createAccount(@RequestBody AccountRequest accountRequest,  HttpServletRequest request) {
+    public ResponseEntity<?> createAccount(@RequestBody AccountRequest accountRequest, HttpServletRequest request) {
         Optional<Account> isJoinedAccount = accountRepository.findByEmail(accountRequest.getEmail());
 
         ServletUriComponentsBuilder defaultPath = ServletUriComponentsBuilder.fromCurrentContextPath();
@@ -58,7 +56,7 @@ public class AccountController {
         }
     }
 
-    // 회원정보 출력
+    // 본인 회원정보 출력
     @GetMapping("/profile")
     public ResponseEntity<?> loadProfile(@CurrentAccount Account currentAccount){
         Account account = accountRepository.findByEmail(currentAccount.getEmail()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
@@ -95,8 +93,6 @@ public class AccountController {
         else
             return new ResponseEntity<>("Fail", HttpStatus.BAD_REQUEST);
     }
-
-
 
     // 회원정보 수정
     @PutMapping("/{accountId}")
@@ -138,6 +134,9 @@ public class AccountController {
         Team findTeam = teamRepository.findById(teamId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
         findTeam.getAccounts().remove(findAccount);
+
+//        ToDo Account측에서 Team 삭제
+
 
         Account withdrawalAccount = accountRepository.save(findAccount);
 

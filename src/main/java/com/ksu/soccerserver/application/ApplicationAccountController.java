@@ -54,9 +54,10 @@ public class ApplicationAccountController {
 
     // 유저가 팀에 가입신청하는 API
     @PostMapping
-    public ResponseEntity<?> applyTeam(@RequestBody ApplicationAccountRequest applicationAccountRequest){
+    public ResponseEntity<?> applyTeam(@RequestBody ApplicationAccountRequest applicationAccountRequest,
+                                       @CurrentAccount Account nowAccount){
 
-        Account findAccount = accountRepository.findById(applicationAccountRequest.getAccountId()).
+        Account findAccount = accountRepository.findById(nowAccount.getId()).
                 orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
         Team findTeam = teamRepository.findById(applicationAccountRequest.getTeamId()).

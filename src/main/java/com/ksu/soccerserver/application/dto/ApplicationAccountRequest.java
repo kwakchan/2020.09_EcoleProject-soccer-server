@@ -11,7 +11,6 @@ import lombok.Setter;
 @Setter
 public class ApplicationAccountRequest {
 
-    private Long accountId;
     private Long teamId;
 
     public ApplicationAccount toEntity(Account findAccount, Team findTeam){

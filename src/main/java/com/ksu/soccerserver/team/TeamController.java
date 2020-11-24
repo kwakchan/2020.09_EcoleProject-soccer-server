@@ -76,25 +76,6 @@ public class TeamController {
         return new ResponseEntity<>(accounts, HttpStatus.OK);
     }
 
-    /*철오씨가 무슨 관계성? 때문에 잠깐 지웠다고 해서 임시 테스트용으로 팀원 삽입 테이블 만들었습니다.*/
-    //나머지 기능 구현되면 이 것 지우면 될 것 같습니다.
-    //혹시 참고할 수도 있으니 그냥 두겠습니다.
-
-    @PostMapping("/{id}/{teamId}")
-    public ResponseEntity<?> practiceTeam(@CurrentAccount Account nowAccount, @PathVariable Long id, @PathVariable Long teamId){
-        Team team = teamRepository.findById(teamId).get();
-        Account joiningAccount = accountRepository.findById(id).get();
-        team.joinMember(joiningAccount);
-
-        joiningAccount.setTeam(team);
-        accountRepository.save(joiningAccount);
-
-        //TeamResponse response = modelMapper.map(madeTeam, TeamResponse.class);
-
-
-        return new ResponseEntity(teamRepository.save(team), HttpStatus.OK);
-    }
-
 
     //모든팀 Get
     @GetMapping

@@ -15,8 +15,10 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 
@@ -67,51 +69,79 @@ public class TeamController {
         }
     }
 
-    // 생성되어 있는 모든 팀 GET
-//    @GetMapping
-//    public ResponseEntity<?> loadAllFilteredTeams(@RequestParam(required = false) String teamName,
-//                                                  @RequestParam String state,
-//                                                  @RequestParam String district,
-//                                                  Pageable pageable){
-//
-//        Page<Team> teams = teamRepository.findByTeamName(teamName);
-//
-//        if (teams.isEmpty()) {
-//            return new ResponseEntity<>("생성된 팀이 없습니다.", HttpStatus.NOT_FOUND);
-//        }
-//
-//        return new ResponseEntity<>(teams, HttpStatus.OK);
-//    }
+    @GetMapping("/getAccount")
+    public ResponseEntity<?> getAccounts() {
+        List<Account> accounts =accountRepository.findAllByTeam(teamRepository.findById((long)1).get());
 
+        return new ResponseEntity<>(accounts, HttpStatus.OK);
+    }
+
+    /*철오씨가 무슨 관계성? 때문에 잠깐 지웠다고 해서 임시 테스트용으로 팀원 삽입 테이블 만들었습니다.*/
+    //나머지 기능 구현되면 이 것 지우면 될 것 같습니다.
+    //혹시 참고할 수도 있으니 그냥 두겠습니다.
 
     @PostMapping("/{id}/{teamId}")
     public ResponseEntity<?> practiceTeam(@CurrentAccount Account nowAccount, @PathVariable Long id, @PathVariable Long teamId){
         Team team = teamRepository.findById(teamId).get();
         Account joiningAccount = accountRepository.findById(id).get();
-        team.setAccounts(joiningAccount);
+        team.joinMember(joiningAccount);
+
+        joiningAccount.setTeam(team);
+        accountRepository.save(joiningAccount);
+
+        //TeamResponse response = modelMapper.map(madeTeam, TeamResponse.class);
+
+
         return new ResponseEntity(teamRepository.save(team), HttpStatus.OK);
     }
 
 
-
     //모든팀 Get
     @GetMapping
-    public ResponseEntity<?> loadFilteredTeam() {
-        List<Team> teams = teamRepository.findAll();
+    public ResponseEntity<?> loadFilteredTeam(@RequestParam(required = false) String teamName,
+                                              @RequestParam String state,
+                                              @RequestParam String district){
+        List<Team> teams;
+        //(광역시, 시, 도)가 전체라면, 모든 팀을 검색
+        if(state.equals("All")) {
+            teams = teamRepository.findAll();
+        }
+        //(광역시, 시, 도)가 선택되었고, (구, 면, 읍)이 전체라면
+        else if(district.equals("All")){
+            teams = teamRepository.findAllByState(state);
+        }
+        //(광역시, 시, 도)가 선택되었고, (구, 면, 읍)또한 선택 시
+        else {
+            teams = teamRepository.findAllByStateAndDistrict(state, district);
+        }
+
+
+        //List<Team> teams = teamRepository.findAll();
         TeamDTO teamDTO = new TeamDTO();
+        //TeamDTO List
+        List<TeamDTO> tempDTOS = new ArrayList<>();
         FilteredTeamsDTO filteredTeamsDTO = new FilteredTeamsDTO();
-        for(int i=0; i<teams.size(); i++)
-        {
+
+        for(int i=0; i<teams.size(); i++) {
             teamDTO.setId(teams.get(i).getId());
             teamDTO.setName(teams.get(i).getName());
             teamDTO.setState(teams.get(i).getState());
-            teamDTO.setDistrict(teamDTO.getDistrict());
-            teamDTO.setDescription(teamDTO.getDescription());
-            teamDTO.setLogopath(teamDTO.getLogopath());
-            filteredTeamsDTO.getFilteredTeamsDTO().add(teamDTO);
-        }
+            teamDTO.setDistrict(teams.get(i).getDistrict());
+            teamDTO.setDescription(teams.get(i).getDescription());
+            teamDTO.setLogopath(teams.get(i).getLogopath());
+            teamDTO.setOwner(
+                    //teams.get(i).getOwner()
+                    new TeamsAccountDTO(teams.get(i).getOwner())
+            );
+            teamDTO.setAccounts(
+                    //accountRepository.findAllByTeam(teams.get(i))
+                    new TeamsAccountsDTO(accountRepository.findAllByTeam(teams.get(i)))
+            );
 
-        return new ResponseEntity<>(filteredTeamsDTO, HttpStatus.OK);
+            tempDTOS.add(teamDTO);
+        }
+        filteredTeamsDTO.setFilteredTeamsDTO(tempDTOS);
+        return new ResponseEntity<>(filteredTeamsDTO.getFilteredTeamsDTO(), HttpStatus.OK);
 
     }
 

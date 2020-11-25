@@ -76,6 +76,21 @@ public class TeamController {
         return new ResponseEntity<>(accounts, HttpStatus.OK);
     }
 
+    /* 프론트 앤드 팀 리스트 담당자의 테스트를 위한 목적으로 임시 팀원 삽입 메소드 구현 */
+    @PostMapping("/{teamId}")
+    public ResponseEntity<?> practiceTeam(@CurrentAccount Account joiningAccount, @PathVariable Long teamId){
+        Team team = teamRepository.findById(teamId).get();
+        team.joinMember(joiningAccount);
+
+        joiningAccount.setTeam(team);
+        accountRepository.save(joiningAccount);
+
+        //TeamResponse response = modelMapper.map(madeTeam, TeamResponse.class);
+
+
+        return new ResponseEntity(teamRepository.save(team), HttpStatus.OK);
+    }
+
 
     //모든팀 Get
     @GetMapping

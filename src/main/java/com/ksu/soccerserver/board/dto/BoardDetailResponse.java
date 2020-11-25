@@ -3,6 +3,7 @@ package com.ksu.soccerserver.board.dto;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.board.BoardType;
 import com.ksu.soccerserver.comment.Comment;
+import com.ksu.soccerserver.comment.dto.CommentResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,7 +21,11 @@ public class BoardDetailResponse {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private BoardType boardType;
-    private Set<Comment> comment = new HashSet<>();
+    private Set<CommentResponse> comments = new HashSet<>();
+
+    public void addComment(CommentResponse commentResponse) {
+        this.comments.add(commentResponse);
+    }
 }
 
 /*

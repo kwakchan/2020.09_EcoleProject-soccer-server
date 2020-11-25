@@ -84,7 +84,7 @@ public class BoardController {
     ResponseEntity<?> getBoardDetail(@PathVariable Long boardId){
         ModelMapper modelMapper = new ModelMapper();
        /* PropertyMap<Board, BoardListRespnse> bookMap = new PropertyMap<Board, BoardListRespnse>() {
-            protected void configure() {
+            protected void configure() { 
                 map().setName(source.getAccount().getName());
             }
         };

@@ -6,21 +6,15 @@ import com.ksu.soccerserver.account.CurrentAccount;
 import com.ksu.soccerserver.team.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
-
 
 @RestController
 @RequestMapping("/api/teams")
@@ -85,10 +79,7 @@ public class TeamController {
         joiningAccount.setTeam(team);
         accountRepository.save(joiningAccount);
 
-        //TeamResponse response = modelMapper.map(madeTeam, TeamResponse.class);
-
-
-        return new ResponseEntity(teamRepository.save(team), HttpStatus.OK);
+        return new ResponseEntity<>(teamRepository.save(team), HttpStatus.OK);
     }
 
 

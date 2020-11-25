@@ -6,7 +6,6 @@ import com.ksu.soccerserver.account.CurrentAccount;
 import com.ksu.soccerserver.board.dto.BoardListResponse;
 import com.ksu.soccerserver.board.dto.BoardRequest;
 import com.ksu.soccerserver.board.dto.BoardDetailResponse;
-import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -27,8 +26,6 @@ public class BoardController {
     private final AccountRepository accountRepository;
     private final BoardRepository boardRepository;
     private final ModelMapper modelMapper;
-    private final TeamRepository teamRepository;
-
 
     @PostMapping
     ResponseEntity<?> postBoard(@RequestBody BoardRequest boardRequest, @CurrentAccount Account currentAccount){

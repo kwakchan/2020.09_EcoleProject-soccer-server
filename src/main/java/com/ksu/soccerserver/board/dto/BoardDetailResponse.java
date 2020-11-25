@@ -7,16 +7,31 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
-public class BoardResponse {
+public class BoardDetailResponse {
     private Long id;
     private String title;
+    private String name;
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private BoardType boardType;
-    private Account account;
-    private Comment comment;
+    private Set<Comment> comment = new HashSet<>();
 }
+
+/*
+@Getter
+@Setter
+public class BoardListResponse {
+
+    private Long id;
+    private String title;
+    private String Writer;
+    private LocalDateTime createdAt;
+
+}
+ */

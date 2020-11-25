@@ -1,6 +1,7 @@
 package com.ksu.soccerserver.comment;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.board.Board;
@@ -25,6 +26,7 @@ public class Comment {
     @ManyToOne
     private Account account;
 
+    @JsonIgnore
     @ManyToOne
     private Board board;
 

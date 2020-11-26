@@ -12,4 +12,5 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     Optional<Team> findByAccounts(Account account);
     List<Team> findAllByState(String state);
     List<Team> findAllByStateAndDistrict(String state, String district);
+    List<Team> findAllByNameContaining(String name);
 }

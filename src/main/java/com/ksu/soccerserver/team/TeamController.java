@@ -86,11 +86,19 @@ public class TeamController {
     //모든팀 Get
     @GetMapping
     public ResponseEntity<?> loadFilteredTeam(@RequestParam(required = false) String teamName,
-                                              @RequestParam String state,
-                                              @RequestParam String district){
+                                              @RequestParam(required = false) String state,
+                                              @RequestParam(required = false) String district){
         List<Team> teams;
+
+        //TeamName 검색 시,
+        if(teamName != null) {
+            teams = teamRepository.findAllByNameContaining(teamName);
+        }
+        //전부 읽기
+        else if(state == null)
+            teams = teamRepository.findAll();
         //(광역시, 시, 도)가 전체라면, 모든 팀을 검색
-        if(state.equals("All")) {
+        else if(state.equals("All")) {
             teams = teamRepository.findAll();
         }
         //(광역시, 시, 도)가 선택되었고, (구, 면, 읍)이 전체라면
@@ -103,13 +111,14 @@ public class TeamController {
         }
 
 
-        //List<Team> teams = teamRepository.findAll();
-        TeamDTO teamDTO = new TeamDTO();
+
+        //
         //TeamDTO List
         List<TeamDTO> tempDTOS = new ArrayList<>();
         FilteredTeamsDTO filteredTeamsDTO = new FilteredTeamsDTO();
 
         for(int i=0; i<teams.size(); i++) {
+            TeamDTO teamDTO = new TeamDTO();
             teamDTO.setId(teams.get(i).getId());
             teamDTO.setName(teams.get(i).getName());
             teamDTO.setState(teams.get(i).getState());
@@ -117,11 +126,9 @@ public class TeamController {
             teamDTO.setDescription(teams.get(i).getDescription());
             teamDTO.setLogopath(teams.get(i).getLogopath());
             teamDTO.setOwner(
-                    //teams.get(i).getOwner()
                     new TeamsAccountDTO(teams.get(i).getOwner())
             );
             teamDTO.setAccounts(
-                    //accountRepository.findAllByTeam(teams.get(i))
                     new TeamsAccountsDTO(accountRepository.findAllByTeam(teams.get(i)))
             );
 

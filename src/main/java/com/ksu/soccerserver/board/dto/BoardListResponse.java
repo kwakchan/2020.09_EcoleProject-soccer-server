@@ -26,6 +26,7 @@ public class BoardListResponse {
     private String title;
     private String name;
     private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
     private BoardType boardType;
     //private Set<Comment> comment = new HashSet<>();
 

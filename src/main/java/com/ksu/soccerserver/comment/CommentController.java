@@ -40,6 +40,7 @@ public class CommentController {
         Comment saveComment = commentRepository.save(postComment);
 
         CommentResponse response = modelMaapper.map(saveComment, CommentResponse.class);
+        response.setName(account.getName());
 
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -68,6 +69,7 @@ public class CommentController {
             Comment updatedComment = commentRepository.save(findComment);
 
             CommentResponse response = modelMaapper.map(updatedComment, CommentResponse.class);
+            response.setName(findComment.getAccount().getName());
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 

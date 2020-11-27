@@ -34,4 +34,9 @@ public class ApplicationTeam {
         this.awayStatus = awayStatus;
     }
 
+    public ApplicationTeam cancelApplication() {
+        this.awayStatus = AwayStatus.CANCEL;
+
+        return this;
+    }
 }

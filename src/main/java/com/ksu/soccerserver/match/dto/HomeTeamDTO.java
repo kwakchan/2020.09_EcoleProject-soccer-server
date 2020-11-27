@@ -6,12 +6,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MatchTeamDTO {
+public class HomeTeamDTO {
     private String name;
     private String logopath;
     private String description;
 
-    public MatchTeamDTO (Team homeTeam){
+    public HomeTeamDTO(Team homeTeam){
         this.name = homeTeam.getName();
         this.logopath = homeTeam.getLogopath();
         this.description = homeTeam.getDescription();

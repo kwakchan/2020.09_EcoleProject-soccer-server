@@ -77,7 +77,6 @@ public class Account {
     private List<String> roles = new ArrayList<>();
 
     public void updateMyInfo(AccountModifyRequest modifyRequest, String imagePath) {
-        //this.password = modifyRequest.getPassword();
         this.position = modifyRequest.getPosition();
         this.state = modifyRequest.getState();
         this.district = modifyRequest.getDistrict();

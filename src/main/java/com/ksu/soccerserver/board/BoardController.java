@@ -48,30 +48,35 @@ public class BoardController {
     }
 
     @GetMapping
-    ResponseEntity<?> getBoardList(@RequestParam(value = "title",required = false)String title,
-                                   @RequestParam(value = "boardType",required = false)String boardType) {
+    ResponseEntity<?> getBoardList(@RequestParam(required = false)String title,
+                                   @RequestParam(required = false)String boardType) {
         List<Board> boards = new ArrayList<>();
+        List<BoardListResponse> boardListResponses = new ArrayList<>();
         if(boardType.equals("All")){
-            boards = boardRepository.findByTitleContaining(title);
+            boards = boardRepository.findAllByTitleContaining(title);
+            boardListResponses = boardRepository.findAllByTitleContaining(title)
+                    .stream()
+                    .map(boardRepository -> modelMapper.map(boardRepository, BoardListResponse.class))
+                    .collect(Collectors.toList());
         }
-        else if(boardType.equals("FREE") || boardType.equals("INVITAION") || boardType.equals("FIND")){
-            boards = boardRepository.findByTitleContainingAndBoardType(title, boardType);
+        else if((boardType.equals("FREE")) || (boardType.equals("INVITE")) || (boardType.equals("FIND"))){
+            boards = boardRepository.findAllByBoardTypeAndTitleContaining(boardType, title);
+            boardListResponses = boardRepository.findAllByBoardTypeAndTitleContaining(boardType, title)
+                    .stream()
+                    .map(boardRepository -> modelMapper.map(boardRepository, BoardListResponse.class))
+                    .collect(Collectors.toList());
         }
+
         if (boards.isEmpty()) {
             return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
         }
 
-        List<BoardListResponse> boardListResponse = boardRepository.findAll()
-                .stream()
-                .map(boardRepository -> modelMapper.map(boardRepository, BoardListResponse.class))
-                .collect(Collectors.toList());
-
-
-        for (int i = 0; i < boardListResponse.size(); i++) {
-            boardListResponse.get(i).setName(boards.get(i).getAccount().getName());
+        for (int i = 0; i < boardListResponses.size(); i++) {
+            boardListResponses.get(i).setName(boards.get(i).getAccount().getName());
         }
 
-        return new ResponseEntity<>(boardListResponse, HttpStatus.OK);
+
+        return new ResponseEntity<>(boardListResponses, HttpStatus.OK);
     }
 
     @GetMapping("/{boardId}")

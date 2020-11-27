@@ -1,6 +1,5 @@
 package com.ksu.soccerserver.board.dto;
 
-import com.ksu.soccerserver.board.BoardType;
 import com.ksu.soccerserver.comment.dto.CommentResponse;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +17,7 @@ public class BoardDetailResponse {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-    private BoardType boardType;
+    private String boardType;
     private String image;
     private List<CommentResponse> comments = new ArrayList<>();
 

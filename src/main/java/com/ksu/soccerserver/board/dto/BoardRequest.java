@@ -3,7 +3,6 @@ package com.ksu.soccerserver.board.dto;
 
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.board.Board;
-import com.ksu.soccerserver.board.BoardType;
 import lombok.Getter;
 import lombok.Setter;
 

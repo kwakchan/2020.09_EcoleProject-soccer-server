@@ -10,14 +10,11 @@ import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board, Long>{
 
-
-
     List<Board> findByAccount(Account account);
 
     List<Board> findByTitleContaining(String title);
-    List<Board> findByTitleContainingAndBoardType(String title, String boardType);
 
-//    List<Board> findByBoardtype(String keyword);
+    List<Board> findByTitleContainingAndBoardType(String title, String boardType);
 
     //pagination
     Page<Board> findAllByAccount(Account account, Pageable pageable);
@@ -26,5 +23,4 @@ public interface BoardRepository extends JpaRepository<Board, Long>{
 
     Page<Board> findAllByBoardType(String keyword, Pageable pageable);
 
-    //List<Board> findByBoardTypeAndTitleContaing(String boardType, String title);
 }

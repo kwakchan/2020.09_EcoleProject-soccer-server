@@ -110,7 +110,7 @@ public class AccountController {
 
         String imagePath = accountImageService.saveImage(image, request);
 
-        findAccount.updateMyInfo(request1);
+        findAccount.updateMyInfo(request1, imagePath);
 //        findAccount.updateMyInfo(modifyRequest);
         Account updatedAccount = accountRepository.save(findAccount);
 

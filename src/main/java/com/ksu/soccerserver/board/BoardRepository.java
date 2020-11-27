@@ -12,9 +12,9 @@ public interface BoardRepository extends JpaRepository<Board, Long>{
 
     List<Board> findByAccount(Account account);
 
-    List<Board> findByTitleContaining(String title);
+    List<Board> findAllByBoardTypeAndTitleContaining(String boardType, String title);
 
-    List<Board> findByTitleContainingAndBoardType(String title, String boardType);
+    List<Board> findAllByTitleContaining(String title);
 
     //pagination
     Page<Board> findAllByAccount(Account account, Pageable pageable);
@@ -22,5 +22,6 @@ public interface BoardRepository extends JpaRepository<Board, Long>{
     Page<Board> findAllByTitleContaining(String keyword, Pageable pageable);
 
     Page<Board> findAllByBoardType(String keyword, Pageable pageable);
+
 
 }

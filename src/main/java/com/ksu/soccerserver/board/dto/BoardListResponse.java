@@ -1,6 +1,5 @@
 package com.ksu.soccerserver.board.dto;
 
-import com.ksu.soccerserver.board.BoardType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,5 +17,5 @@ public class BoardListResponse {
     private String name;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-    private BoardType boardType;
+    private String boardType;
 }

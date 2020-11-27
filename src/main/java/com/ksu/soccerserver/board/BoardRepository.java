@@ -8,16 +8,17 @@ import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board, Long>{
 
-
-
     List<Board> findByAccount(Account account);
 
-    List<Board> findByTitleContaining(String keyword);
+    List<Board> findByTitleContaining(String title);
 
+    List<Board> findByTitleContainingAndBoardType(String title, String boardType);
+  
     //pagination
     Page<Board> findAllByAccount(Account account, Pageable pageable);
 
     Page<Board> findAllByTitleContaining(String keyword, Pageable pageable);
 
     Page<Board> findAllByBoardType(String keyword, Pageable pageable);
+
 }

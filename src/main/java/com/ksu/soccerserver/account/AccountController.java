@@ -132,14 +132,13 @@ public class AccountController {
     }
 
     // 팀 탈퇴
-    @PutMapping("/withdrawal/{teamId}")
-    public ResponseEntity<?> withdrawalTeam(@CurrentAccount Account currentAccount, @PathVariable Long teamId) {
+    @PutMapping("/withdrawal")
+    public ResponseEntity<?> withdrawalTeam(@CurrentAccount Account currentAccount) {
 
         Account findAccount = accountRepository.findById(currentAccount.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
-        Team findTeam = teamRepository.findById(teamId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
+        Team findTeam = accountRepository.findById(currentAccount.getId()).get().getTeam();
 
         if(teamRepository.findByAccounts(findAccount).isPresent()){
             findTeam.getAccounts().remove(findAccount);

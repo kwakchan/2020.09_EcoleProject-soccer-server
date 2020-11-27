@@ -107,7 +107,7 @@ public class MatchController {
             Match createMatch = matchCreateRequest.toEntity(homeTeam);
             Match savedMatch = matchRepository.save(createMatch);
 
-            ApplicationTeamResponse response = modelMapper.map(savedMatch, ApplicationTeamResponse.class);
+            MatchResponse response = modelMapper.map(savedMatch, MatchResponse.class);
 
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } else{

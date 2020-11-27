@@ -49,7 +49,6 @@ public class AccountController {
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         }
         else {
-//            Account alreadyJoinedAccount = isJoinedAccount.get();
             return new ResponseEntity<>("이미 존재하는 아이디입니다.", HttpStatus.BAD_REQUEST);
         }
     }
@@ -139,9 +138,7 @@ public class AccountController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
         Team findTeam = teamRepository.findById(teamId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
-
-        findTeam.getAccounts().remove(findAccount);
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
 
         if(teamRepository.findByAccounts(findAccount).isPresent()){
             findTeam.getAccounts().remove(findAccount);

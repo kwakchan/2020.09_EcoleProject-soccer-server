@@ -10,5 +10,8 @@ import lombok.Setter;
 public class MatchResponse {
     private Long id;
     private Team homeTeam;
-    private Team awayTeam;
+    private String date;
+    private String state;
+    private String district;
+    private String countMember;
 }

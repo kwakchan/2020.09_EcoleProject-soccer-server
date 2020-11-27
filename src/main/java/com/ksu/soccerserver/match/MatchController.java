@@ -77,7 +77,7 @@ public class MatchController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // 자신의 팀에서 요청받은 경기에 대해 리스트를 보는 api
+    // 자신의 팀에서 요청받은 경기에 대해 리스트를 보는 api => ROLE_LEADER
     @GetMapping("{teamId}/home/{matchId}")
     public ResponseEntity<?> loadApplicationHomes(@PathVariable Long teamId,
                                                   @PathVariable Long matchId,
@@ -94,7 +94,7 @@ public class MatchController {
         }
     }
 
-    //경기방 개설
+    //경기방 개설 => ROLE_LEADER
     @PostMapping
     public ResponseEntity<?> createMatch(@RequestBody MatchCreateRequest matchCreateRequest,
                                          @CurrentAccount Account nowAccount){
@@ -115,7 +115,7 @@ public class MatchController {
         }
     }
 
-    //개설한 경기방 수정하기
+    //개설한 경기방 수정하기 => ROLE_LEADER
     @PutMapping("/{matchId}")
     public ResponseEntity<?> modifyMatch(@PathVariable Long matchId,
                                          @CurrentAccount Account nowAccount,
@@ -137,7 +137,7 @@ public class MatchController {
         }
     }
 
-    // HomeTeam에서의 수락 / 거절, 수락시 경기성사
+    // HomeTeam에서의 수락 / 거절, 수락시 경기성사 => ROLE_LEADER
     @PutMapping("/{matchId}/home/{applyTeamId}")
     public ResponseEntity<?> modifyHomeStatus(@PathVariable Long matchId, @PathVariable Long applyTeamId, @RequestBody MatchRequest matchRequest,
                                                @CurrentAccount Account nowAccount){
@@ -169,7 +169,7 @@ public class MatchController {
         return new ResponseEntity<>("해당 유저는 팀장이 아닙니다.", HttpStatus.BAD_REQUEST);
     }
 
-    @DeleteMapping("/{matchId}")
+    @DeleteMapping("/{matchId}") // => ROLE_LEADER
     public ResponseEntity<?> deleteMatch(@PathVariable Long matchId, @CurrentAccount Account nowAccount) {
 
         Match findMatch = matchRepository.findById(matchId)

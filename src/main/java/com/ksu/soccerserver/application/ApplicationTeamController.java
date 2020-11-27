@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/applications/teams")
+@RequestMapping("/api/applications/teams") // => ROLE_LEADER
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ApplicationTeamController {
 

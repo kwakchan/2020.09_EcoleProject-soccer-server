@@ -139,7 +139,7 @@ public class TeamController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // 해당 팀의 정보 수정
+    // 해당 팀의 정보 수정 => ROLE_LEADER
     @PutMapping("/{teamId}")
     public ResponseEntity<?> putTeam(@PathVariable Long teamId, @CurrentAccount Account nowAccount,
                                      @RequestPart(value = "logo", required = false) MultipartFile image,
@@ -165,7 +165,7 @@ public class TeamController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // 팀 삭제
+    // 팀 삭제 => ROLE_LEADER
     @DeleteMapping("/{teamId}")
     public ResponseEntity<?> deleteTeam(@PathVariable Long teamId, @CurrentAccount Account nowAccount) {
         Team findTeam = teamRepository.findById(teamId).orElseThrow

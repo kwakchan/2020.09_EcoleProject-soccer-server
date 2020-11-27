@@ -48,32 +48,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .httpBasic().disable() //rest API만을 고려. 기본설정x.
-                //.cors().and() //?
                 .csrf().disable() // csrf보안 토큰 disable처리
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 //세션 사용 X
                 .and()
                 .authorizeRequests() //요청에 대한 사용권한 체크
-                .antMatchers("/api/admin/**").hasRole("ADMIN") //인증요구
-                /*
-                //TODO - api/accounts(POST)는 permitAll, api/accounts?name={}&{}&.. 는 hasRole() 가능여부
-                .antMatchers("api/accounts/join").permitAll() //회원가입 허가
-                .antMatchers("/api/accounts/**").hasRole("USER") //인증요구
-                 */
-                .antMatchers("/api/accounts").permitAll() //회원가입 허가
-                .antMatchers(HttpMethod.GET,"/api/accounts/images/**").permitAll() //유저 이미지 허가
-                .antMatchers(HttpMethod.GET,"/api/accounts/**/images/**").permitAll() //유저 이미지 허가
-                .antMatchers(HttpMethod.GET,"/api/teams/images/**").permitAll() //팀 이미지 허가
-                .antMatchers(HttpMethod.GET,"/api/teams/**/images/**").permitAll() //팀 이미지 허가
-                .antMatchers("/api/accounts/**").hasRole("USER") //Account(Modify, Remove, Load) 인증요구
-                .antMatchers("/api/login", "/api/logout").permitAll() //Login/out 허가
-                .antMatchers("/api/find/**").permitAll() //회원정보 찾기 허가
-                .antMatchers("/api/teams/**").hasRole("USER") //인증요구
-                //아래는 위 코드 pull받은 후 추가 및 변경사항에 대해 hasRole해줄 것.
-                .antMatchers("/api/apply/**").hasRole("USER") //인증요구
-                .antMatchers("/api/invite/**").hasRole("USER") //인증요구
-                .antMatchers("/api/boards/**").hasRole("USER") //인증요구
+                // PERMIT.ALL()
+                .antMatchers(HttpMethod.POST, "/api/accounts", "/api/login").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/accounts/images/**", "/api/accounts/**/images/**").permitAll() //유저 이미지 허가
+                .antMatchers(HttpMethod.GET,"/api/teams/images/**", "/api/teams/**/images/**").permitAll() //팀 이미지 허가
                 .antMatchers("/h2-console/**").permitAll() //개발 편의상 permitAll
+                // LEADER
+                .antMatchers(HttpMethod.GET, "/api/matches/**/home/**").hasRole("LEADER")
+                .antMatchers(HttpMethod.POST, "/api/matches").hasRole("LEADER")
+                .antMatchers(HttpMethod.PUT, "/api/applications/accounts/**/team", "/api/matches/**", "/api/teams/**").hasRole("LEADER")
+                .antMatchers(HttpMethod.DELETE, "/api/matches/**", "/api/teams/**").hasRole("LEADER")
+                .antMatchers("/api/applications/teams/**").hasRole("LEADER")
+                // USER or LEADER
+                .anyRequest().authenticated()
                 .and().headers().frameOptions().disable()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, expiredTokenRepository), UsernamePasswordAuthenticationFilter.class)

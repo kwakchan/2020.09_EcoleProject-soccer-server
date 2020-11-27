@@ -237,11 +237,18 @@ public class BoardController {
     @DeleteMapping("/{boardId}")
     ResponseEntity<?> deleteBoard(@PathVariable Long boardId, @CurrentAccount Account currentAccount){
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시판입니다."));
+        List<Comment> comment = commentRepository.findByBoard(board);
 
         if(!currentAccount.getId().equals(board.getAccount().getId())){
             return new ResponseEntity<>("삭제권한이 없습니다.", HttpStatus.BAD_REQUEST);
         }
         else {
+            if(!comment.isEmpty())
+            {
+                for (int i=0; i<comment.size(); i++) {
+                    commentRepository.delete(comment.get(i));
+                }
+            }
             boardRepository.delete(board);
             BoardDetailResponse response = modelMapper.map(board, BoardDetailResponse.class);
             response.setName(board.getAccount().getName());

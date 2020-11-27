@@ -10,11 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
@@ -77,7 +75,7 @@ public class AccountImageService {
             return defaultImage;
         }
 
-        String requestUri = request.getRequestURI() + "/";
+        String requestUri = request.getRequestURI() + "/images/";
         String newImagePath = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path(requestUri)

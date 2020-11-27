@@ -59,11 +59,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,"/api/teams/images/**", "/api/teams/**/images/**").permitAll() //팀 이미지 허가
                 .antMatchers("/h2-console/**").permitAll() //개발 편의상 permitAll
                 // LEADER
-                .antMatchers(HttpMethod.GET, "/api/matches/**/home/**").hasRole("LEADER")
-                .antMatchers(HttpMethod.POST, "/api/matches").hasRole("LEADER")
-                .antMatchers(HttpMethod.PUT, "/api/applications/accounts/**/team", "/api/matches/**", "/api/teams/**").hasRole("LEADER")
-                .antMatchers(HttpMethod.DELETE, "/api/matches/**", "/api/teams/**").hasRole("LEADER")
-                .antMatchers("/api/applications/teams/**").hasRole("LEADER")
+                .antMatchers(HttpMethod.GET, "/api/matches/**/home/**").hasAnyRole("LEADER")
+                .antMatchers(HttpMethod.POST, "/api/matches").hasAnyRole("LEADER")
+                .antMatchers(HttpMethod.PUT, "/api/applications/accounts/**/team", "/api/matches/**", "/api/teams/**").hasAnyRole("LEADER")
+                .antMatchers(HttpMethod.DELETE, "/api/matches/**", "/api/teams/**").hasAnyRole("LEADER")
+                .antMatchers("/api/applications/teams/**").hasAnyRole("LEADER")
                 // USER or LEADER
                 .anyRequest().authenticated()
                 .and().headers().frameOptions().disable()

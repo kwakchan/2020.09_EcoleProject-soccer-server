@@ -1,13 +1,12 @@
 package com.ksu.soccerserver.account.dto;
 
-
 import com.ksu.soccerserver.team.Team;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class AccountResponse{
+public class AccountResponse {
     private Long id;
     private String email;
     private String name;

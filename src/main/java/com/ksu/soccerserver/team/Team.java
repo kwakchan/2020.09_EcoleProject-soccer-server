@@ -5,8 +5,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.application.ApplicationAccount;
 import com.ksu.soccerserver.application.ApplicationTeam;
-import com.ksu.soccerserver.invitation.InvitationAccount;
-import com.ksu.soccerserver.invitation.InvitationTeam;
+import com.ksu.soccerserver.match.Match;
 import com.ksu.soccerserver.team.dto.TeamModifyRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,7 +41,6 @@ public class Team {
     private String description;
 
     // 팀의 주장을 나타내는 관계성
-    //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @OneToOne
     private Account owner;
 
@@ -56,28 +54,17 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private final Set<ApplicationAccount> applicationAccounts = new HashSet<>();
 
-    // 팀에서 가입요청한 유저들의 리스트를 나타내는 관계성
-    //@JsonIgnore
-    @OneToMany(mappedBy = "team")
-    private final Set<InvitationAccount> invitationAccounts = new HashSet<>();
-
-    // 팀에게 경기요청을 받은 리스트를 나타내는 관계성
-    //@JsonIgnore
-    @OneToMany(mappedBy = "applicationHomeTeam")
-    private final Set<ApplicationTeam> applicationHomeTeams = new HashSet<>();
-
     // 자신의 팀이 경기신청을 보낸 리스트를 나타내는 관계성
-    @OneToMany(mappedBy = "applicationAwayTeam")
-    private final Set<ApplicationTeam> applicationAwayTeams = new HashSet<>();
+    @OneToMany(mappedBy = "applyTeams")
+    private final Set<ApplicationTeam> applyTeams = new HashSet<>();
 
-    // 팀에게 경기요청을 받은 리스트를 나타내는 관계성성
-    @OneToMany(mappedBy = "invitationHomeTeam")
-    private final Set<InvitationTeam> invitationHomeTeams = new HashSet<>();
+    //HomeTeam으로써 성사된 Match의 List를 나타내는 관계성
+    @OneToMany(mappedBy = "homeTeam")
+    private final Set<Match> homeTeam = new HashSet<>();
 
-    // 팀에게 경기요청을 보낸 리스트를 나타내는 관계성
-    //@JsonIgnore
-    @OneToMany(mappedBy = "invitationAwayTeam")
-    private final Set<InvitationTeam> invitationAwayTeams = new HashSet<>();
+    //AwayTeam으로써 성사된 Match의 List를 나타내는 관계성
+    @OneToMany(mappedBy = "awayTeam")
+    private final Set<Match> awayTeam = new HashSet<>();
 
     public void updateTeamInfo(TeamModifyRequest teamModifyRequest){
         this.description = teamModifyRequest.getDescription();

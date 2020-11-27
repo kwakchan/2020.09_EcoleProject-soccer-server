@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -20,6 +19,4 @@ public class BoardListResponse {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private BoardType boardType;
-    //private Set<Comment> comment = new HashSet<>();
-
 }

@@ -1,6 +1,5 @@
 package com.ksu.soccerserver.application.dto;
 
-
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.application.enums.AccountStatus;
 import com.ksu.soccerserver.application.enums.TeamStatus;

@@ -4,7 +4,6 @@ import com.ksu.soccerserver.board.BoardType;
 import com.ksu.soccerserver.comment.dto.CommentResponse;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,16 +25,3 @@ public class BoardDetailResponse {
         this.comments.add(commentResponse);
     }
 }
-
-/*
-@Getter
-@Setter
-public class BoardListResponse {
-
-    private Long id;
-    private String title;
-    private String Writer;
-    private LocalDateTime createdAt;
-
-}
- */

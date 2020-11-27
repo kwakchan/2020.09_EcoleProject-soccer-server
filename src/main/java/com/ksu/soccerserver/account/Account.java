@@ -2,8 +2,6 @@ package com.ksu.soccerserver.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ksu.soccerserver.account.dto.AccountModifyRequest;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,14 +9,12 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.*;
 import com.ksu.soccerserver.application.ApplicationAccount;
-import com.ksu.soccerserver.invitation.InvitationAccount;
 import com.ksu.soccerserver.team.Team;
 
 @Builder
 @Entity @Table
 @Getter
 @NoArgsConstructor @AllArgsConstructor
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Account {
 
     @Id
@@ -75,9 +71,6 @@ public class Account {
 
     @OneToOne
     Team leadingTeam;
-
-    @OneToMany(mappedBy = "account")
-    private final Set<InvitationAccount> invitationAccount = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default

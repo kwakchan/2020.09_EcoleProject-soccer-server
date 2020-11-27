@@ -1,6 +1,5 @@
 package com.ksu.soccerserver.match.dto;
 
-import com.ksu.soccerserver.application.ApplicationTeam;
 import com.ksu.soccerserver.team.Team;
 import lombok.Getter;
 import lombok.Setter;

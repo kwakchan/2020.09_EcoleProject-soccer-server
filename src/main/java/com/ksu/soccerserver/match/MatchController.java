@@ -1,6 +1,5 @@
 package com.ksu.soccerserver.match;
 
-
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.CurrentAccount;
 import com.ksu.soccerserver.application.ApplicationTeam;
@@ -20,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
 import java.util.stream.Collectors;
 

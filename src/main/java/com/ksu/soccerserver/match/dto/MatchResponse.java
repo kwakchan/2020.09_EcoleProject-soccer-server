@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class MatchResponse {
     private Long id;
-    private HomeTeamDTO homeTeamDTO;
+    private HomeTeamDTO homeTeam;
     private String date;
     private String state;
     private String district;
@@ -18,7 +18,7 @@ public class MatchResponse {
     private MatchStatus matchStatus;
 
     public MatchResponse (Match match){
-        this.homeTeamDTO = new HomeTeamDTO(match.getHomeTeam());
+        this.homeTeam = new HomeTeamDTO(match.getHomeTeam());
         this.id = match.getId();
         this.date = match.getDate();
         this.state = match.getState();

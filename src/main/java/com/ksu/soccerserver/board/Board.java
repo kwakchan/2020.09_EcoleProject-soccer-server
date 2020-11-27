@@ -1,7 +1,5 @@
 package com.ksu.soccerserver.board;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.comment.Comment;
 import lombok.*;

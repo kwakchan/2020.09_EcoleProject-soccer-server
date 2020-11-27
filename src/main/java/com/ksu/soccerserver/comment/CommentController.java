@@ -41,6 +41,7 @@ public class CommentController {
 
         CommentResponse response = modelMaapper.map(saveComment, CommentResponse.class);
         response.setName(account.getName());
+        response.setImage(account.getImage());
 
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -70,6 +71,7 @@ public class CommentController {
 
             CommentResponse response = modelMaapper.map(updatedComment, CommentResponse.class);
             response.setName(findComment.getAccount().getName());
+            response.setImage(findComment.getAccount().getImage());
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
@@ -85,6 +87,8 @@ public class CommentController {
             commentRepository.delete(comment);
 
             CommentResponse response = modelMaapper.map(comment, CommentResponse.class);
+            response.setName(comment.getAccount().getName());
+            response.setImage(comment.getAccount().getImage());
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         }

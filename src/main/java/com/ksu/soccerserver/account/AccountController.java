@@ -2,10 +2,7 @@ package com.ksu.soccerserver.account;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ksu.soccerserver.account.dto.AccountModifyRequest;
-import com.ksu.soccerserver.account.dto.AccountPasswordRequest;
-import com.ksu.soccerserver.account.dto.AccountRequest;
-import com.ksu.soccerserver.account.dto.AccountResponse;
+import com.ksu.soccerserver.account.dto.*;
 import com.ksu.soccerserver.image.ImageService;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
@@ -45,8 +42,7 @@ public class AccountController {
             Account account = accountRequest.toEntity(passwordEncoder, image);
             Account joinAccount = accountRepository.save(account);
 
-            AccountResponse response = modelMapper.map(joinAccount, AccountResponse.class);
-
+            AccountResponse response = new AccountResponse(joinAccount);
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         }
         else {
@@ -62,8 +58,7 @@ public class AccountController {
 
         if(currentAccount.getId().equals(account.getId())) {
 
-            AccountResponse response = modelMapper.map(account, AccountResponse.class);
-
+            AccountResponse response = new AccountResponse(account);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return new ResponseEntity<>("권한이 없습니다.", HttpStatus.BAD_REQUEST);
@@ -75,8 +70,7 @@ public class AccountController {
     public ResponseEntity<?> loadAccount(@PathVariable Long accountId){
         Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
-        AccountResponse response = modelMapper.map(findAccount, AccountResponse.class);
-
+        AccountResponse response = new AccountResponse(findAccount);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -117,8 +111,7 @@ public class AccountController {
 
         findAccount.updateMyInfo(accountModifyRequest, imagePath);
         Account updatedAccount = accountRepository.save(findAccount);
-        AccountResponse response = modelMapper.map(updatedAccount, AccountResponse.class);
-
+        AccountResponse response = new AccountResponse(updatedAccount);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -134,8 +127,7 @@ public class AccountController {
 
         accountRepository.delete(findAccount);
 
-        AccountResponse response = modelMapper.map(findAccount, AccountResponse.class);
-
+        AccountResponse response = new AccountResponse(findAccount);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -156,7 +148,7 @@ public class AccountController {
             Account withdrawalAccount = accountRepository.save(findAccount);
             teamRepository.save(findTeam);
 
-            AccountResponse response = modelMapper.map(withdrawalAccount, AccountResponse.class);
+            AccountResponse response = new AccountResponse(withdrawalAccount);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {

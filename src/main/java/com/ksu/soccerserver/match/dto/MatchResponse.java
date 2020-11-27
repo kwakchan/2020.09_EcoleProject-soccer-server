@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 public class MatchResponse {
     private Long id;
-    private MatchTeamDTO matchTeamDTO;
     private String date;
     private String state;
     private String district;

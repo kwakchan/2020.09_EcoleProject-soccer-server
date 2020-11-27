@@ -1,20 +1,25 @@
 package com.ksu.soccerserver.team;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.AccountRepository;
 import com.ksu.soccerserver.account.CurrentAccount;
+import com.ksu.soccerserver.image.ImageService;
 import com.ksu.soccerserver.team.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/teams")
@@ -23,7 +28,9 @@ public class TeamController {
 
     private final TeamRepository teamRepository;
     private final AccountRepository accountRepository;
+    private final ImageService imageService;
     private final ModelMapper modelMapper;
+    private final ObjectMapper objectMapper;
 
     // 팀 생성
     @PostMapping
@@ -153,21 +160,25 @@ public class TeamController {
     // 해당 팀의 정보 수정
     @PutMapping("/{teamId}")
     public ResponseEntity<?> putTeam(@PathVariable Long teamId, @CurrentAccount Account nowAccount,
-                                     @RequestBody TeamModifyRequest teamModifyRequest) {
+                                     @RequestPart(value = "logo", required = false) MultipartFile image,
+                                     @RequestPart(value = "data") String modifyTeam, HttpServletRequest request) throws JsonProcessingException {
         Team findTeam = teamRepository.findById(teamId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다"));
 
         if(!findTeam.getOwner().getId().equals(nowAccount.getId())){
             return new ResponseEntity<>("해당 유저는 팀장이 아닙니다.", HttpStatus.BAD_REQUEST);
-        } else{
-            findTeam.updateTeamInfo(teamModifyRequest);
-
-            Team updatedTeam = teamRepository.save(findTeam);
-
-            TeamResponse response = modelMapper.map(updatedTeam, TeamResponse.class);
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
         }
+
+        TeamModifyRequest teamModifyRequest = objectMapper.readValue(modifyTeam, TeamModifyRequest.class);
+        if(image != null){
+            String imagePath = imageService.saveImage(image, request);
+            teamModifyRequest.setLogopath(imagePath);
+        }
+
+        findTeam.updateTeamInfo(teamModifyRequest);
+        Team updatedTeam = teamRepository.save(findTeam);
+        TeamResponse response = modelMapper.map(updatedTeam, TeamResponse.class);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // 팀 삭제

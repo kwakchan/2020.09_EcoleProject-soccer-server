@@ -14,7 +14,6 @@ import com.ksu.soccerserver.match.enums.MatchStatus;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +29,6 @@ public class MatchController {
     private final MatchRepository matchRepository;
     private final ApplicationTeamRepository applicationTeamRepository;
     private final TeamRepository teamRepository;
-    private final ModelMapper modelMapper;
 
     // 개설된 모든 경기방 및 필터링된 경기방 GET
     @GetMapping
@@ -44,14 +42,18 @@ public class MatchController {
             matchResponses = matchRepository.findAllByMatchStatus(MatchStatus.PENDING)
                     .stream()
                     .filter(match -> match.getHomeTeam().getName().contains(teamName))
-                    .map(match -> modelMapper.map(match, MatchResponse.class))
+                    .map(match ->
+                            new MatchResponse(match)
+                    )
                     .collect(Collectors.toList());
         } else if ("All".equals(district)){
             matchResponses = matchRepository.findAllByMatchStatus(MatchStatus.PENDING)
                     .stream()
                     .filter(match -> match.getHomeTeam().getName().contains(teamName)
                         && match.getState().equals(state))
-                    .map(match -> modelMapper.map(match, MatchResponse.class))
+                    .map(match ->
+                            new MatchResponse(match)
+                    )
                     .collect(Collectors.toList());
         } else {
             matchResponses = matchRepository.findAllByMatchStatus(MatchStatus.PENDING)
@@ -59,7 +61,9 @@ public class MatchController {
                     .filter(match -> match.getHomeTeam().getName().contains(teamName)
                         && match.getState().equals(state)
                         && match.getDistrict().equals(district))
-                    .map(match -> modelMapper.map(match, MatchResponse.class))
+                    .map(match ->
+                            new MatchResponse(match)
+                    )
                     .collect(Collectors.toList());
         }
         return new ResponseEntity<>(matchResponses, HttpStatus.OK);
@@ -71,7 +75,8 @@ public class MatchController {
         Match application = matchRepository.findById(matchId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 방입니다."));
 
-        MatchResponse response = modelMapper.map(application, MatchResponse.class);
+        MatchResponse response =
+                new MatchResponse(application);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -106,7 +111,8 @@ public class MatchController {
             Match createMatch = matchCreateRequest.toEntity(homeTeam);
             Match savedMatch = matchRepository.save(createMatch);
 
-            MatchResponse response = modelMapper.map(savedMatch, MatchResponse.class);
+            MatchResponse response =
+                    new MatchResponse(savedMatch);
 
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } else{
@@ -128,7 +134,8 @@ public class MatchController {
 
             Match modifyMatch = matchRepository.save(room);
 
-            MatchResponse response = modelMapper.map(modifyMatch, MatchResponse.class);
+            MatchResponse response =
+                    new MatchResponse(modifyMatch);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
@@ -160,7 +167,7 @@ public class MatchController {
                 room.successMatch(awayTeam);
 
                 Match saveMatch = matchRepository.save(room);
-                MatchResponse response = modelMapper.map(saveMatch, MatchResponse.class);
+                MatchResponse response = new MatchResponse(saveMatch);
 
                 applicationTeamRepository.findAllByMatchId(matchId)
                         .stream()
@@ -184,7 +191,7 @@ public class MatchController {
         if(findMatch.getHomeTeam().getOwner().getId().equals(nowAccount.getId())){
             matchRepository.delete(findMatch);
 
-            MatchResponse response = modelMapper.map(findMatch, MatchResponse.class);
+            MatchResponse response = new MatchResponse(findMatch);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
 

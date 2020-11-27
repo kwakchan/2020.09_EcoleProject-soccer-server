@@ -3,7 +3,6 @@ package com.ksu.soccerserver.board;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.comment.Comment;
 import lombok.*;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -34,8 +33,8 @@ public class Board {
     @Column
     private LocalDateTime modifiedAt;
 
-    @Enumerated(value =  EnumType.STRING)
-    private BoardType boardType;
+    @Column
+    private String boardType;
 
     @OneToMany(mappedBy = "board")
     private final Set<Comment> comment = new HashSet<>();
@@ -53,16 +52,9 @@ public class Board {
         this.modifiedAt = localDateTime;
     }
 
-    public void setBoardtype(BoardType boardType) {
+    public void setBoardtype(String boardType) {
         this.boardType = boardType;
     }
-
-
-    /*public Account getAccount(){
-        return this.account;
-    }
-    */
-
 
     /*
     조회수

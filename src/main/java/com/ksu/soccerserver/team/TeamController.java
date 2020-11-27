@@ -9,7 +9,6 @@ import com.ksu.soccerserver.image.ImageService;
 import com.ksu.soccerserver.team.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +38,7 @@ public class TeamController {
                                         @RequestBody TeamRequest teamRequest){
 
         ServletUriComponentsBuilder defaultPath = ServletUriComponentsBuilder.fromCurrentContextPath();
-        String requestUri = defaultPath.toUriString() + request.getRequestURI() + "/images/default.jpg";
+        String requestUri = defaultPath.toUriString() + request.getRequestURI() + "/images/team_default.jpg";
 
         Account currentAccount = accountRepository.findByEmail(nowAccount.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
@@ -58,8 +57,9 @@ public class TeamController {
                 currentAccount.addRoles("ROLE_LEADER");
                 accountRepository.save(currentAccount);
 
-                TeamResponse response = modelMapper.map(madeTeam, TeamResponse.class);
-
+                //TeamResponse response = modelMapper.map(madeTeam, TeamResponse.class);
+                List<Account> accounts = accountRepository.findAllByTeam(madeTeam);
+                TeamDTO response = new TeamDTO(madeTeam, accounts);
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
             }
             else {
@@ -128,12 +128,14 @@ public class TeamController {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
-            TeamMemberResponse response = modelMapper.map(findTeam, TeamMemberResponse.class);
-
+            //TeamMemberResponse response = modelMapper.map(findTeam, TeamMemberResponse.class);
+            List<Account> accounts = accountRepository.findAllByTeam(findTeam);
+            TeamDTO response = new TeamDTO(findTeam, accounts);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        TeamResponse response = modelMapper.map(findTeam, TeamResponse.class);
-
+        //TeamResponse response = modelMapper.map(findTeam, TeamResponse.class);
+        List<Account> accounts = accountRepository.findAllByTeam(findTeam);
+        TeamDTO response = new TeamDTO(findTeam, accounts);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -157,7 +159,9 @@ public class TeamController {
 
         findTeam.updateTeamInfo(teamModifyRequest);
         Team updatedTeam = teamRepository.save(findTeam);
-        TeamResponse response = modelMapper.map(updatedTeam, TeamResponse.class);
+        //TeamResponse response = modelMapper.map(updatedTeam, TeamResponse.class);
+        List<Account> accounts = accountRepository.findAllByTeam(updatedTeam);
+        TeamDTO response = new TeamDTO(updatedTeam, accounts);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -171,8 +175,9 @@ public class TeamController {
         }else {
             teamRepository.delete(findTeam);
 
-            TeamResponse response = modelMapper.map(findTeam, TeamResponse.class);
-
+            //TeamResponse response = modelMapper.map(findTeam, TeamResponse.class);
+            List<Account> accounts = accountRepository.findAllByTeam(findTeam);
+            TeamDTO response = new TeamDTO(findTeam, accounts);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }

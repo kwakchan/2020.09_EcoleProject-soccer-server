@@ -7,7 +7,6 @@ import com.ksu.soccerserver.application.dto.ApplicationAccountRequest;
 import com.ksu.soccerserver.application.dto.ApplicationAccountResponse;
 import com.ksu.soccerserver.application.enums.AccountStatus;
 import com.ksu.soccerserver.application.enums.TeamStatus;
-import com.ksu.soccerserver.match.dto.MatchResponse;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -74,6 +71,10 @@ public class ApplicationAccountController {
         Optional<ApplicationAccount> alreadyExist = applicationAccountRepository.findByAccountAndTeam(findAccount, findTeam);
         if(alreadyExist.isPresent()){
             return new ResponseEntity<>("이미 가입신청한 팀입니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        if(findTeam.getId().equals(nowAccount.getId())){
+            return new ResponseEntity<>("해당 유저는 팀장입니다.", HttpStatus.BAD_REQUEST);
         }
 
         ApplicationAccount apply = applicationAccountRequest.toEntity(findAccount, findTeam);

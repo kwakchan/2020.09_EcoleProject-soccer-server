@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.persistence.Column;
 import java.util.Collections;
 
 @Getter
@@ -16,6 +17,13 @@ public class AccountRequest {
     private String phoneNum;
     private String gender;
     private String birth;
+    private String image;
+    private String position;
+    private String height;
+    private String weight;
+    private String foot;
+    private String state;
+    private String district;
 
     public Account toEntity(PasswordEncoder passwordEncoder, String image) {
         return Account.builder()
@@ -27,6 +35,12 @@ public class AccountRequest {
                 .phoneNum(this.getPhoneNum())
                 .birth(this.getBirth())
                 .gender(this.getGender())
+                .position(this.getPosition())
+                .height(this.getHeight())
+                .weight(this.getWeight())
+                .foot(this.getFoot())
+                .state(this.getState())
+                .district(this.getDistrict())
                 .build();
     }
 }

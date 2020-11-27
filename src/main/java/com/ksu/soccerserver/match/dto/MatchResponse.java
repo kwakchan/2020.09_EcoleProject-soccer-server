@@ -1,5 +1,6 @@
 package com.ksu.soccerserver.match.dto;
 
+
 import com.ksu.soccerserver.match.enums.MatchStatus;
 import com.ksu.soccerserver.team.Team;
 import lombok.Getter;

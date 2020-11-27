@@ -1,12 +1,9 @@
 package com.ksu.soccerserver.board.dto;
 
-
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.board.Board;
-import com.ksu.soccerserver.board.BoardType;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,7 +11,7 @@ import java.time.LocalDateTime;
 public class BoardRequest {
     private String title;
     private String content;
-    private BoardType boardType;
+    private String boardType;
 
     public Board toEntity(Account account) {
         return Board.builder()

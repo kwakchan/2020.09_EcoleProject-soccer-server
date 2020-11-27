@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
+import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,22 +48,35 @@ public class BoardController {
     }
 
     @GetMapping
-    ResponseEntity<?> getBoardList() {
-        List<Board> boards = boardRepository.findAll();
-        List<BoardListResponse> boardListResponse = boardRepository.findAll()
-                .stream()
-                .map(boardRepository -> modelMapper.map(boardRepository, BoardListResponse.class))
-                .collect(Collectors.toList());
+    ResponseEntity<?> getBoardList(@RequestParam(required = false)String title,
+                                   @RequestParam(required = false)String boardType) {
+        List<Board> boards = new ArrayList<>();
+        List<BoardListResponse> boardListResponses = new ArrayList<>();
+        if(boardType.equals("All")){
+            boards = boardRepository.findAllByTitleContaining(title);
+            boardListResponses = boardRepository.findAllByTitleContaining(title)
+                    .stream()
+                    .map(boardRepository -> modelMapper.map(boardRepository, BoardListResponse.class))
+                    .collect(Collectors.toList());
+        }
+        else if((boardType.equals("FREE")) || (boardType.equals("INVITE")) || (boardType.equals("FIND"))){
+            boards = boardRepository.findAllByBoardTypeAndTitleContaining(boardType, title);
+            boardListResponses = boardRepository.findAllByBoardTypeAndTitleContaining(boardType, title)
+                    .stream()
+                    .map(boardRepository -> modelMapper.map(boardRepository, BoardListResponse.class))
+                    .collect(Collectors.toList());
+        }
 
-        if (boardListResponse.isEmpty()) {
+        if (boards.isEmpty()) {
             return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
         }
 
-        for (int i = 0; i < boardListResponse.size(); i++) {
-            boardListResponse.get(i).setName(boards.get(i).getAccount().getName());
+        for (int i = 0; i < boardListResponses.size(); i++) {
+            boardListResponses.get(i).setName(boards.get(i).getAccount().getName());
         }
 
-        return new ResponseEntity<>(boardListResponse, HttpStatus.OK);
+
+        return new ResponseEntity<>(boardListResponses, HttpStatus.OK);
     }
 
     @GetMapping("/{boardId}")
@@ -115,38 +130,7 @@ public class BoardController {
         return new ResponseEntity<>(boardListResponses, HttpStatus.OK);
     }
 
-    //게시판 keyword포함 제목 검색
-    @GetMapping("/search")
-    ResponseEntity<?> getSearchBoard(@RequestParam(value = "keyword") String keyword){
-        List<Board> boards = boardRepository.findByTitleContaining(keyword);
-        List<BoardListResponse> boardListResponses = boardRepository.findByTitleContaining(keyword)
-                .stream()
-                .map(boardRepository -> modelMapper.map(boardRepository, BoardListResponse.class))
-                .collect(Collectors.toList());
 
-        if(boardListResponses.isEmpty()){
-            return new ResponseEntity<>(keyword + " 제목의 게시글이 없습니다.", HttpStatus.NOT_FOUND);
-        }
-
-        for(int i=0; i<boardListResponses.size();i++){
-            boardListResponses.get(i).setName(boards.get(i).getAccount().getName());
-        }
-
-        return new ResponseEntity<>(boardListResponses, HttpStatus.OK);
-    }
-
-    //boardType 게시판 출력
-    /*
-    @GetMapping("/boardType")
-    ResponseEntity<?> getFilteredBoard(@RequestParam(value = "keyword")String keyword){
-        List<Board> boards = boardRepository.findByBoardtype(keyword);
-        if(boards.isEmpty()){
-            return new ResponseEntity<>("게시글이 없습니다.", HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(boards, HttpStatus.OK);
-    }
-    */
 
     @GetMapping("/page")
     ResponseEntity<?> getPaginationBoard(Pageable pageable){

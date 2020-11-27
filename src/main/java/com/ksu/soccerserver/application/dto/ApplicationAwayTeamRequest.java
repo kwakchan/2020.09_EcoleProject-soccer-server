@@ -1,6 +1,5 @@
 package com.ksu.soccerserver.application.dto;
 
-
 import com.ksu.soccerserver.application.ApplicationTeam;
 import com.ksu.soccerserver.application.enums.AwayStatus;
 import com.ksu.soccerserver.match.Match;

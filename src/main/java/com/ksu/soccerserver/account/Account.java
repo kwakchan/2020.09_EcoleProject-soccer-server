@@ -2,8 +2,6 @@ package com.ksu.soccerserver.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ksu.soccerserver.account.dto.AccountModifyRequest;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +15,6 @@ import com.ksu.soccerserver.team.Team;
 @Entity @Table
 @Getter
 @NoArgsConstructor @AllArgsConstructor
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Account {
 
     @Id

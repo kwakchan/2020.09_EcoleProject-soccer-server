@@ -11,6 +11,7 @@ import com.ksu.soccerserver.match.dto.MatchCreateRequest;
 import com.ksu.soccerserver.match.dto.MatchModifyRequest;
 import com.ksu.soccerserver.match.dto.MatchRequest;
 import com.ksu.soccerserver.match.dto.MatchResponse;
+import com.ksu.soccerserver.match.enums.MatchStatus;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/matches")
@@ -32,6 +34,37 @@ public class MatchController {
     private final ModelMapper modelMapper;
 
     // 개설된 모든 경기방 및 필터링된 경기방 GET
+    @GetMapping
+    public ResponseEntity<?> loadApplications(@RequestParam(required = false) String teamName,
+                                              @RequestParam(required = false) String state,
+                                              @RequestParam(required = false) String district){
+
+        List<MatchResponse> matchResponses;
+
+        if("ALL".equals(state)) {
+            matchResponses = matchRepository.findByMatchStatus(MatchStatus.PENDING)
+                    .stream()
+                    .filter(match -> match.getHomeTeam().getName().contains(teamName))
+                    .map(match -> modelMapper.map(match, MatchResponse.class))
+                    .collect(Collectors.toList());
+        } else if ("ALL".equals(district)){
+            matchResponses = matchRepository.findByMatchStatus(MatchStatus.PENDING)
+                    .stream()
+                    .filter(match -> match.getHomeTeam().getName().contains(teamName)
+                        && match.getState().equals(state))
+                    .map(match -> modelMapper.map(match, MatchResponse.class))
+                    .collect(Collectors.toList());
+        } else {
+            matchResponses = matchRepository.findByMatchStatus(MatchStatus.PENDING)
+                    .stream()
+                    .filter(match -> match.getHomeTeam().getName().contains(teamName)
+                        && match.getState().equals(state)
+                        && match.getDistrict().equals(district))
+                    .map(match -> modelMapper.map(match, MatchResponse.class))
+                    .collect(Collectors.toList());
+        }
+        return new ResponseEntity<>(matchResponses, HttpStatus.OK);
+    }
 
     //특정 경기방 상세 정보 보기
     @GetMapping("/{matchId}")
@@ -148,10 +181,10 @@ public class MatchController {
             MatchResponse response = modelMapper.map(findMatch, MatchResponse.class);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
+
         } else {
             return new ResponseEntity<>("해당 유저는 팀장이 아닙니다.", HttpStatus.BAD_REQUEST);
         }
-
     }
 
 

@@ -18,6 +18,7 @@ public class TeamRequest {
         return Team.builder().name(this.getName())
                 .state(this.getState()).district(this.getDistrict())
                 .logopath(image)
-                .description(this.getDescription()).owner(nowAccount).build();
+                .description(this.getDescription())
+                .owner(nowAccount).build();
     }
 }

@@ -3,6 +3,7 @@ package com.ksu.soccerserver.application.dto;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.application.ApplicationAccount;
 import com.ksu.soccerserver.application.enums.AccountStatus;
+import com.ksu.soccerserver.application.enums.TeamStatus;
 import com.ksu.soccerserver.team.Team;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +17,9 @@ public class ApplicationAccountRequest {
     public ApplicationAccount toEntity(Account findAccount, Team findTeam){
         return ApplicationAccount.builder()
                 .account(findAccount).team(findTeam)
-                .accountStatus(AccountStatus.PENDING).build();
+                .accountStatus(AccountStatus.PENDING)
+                .teamStatus(TeamStatus.PENDING)
+                .build();
     }
 
 }

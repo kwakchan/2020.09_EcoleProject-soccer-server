@@ -1,12 +1,11 @@
 package com.ksu.soccerserver.match;
 
-import com.ksu.soccerserver.team.Team;
+import com.ksu.soccerserver.match.enums.MatchStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface MatchRepository extends JpaRepository<Match, Long> {
 
-    List<Match> findAllByHomeTeam(Team team);
-
+    List<Match> findByMatchStatus(MatchStatus matchStatus);
 
 }

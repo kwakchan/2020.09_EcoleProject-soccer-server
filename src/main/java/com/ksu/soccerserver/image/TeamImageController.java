@@ -1,37 +1,25 @@
 package com.ksu.soccerserver.image;
 
-import com.ksu.soccerserver.account.Account;
-import com.ksu.soccerserver.account.CurrentAccount;
-import com.ksu.soccerserver.image.TeamImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping(value = "/api/teams/images")
+@RequestMapping(value = "/api/teams")
 @RequiredArgsConstructor
 public class TeamImageController {
 
-    private final TeamImageService teamimageService;
+    private final ImageService imageService;
 
-    // 이미지업로드
-    @PutMapping
-    ResponseEntity<?> saveImage(@RequestParam("logo") MultipartFile image, HttpServletRequest request) {
-
-        return teamimageService.saveImage(image, request);
-    }
-    // 이미지 불러오기
-    @GetMapping(value = "/{imageName:.+}")
-    ResponseEntity<?> getImage(@PathVariable String imageName, HttpServletRequest request) {
-        return teamimageService.loadAsResource(imageName, request);
-    }
-    // 기본 이미지로 변경
-    @PutMapping("/{teamId}")
-    public ResponseEntity<?> removeImage(@PathVariable Long teamId, @CurrentAccount Account currentAccoun,
-                                         HttpServletRequest request){
-        return teamimageService.setTeamLogo(teamId, currentAccoun, request);
+    @GetMapping({"/images/{imageName:.+}", "/{idx}/images/{imageName:.+}"})
+    ResponseEntity<?> getImage(@PathVariable(name = "imageName") String imageName,
+                               @PathVariable(name = "idx",required = false) Long idx,
+                               HttpServletRequest request) {
+        return imageService.loadAsResource(imageName, request);
     }
 }

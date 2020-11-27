@@ -7,4 +7,5 @@ import lombok.Setter;
 @Setter
 public class TeamModifyRequest {
     private String description;
+    private String logopath;
 }

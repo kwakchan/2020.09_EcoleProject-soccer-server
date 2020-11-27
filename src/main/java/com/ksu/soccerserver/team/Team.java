@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -67,13 +68,11 @@ public class Team {
 
     public void updateTeamInfo(TeamModifyRequest teamModifyRequest){
         this.description = teamModifyRequest.getDescription();
+        this.logopath = teamModifyRequest.getLogopath();
     }
 
     public void joinMember(Account account) {
         accounts.add(account);
     }
-    // Logo 수정
-    public void setLogo(String logo) { this.logopath = logo; }
-
 
 }

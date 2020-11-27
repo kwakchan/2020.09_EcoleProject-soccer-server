@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -46,46 +47,44 @@ public class AccountImageService {
         this.accountRepository = accountRepository;
     }
 
+    public String saveImage(MultipartFile image, HttpServletRequest request) {
+        ServletUriComponentsBuilder defaultPath = ServletUriComponentsBuilder.fromCurrentContextPath();
+        String defaultImage = defaultPath.toUriString() + request.getRequestURI() + "/images/default.jpg";
 
-    public ResponseEntity<?> saveImage(MultipartFile image, HttpServletRequest request) {
         String imageName = UUID.randomUUID().toString() + "_" + StringUtils.cleanPath(image.getOriginalFilename());
         String extension = FilenameUtils.getExtension(imageName);
 
         try {
-            // image null 여부 확인
             if(image.isEmpty()){
-                return new ResponseEntity<>("imageNullError", HttpStatus.BAD_REQUEST);
+                return defaultImage;
             }
 
             if (!"jpg".equals(extension) && !"jpeg".equals(extension) && !"png".equals(extension)) {
-                return new ResponseEntity<>("TypeError", HttpStatus.BAD_REQUEST);
+                return defaultImage;
             }
-            // message-body로 넘어온 parmeter 확인
             try (InputStream inputStream = image.getInputStream()) {
                 Path targetLocation = this.rootLocation.resolve(imageName);
                 Files.copy(inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING);
             }
 
         }catch (IOException e){
-            return new ResponseEntity<>("Failed to Store file" + imageName,HttpStatus.BAD_REQUEST);
+            return defaultImage;
         }
 
         String email = jwtProvider.getUserPk(request.getHeader(HttpHeaders.AUTHORIZATION));
         Optional<Account> accountOptional = accountRepository.findByEmail(email);
         if (!accountOptional.isPresent()) {
-            return new ResponseEntity<>("userError", HttpStatus.BAD_REQUEST);
+            return defaultImage;
         }
-        // uri 앞부분 가져오기
+
         String requestUri = request.getRequestURI() + "/";
-        Account account = accountOptional.get();
         String newImagePath = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path(requestUri)
                 .path(imageName)
                 .toUriString();
 
-        account.setImage(newImagePath);
-        return new ResponseEntity<>(accountRepository.save(account), HttpStatus.CREATED);
+        return newImagePath;
     }
 
     public ResponseEntity<?> loadAsResource(String imageName, HttpServletRequest request) {

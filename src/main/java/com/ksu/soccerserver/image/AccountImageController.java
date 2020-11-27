@@ -33,11 +33,6 @@ public class AccountImageController {
     private final AccountRepository accountRepository;
     private final ModelMapper modelMapper;
 
-    // Image Upload
-    @PutMapping
-    ResponseEntity<?> saveImage(@RequestParam(name = "image", required = false) MultipartFile image, HttpServletRequest request) throws MalformedURLException {
-        return accountImageService.saveImage(image, request);
-    }
     // Image Load
     @GetMapping(value = "/{imageName:.+}")
     ResponseEntity<?> getImage(@PathVariable String imageName, HttpServletRequest request) {

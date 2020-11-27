@@ -12,7 +12,6 @@ import com.ksu.soccerserver.match.MatchRepository;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +28,6 @@ public class ApplicationTeamController {
     private final ApplicationTeamRepository applicationTeamRepository;
     private final TeamRepository teamRepository;
     private final MatchRepository matchRepository;
-    private final ModelMapper modelMapper;
 
     // 자신의 팀에서 신청한 경기에 대해 리스트를 보는 api
     @GetMapping("/away/{teamId}")
@@ -41,9 +39,10 @@ public class ApplicationTeamController {
         if(awayTeam.getOwner().getId().equals(nowAccount.getId())) {
 
             List<ApplicationTeamResponse> findApplies = applicationTeamRepository.findByApplyTeamsId(awayTeam.getId())
-                    .stream().map(applicationTeam -> modelMapper.map(applicationTeam, ApplicationTeamResponse.class))
+                    .stream().map(applicationTeam ->
+                            new ApplicationTeamResponse(applicationTeam)
+                    )
                     .collect(Collectors.toList());
-
             return new ResponseEntity<>(findApplies, HttpStatus.OK);
         } else {
             return new ResponseEntity<>("해당 유저는 팀장이 아닙니다.", HttpStatus.BAD_REQUEST);
@@ -67,7 +66,8 @@ public class ApplicationTeamController {
             ApplicationTeam applyTeam = applicationAwayTeamRequest.toEntity(findMatch,findTeam);
 
             ApplicationTeam appliedMatch = applicationTeamRepository.save(applyTeam);
-            ApplicationTeamResponse response = modelMapper.map(appliedMatch, ApplicationTeamResponse.class);
+            ApplicationTeamResponse response =
+                    new ApplicationTeamResponse(appliedMatch);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else{
@@ -90,7 +90,8 @@ public class ApplicationTeamController {
 
         ApplicationTeam updateApply = applicationTeamRepository.save(apply);
 
-        ApplicationTeamResponse response = modelMapper.map(updateApply, ApplicationTeamResponse.class);
+        ApplicationTeamResponse response =
+                 new ApplicationTeamResponse(updateApply);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

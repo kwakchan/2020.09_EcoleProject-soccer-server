@@ -41,21 +41,21 @@ public class MatchController {
 
         List<MatchResponse> matchResponses;
 
-        if("ALL".equals(state)) {
-            matchResponses = matchRepository.findByMatchStatus(MatchStatus.PENDING)
+        if("All".equals(state)) {
+            matchResponses = matchRepository.findAllByMatchStatus(MatchStatus.PENDING)
                     .stream()
                     .filter(match -> match.getHomeTeam().getName().contains(teamName))
                     .map(match -> modelMapper.map(match, MatchResponse.class))
                     .collect(Collectors.toList());
-        } else if ("ALL".equals(district)){
-            matchResponses = matchRepository.findByMatchStatus(MatchStatus.PENDING)
+        } else if ("All".equals(district)){
+            matchResponses = matchRepository.findAllByMatchStatus(MatchStatus.PENDING)
                     .stream()
                     .filter(match -> match.getHomeTeam().getName().contains(teamName)
                         && match.getState().equals(state))
                     .map(match -> modelMapper.map(match, MatchResponse.class))
                     .collect(Collectors.toList());
         } else {
-            matchResponses = matchRepository.findByMatchStatus(MatchStatus.PENDING)
+            matchResponses = matchRepository.findAllByMatchStatus(MatchStatus.PENDING)
                     .stream()
                     .filter(match -> match.getHomeTeam().getName().contains(teamName)
                         && match.getState().equals(state)
@@ -139,8 +139,9 @@ public class MatchController {
 
     // HomeTeam에서의 수락 / 거절, 수락시 경기성사 => ROLE_LEADER
     @PutMapping("/{matchId}/home/{applyTeamId}")
-    public ResponseEntity<?> modifyHomeStatus(@PathVariable Long matchId, @PathVariable Long applyTeamId, @RequestBody MatchRequest matchRequest,
-                                               @CurrentAccount Account nowAccount){
+    public ResponseEntity<?> modifyHomeStatus(@PathVariable Long matchId, @PathVariable Long applyTeamId,
+                                              @RequestBody MatchRequest matchRequest,
+                                              @CurrentAccount Account nowAccount){
         Match room = matchRepository.findById(matchId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 요청입니다."));
 
@@ -148,6 +149,7 @@ public class MatchController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 요청입니다."));
 
         if(room.getHomeTeam().getOwner().getId().equals(nowAccount.getId())){
+
             room.updateHomeStatus(HomeStatus.valueOf(matchRequest.getHomeStatus().name()));
 
             if(applyTeam.getAwayStatus().name().equals(AwayStatus.PENDING.name()) &&
@@ -162,8 +164,6 @@ public class MatchController {
                 MatchResponse response = modelMapper.map(saveMatch, MatchResponse.class);
 
                 List<ApplicationTeam> appliedTeams = applicationTeamRepository.findByMatchId(matchId);
-
-
 
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }

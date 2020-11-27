@@ -43,9 +43,22 @@ public class ImageService {
         this.accountRepository = accountRepository;
     }
 
+    public String Prefix(HttpServletRequest request){
+
+        String prefix;
+        if(request.getRequestURI().contains("accounts")) {
+            prefix = "account";
+        }
+        else{
+            prefix = "teams";
+        }
+        return prefix;
+    }
+
     public String saveImage(MultipartFile image, HttpServletRequest request) {
+        String prefix = Prefix(request);
         ServletUriComponentsBuilder defaultPath = ServletUriComponentsBuilder.fromCurrentContextPath();
-        String defaultImage = defaultPath.toUriString() + request.getRequestURI() + "/images/default.jpg";
+        String defaultImage = defaultPath.toUriString() + request.getRequestURI() + "/images/" + prefix +"default.jpg";
 
         String imageName = UUID.randomUUID().toString() + "_" + StringUtils.cleanPath(image.getOriginalFilename());
         String extension = FilenameUtils.getExtension(imageName);
@@ -105,13 +118,8 @@ public class ImageService {
                         .body(resource);
             } else {
                 // 데이터가 존재 하지 않을 경우 기본 이미지 주소 전달
-                String prefix;
-                if(request.getRequestURI().contains("accounts")) {
-                    prefix = "account";
-                }
-                else    {
-                    prefix = "teams";
-                }
+                String prefix = Prefix(request);
+
                 // 기본 이미지 출력
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + prefix + "_default.jpg" + "\"")

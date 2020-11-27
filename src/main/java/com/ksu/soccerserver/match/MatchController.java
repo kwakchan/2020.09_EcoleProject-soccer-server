@@ -78,20 +78,20 @@ public class MatchController {
         if("ALL".equals(state)) {
             matchResponses = matchRepository.findByMatchStatus(MatchStatus.PENDING)
                     .stream()
-                    .filter(match -> match.getHomeTeam().getName().equals(teamName))
+                    .filter(match -> match.getHomeTeam().getName().contains(teamName))
                     .map(match -> modelMapper.map(match, MatchResponse.class))
                     .collect(Collectors.toList());
         } else if ("ALL".equals(district)){
             matchResponses = matchRepository.findByMatchStatus(MatchStatus.PENDING)
                     .stream()
-                    .filter(match -> match.getHomeTeam().getName().equals(teamName)
+                    .filter(match -> match.getHomeTeam().getName().contains(teamName)
                         && match.getState().equals(state))
                     .map(match -> modelMapper.map(match, MatchResponse.class))
                     .collect(Collectors.toList());
         } else {
             matchResponses = matchRepository.findByMatchStatus(MatchStatus.PENDING)
                     .stream()
-                    .filter(match -> match.getHomeTeam().getName().equals(teamName)
+                    .filter(match -> match.getHomeTeam().getName().contains(teamName)
                         && match.getState().equals(state)
                         && match.getDistrict().equals(district))
                     .map(match -> modelMapper.map(match, MatchResponse.class))

@@ -1,7 +1,5 @@
 package com.ksu.soccerserver.comment.dto;
 
-import com.ksu.soccerserver.account.Account;
-import com.ksu.soccerserver.board.Board;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +13,7 @@ public class CommentResponse {
     private String name;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+    private String image;
     //private Board board;
     //private Account account;
 }

@@ -40,6 +40,7 @@ public class BoardController {
         Board saveBoard = boardRepository.save(postBoard);
         BoardDetailResponse response = modelMapper.map(saveBoard, BoardDetailResponse.class);
         response.setName(account.getName());
+        response.setImage(account.getImage());
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -76,10 +77,12 @@ public class BoardController {
 
         for (int i=0; i< commentResponses.size(); i++) {
             commentResponses.get(i).setName(comment.get(i).getAccount().getName());
+            commentResponses.get(i).setImage(comment.get(i).getAccount().getImage());
         }
 
         BoardDetailResponse response = modelMapper.map(findBoard, BoardDetailResponse.class);
         response.setName(findBoard.getAccount().getName());
+        response.setImage(findBoard.getAccount().getImage());
 
         for (int i=0;i<comment.size(); i++) {
             response.addComment(commentResponses.get(i));
@@ -206,6 +209,7 @@ public class BoardController {
 
         for (int i=0; i< commentResponses.size(); i++) {
             commentResponses.get(i).setName(comment.get(i).getAccount().getName());
+            commentResponses.get(i).setImage(comment.get(i).getAccount().getImage());
         }
 
         if(!currentAccount.getId().equals(findBoard.getAccount().getId())){
@@ -219,6 +223,7 @@ public class BoardController {
 
             BoardDetailResponse response = modelMapper.map(findBoard, BoardDetailResponse.class);
             response.setName(findBoard.getAccount().getName());
+            response.setImage(findBoard.getAccount().getImage());
 
             for (int i=0;i<comment.size(); i++) {
                 response.addComment(commentResponses.get(i));
@@ -232,14 +237,22 @@ public class BoardController {
     @DeleteMapping("/{boardId}")
     ResponseEntity<?> deleteBoard(@PathVariable Long boardId, @CurrentAccount Account currentAccount){
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시판입니다."));
+        List<Comment> comment = commentRepository.findByBoard(board);
 
         if(!currentAccount.getId().equals(board.getAccount().getId())){
             return new ResponseEntity<>("삭제권한이 없습니다.", HttpStatus.BAD_REQUEST);
         }
         else {
+            if(!comment.isEmpty())
+            {
+                for (int i=0; i<comment.size(); i++) {
+                    commentRepository.delete(comment.get(i));
+                }
+            }
             boardRepository.delete(board);
             BoardDetailResponse response = modelMapper.map(board, BoardDetailResponse.class);
             response.setName(board.getAccount().getName());
+            response.setImage(board.getAccount().getImage());
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         }

@@ -83,7 +83,7 @@ public class Account {
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
-    public void updateMyInfo(AccountModifyRequest modifyRequest) {
+    public void updateMyInfo(AccountModifyRequest modifyRequest, String imagePath) {
         //this.password = modifyRequest.getPassword();
         this.position = modifyRequest.getPosition();
         this.state = modifyRequest.getState();
@@ -91,6 +91,7 @@ public class Account {
         this.weight = modifyRequest.getWeight();
         this.height = modifyRequest.getHeight();
         this.foot = modifyRequest.getFoot();
+        this.image = imagePath;
     }
 
     public void setImage(String image) { this.image = image; }

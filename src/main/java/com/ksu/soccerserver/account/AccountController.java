@@ -56,21 +56,23 @@ public class AccountController {
     // 본인 회원정보 출력
     @GetMapping("/profile")
     public ResponseEntity<?> loadProfile(@CurrentAccount Account currentAccount){
-        Account account = accountRepository.findByEmail(currentAccount.getEmail()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+        Account account = accountRepository.findByEmail(currentAccount.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
 
-        AccountResponse response = modelMapper.map(account, AccountResponse.class);
+        if(currentAccount.getId().equals(account.getId())) {
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+            AccountResponse response = modelMapper.map(account, AccountResponse.class);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("권한이 없습니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     // 회원정보 출력
     @GetMapping("/{accountId}")
-    public ResponseEntity<?> loadAccount(@PathVariable Long accountId, @CurrentAccount Account currentAccount){
+    public ResponseEntity<?> loadAccount(@PathVariable Long accountId){
         Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
-
-        if(!currentAccount.getId().equals(findAccount.getId())) {
-            return new ResponseEntity<>("권한이 없습니다.", HttpStatus.BAD_REQUEST);
-        }
 
         AccountResponse response = modelMapper.map(findAccount, AccountResponse.class);
 
@@ -85,12 +87,16 @@ public class AccountController {
         Account changingAccount = accountRepository.findById(currentAccount.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
-        if(passwordEncoder.matches(accountPasswordRequest.getOldPW(), changingAccount.getPassword())) {
-            changingAccount.changePW(passwordEncoder.encode(accountPasswordRequest.getNewPW()));
-            accountRepository.save(changingAccount);
-            return new ResponseEntity<>("Success", HttpStatus.OK);
+        if(currentAccount.getId().equals(changingAccount.getId())) {
+            if (passwordEncoder.matches(accountPasswordRequest.getOldPW(), changingAccount.getPassword())) {
+                changingAccount.changePW(passwordEncoder.encode(accountPasswordRequest.getNewPW()));
+                accountRepository.save(changingAccount);
+                return new ResponseEntity<>("Success", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Fail", HttpStatus.BAD_REQUEST);
+            }
         } else {
-            return new ResponseEntity<>("Fail", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("권한이 없습니다.", HttpStatus.BAD_REQUEST);
         }
     }
 

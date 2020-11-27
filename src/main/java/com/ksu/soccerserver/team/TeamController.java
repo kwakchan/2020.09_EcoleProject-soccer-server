@@ -6,6 +6,7 @@ import com.ksu.soccerserver.account.CurrentAccount;
 import com.ksu.soccerserver.team.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,14 +64,15 @@ public class TeamController {
         }
     }
 
+//    TestCode
 //    @GetMapping("/getAccount")
 //    public ResponseEntity<?> getAccounts() {
 //        List<Account> accounts =accountRepository.findAllByTeam(teamRepository.findById((long)1).get());
 //
 //        return new ResponseEntity<>(accounts, HttpStatus.OK);
 //    }
-
-    /* 프론트 앤드 팀 리스트 담당자의 테스트를 위한 목적으로 임시 팀원 삽입 메소드 구현 */
+//
+//    /* 프론트 앤드 팀 리스트 담당자의 테스트를 위한 목적으로 임시 팀원 삽입 메소드 구현 */
 //    @PostMapping("/{teamId}")
 //    public ResponseEntity<?> practiceTeam(@CurrentAccount Account joiningAccount, @PathVariable Long teamId){
 //        Team team = teamRepository.findById(teamId).get();
@@ -110,8 +112,6 @@ public class TeamController {
             teams = teamRepository.findAllByStateAndDistrict(state, district);
         }
 
-
-
         //
         //TeamDTO List
         List<TeamDTO> tempDTOS = new ArrayList<>();
@@ -141,10 +141,19 @@ public class TeamController {
 
     // 해당 teamId를 가진 팀 GET
     @GetMapping("/{teamId}")
-    public ResponseEntity<?> loadTeam(@PathVariable Long teamId){
+    public ResponseEntity<?> loadTeam(@PathVariable Long teamId, @CurrentAccount Account nowAccount){
         Team findTeam = teamRepository.findById(teamId).orElseThrow
                 (() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
 
+        if(nowAccount.getRoles().contains("ROLE_LEADER")) {
+            if(!findTeam.getOwner().getId().equals(nowAccount.getId())) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
+            TeamMemberResponse response = modelMapper.map(findTeam, TeamMemberResponse.class);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
         TeamResponse response = modelMapper.map(findTeam, TeamResponse.class);
 
         return new ResponseEntity<>(response, HttpStatus.OK);

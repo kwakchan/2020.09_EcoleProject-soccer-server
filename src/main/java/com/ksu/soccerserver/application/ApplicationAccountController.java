@@ -7,6 +7,7 @@ import com.ksu.soccerserver.application.dto.ApplicationAccountRequest;
 import com.ksu.soccerserver.application.dto.ApplicationAccountResponse;
 import com.ksu.soccerserver.application.enums.AccountStatus;
 import com.ksu.soccerserver.application.enums.TeamStatus;
+import com.ksu.soccerserver.match.dto.MatchResponse;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/applications/accounts")
@@ -33,7 +36,9 @@ public class ApplicationAccountController {
     @GetMapping
     public ResponseEntity<?> loadApplicationAccount(@CurrentAccount Account nowAccount){
 
-        List<ApplicationAccount> applicationLists = applicationAccountRepository.findByAccount(nowAccount);
+        List<ApplicationAccountResponse> applicationLists = applicationAccountRepository.findByAccount(nowAccount)
+                .stream().map(applicationAccount -> modelMapper.map(applicationAccount, ApplicationAccountResponse.class))
+                .collect(Collectors.toList());
 
         return new ResponseEntity<>(applicationLists, HttpStatus.OK);
     }
@@ -47,7 +52,9 @@ public class ApplicationAccountController {
         Team findTeam = teamRepository.findByOwner(ownerAccount)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 유저는 팀장이 아닙니다."));
 
-        List<ApplicationAccount> applies = applicationAccountRepository.findByTeam(findTeam);
+        List<ApplicationAccountResponse> applies = applicationAccountRepository.findByTeam(findTeam)
+                .stream().map(applicationAccount -> modelMapper.map(applicationAccount, ApplicationAccountResponse.class))
+                .collect(Collectors.toList());
 
         return new ResponseEntity<>(applies, HttpStatus.OK);
     }
@@ -97,7 +104,9 @@ public class ApplicationAccountController {
 
         applicationAccountRepository.save(apply);
 
-        return new ResponseEntity<>(apply, HttpStatus.OK);
+        ApplicationAccountResponse response = modelMapper.map(apply, ApplicationAccountResponse.class);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // AccountStatus가 PENDING이면서 Team에서 수락을하면 account가 Team에 가입하는 api
@@ -138,6 +147,8 @@ public class ApplicationAccountController {
 
         applicationAccountRepository.save(apply);
 
-        return new ResponseEntity<>(apply, HttpStatus.OK);
+        ApplicationAccountResponse response = modelMapper.map(apply, ApplicationAccountResponse.class);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

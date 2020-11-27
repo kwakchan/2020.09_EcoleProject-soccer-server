@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,7 +42,9 @@ public class ApplicationTeamController {
 
         if(awayTeam.getOwner().getId().equals(nowAccount.getId())) {
 
-            List<ApplicationTeam> findApplies = applicationTeamRepository.findByApplyTeamsId(awayTeam.getId());
+            List<ApplicationTeamResponse> findApplies = applicationTeamRepository.findByApplyTeamsId(awayTeam.getId())
+                    .stream().map(applicationTeam -> modelMapper.map(applicationTeam, ApplicationTeamResponse.class))
+                    .collect(Collectors.toList());
 
             return new ResponseEntity<>(findApplies, HttpStatus.OK);
         } else {

@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.application.ApplicationAccount;
 import com.ksu.soccerserver.application.ApplicationTeam;
-import com.ksu.soccerserver.invitation.InvitationAccount;
-import com.ksu.soccerserver.invitation.InvitationTeam;
 import com.ksu.soccerserver.match.Match;
 import com.ksu.soccerserver.team.dto.TeamModifyRequest;
 import lombok.AllArgsConstructor;
@@ -66,35 +64,6 @@ public class Team {
     //AwayTeam으로써 성사된 Match의 List를 나타내는 관계성
     @OneToMany(mappedBy = "awayTeam")
     private final Set<Match> awayTeam = new HashSet<>();
-
-
-
-
-
-
-    // 팀에서 가입요청한 유저들의 리스트를 나타내는 관계성
-    //@JsonIgnore
-    @OneToMany(mappedBy = "team")
-    private final Set<InvitationAccount> invitationAccounts = new HashSet<>();
-
-
-    // 팀에게 경기요청을 받은 리스트를 나타내는 관계성성
-    @OneToMany(mappedBy = "invitationHomeTeam")
-    private final Set<InvitationTeam> invitationHomeTeams = new HashSet<>();
-
-    // 팀에게 경기요청을 보낸 리스트를 나타내는 관계성
-    //@JsonIgnore
-    @OneToMany(mappedBy = "invitationAwayTeam")
-    private final Set<InvitationTeam> invitationAwayTeams = new HashSet<>();
-
-
-
-
-
-
-
-
-
 
     public void updateTeamInfo(TeamModifyRequest teamModifyRequest){
         this.description = teamModifyRequest.getDescription();

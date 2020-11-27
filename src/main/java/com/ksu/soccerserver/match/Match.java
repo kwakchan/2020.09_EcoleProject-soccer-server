@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.Set;
 
-@Entity @Table
+@Entity @Table(name = "matching")
 @Getter @Builder
 @NoArgsConstructor
 @AllArgsConstructor

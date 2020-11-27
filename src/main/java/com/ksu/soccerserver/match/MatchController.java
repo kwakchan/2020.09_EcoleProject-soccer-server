@@ -15,7 +15,6 @@ import com.ksu.soccerserver.match.enums.MatchStatus;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/matches")
 @RequiredArgsConstructor
@@ -101,26 +99,18 @@ public class MatchController {
     public ResponseEntity<?> createMatch(@RequestBody MatchCreateRequest matchCreateRequest,
                                          @CurrentAccount Account nowAccount){
 
-        log.info("api 진입!");
         Team homeTeam = teamRepository.findById(nowAccount.getLeadingTeam().getId())
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
 
-        log.info("homeTeam 찾음!");
-
         if(homeTeam.getOwner().getId().equals(nowAccount.getId())) {
-            log.info("Leader 맞음!");
+
             Match createMatch = matchCreateRequest.toEntity(homeTeam);
             Match savedMatch = matchRepository.save(createMatch);
 
-            log.info("Match 저장!");
-
             MatchResponse response = modelMapper.map(savedMatch, MatchResponse.class);
-
-            log.info("Response Binding!");
 
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } else{
-            log.info("유저 주장 아님!");
             return new ResponseEntity<>("해당 유저는 주장이 아닙니다.", HttpStatus.BAD_REQUEST);
         }
     }

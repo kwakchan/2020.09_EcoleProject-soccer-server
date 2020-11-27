@@ -66,12 +66,8 @@ public class AccountController {
 
     // 회원정보 출력
     @GetMapping("/{accountId}")
-    public ResponseEntity<?> loadAccount(@PathVariable Long accountId, @CurrentAccount Account currentAccount){
+    public ResponseEntity<?> loadAccount(@PathVariable Long accountId){
         Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
-
-        if(!currentAccount.getId().equals(findAccount.getId())) {
-            return new ResponseEntity<>("권한이 없습니다.", HttpStatus.BAD_REQUEST);
-        }
 
         AccountResponse response = modelMapper.map(findAccount, AccountResponse.class);
 

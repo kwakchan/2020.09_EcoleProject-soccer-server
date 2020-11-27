@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -50,7 +51,7 @@ public class ImageService {
             prefix = "account";
         }
         else{
-            prefix = "teams";
+            prefix = "team";
         }
         return prefix;
     }
@@ -58,9 +59,9 @@ public class ImageService {
     public String saveImage(MultipartFile image, HttpServletRequest request) {
         String prefix = Prefix(request);
         ServletUriComponentsBuilder defaultPath = ServletUriComponentsBuilder.fromCurrentContextPath();
-        String defaultImage = defaultPath.toUriString() + request.getRequestURI() + "/images/" + prefix +"default.jpg";
+        String defaultImage = defaultPath.toUriString() + request.getRequestURI() + "/images/" + prefix +"_default.jpg";
 
-        String imageName = UUID.randomUUID().toString() + "_" + StringUtils.cleanPath(image.getOriginalFilename());
+        String imageName = UUID.randomUUID().toString() + "_" + StringUtils.cleanPath(Objects.requireNonNull(image.getOriginalFilename()));
         String extension = FilenameUtils.getExtension(imageName);
 
         try {

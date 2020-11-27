@@ -1,6 +1,7 @@
 package com.ksu.soccerserver.match.dto;
 
 import com.ksu.soccerserver.application.ApplicationTeam;
+import com.ksu.soccerserver.team.Team;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +9,6 @@ import lombok.Setter;
 @Setter
 public class MatchResponse {
     private Long id;
-    private ApplicationTeam applicationTeam;
-    private Long homeTeamId;
-    private Long awayTeamId;
+    private Team homeTeam;
+    private Team awayTeam;
 }

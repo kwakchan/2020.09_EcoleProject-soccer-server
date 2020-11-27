@@ -55,22 +55,19 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private final Set<ApplicationAccount> applicationAccounts = new HashSet<>();
 
-    // 팀에게 경기요청을 받은 리스트를 나타내는 관계성
-    //@JsonIgnore
-    @OneToMany(mappedBy = "homeTeam")
-    private final Set<ApplicationTeam> homeTeams = new HashSet<>();
-
     // 자신의 팀이 경기신청을 보낸 리스트를 나타내는 관계성
-    @OneToMany(mappedBy = "awayTeam")
-    private final Set<ApplicationTeam> awayTeams = new HashSet<>();
+    @OneToMany(mappedBy = "applyTeams")
+    private final Set<ApplicationTeam> applyTeams = new HashSet<>();
 
     //HomeTeam으로써 성사된 Match의 List를 나타내는 관계성
-    @OneToMany(mappedBy = "homeMatches")
-    private final Set<Match> homeMatches = new HashSet<>();
+    @OneToMany(mappedBy = "homeTeam")
+    private final Set<Match> homeTeam = new HashSet<>();
 
     //AwayTeam으로써 성사된 Match의 List를 나타내는 관계성
-    @OneToMany(mappedBy = "awayMatches")
-    private final Set<Match> awayMatches = new HashSet<>();
+    @OneToMany(mappedBy = "awayTeam")
+    private final Set<Match> awayTeam = new HashSet<>();
+
+
 
 
 
@@ -108,4 +105,6 @@ public class Team {
     }
     // Logo 수정
     public void setLogo(String logo) { this.logopath = logo; }
+
+
 }

@@ -11,11 +11,10 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter @Builder
+@Getter @Builder @Setter
 @Entity
 @Table
 @NoArgsConstructor @AllArgsConstructor
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Board {
 
     @Id
@@ -59,6 +58,13 @@ public class Board {
     public void setBoardtype(BoardType boardType) {
         this.boardType = boardType;
     }
+
+
+    /*public Account getAccount(){
+        return this.account;
+    }
+    */
+
 
     /*
     조회수

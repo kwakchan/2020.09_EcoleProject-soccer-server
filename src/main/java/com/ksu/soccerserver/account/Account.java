@@ -18,7 +18,7 @@ import com.ksu.soccerserver.team.Team;
 @Entity @Table
 @Getter
 @NoArgsConstructor @AllArgsConstructor
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Account {
 
     @Id
@@ -100,6 +100,8 @@ public class Account {
     public void setLeadingTeam(Team team) { this.leadingTeam = team; }
 
     public void setTeam(Team team) { this.team = team; }
+
+    public void withdrawTeam() { this.team = null;}
 
     public void addRoles(String roles) { this.roles.add(roles);}
 

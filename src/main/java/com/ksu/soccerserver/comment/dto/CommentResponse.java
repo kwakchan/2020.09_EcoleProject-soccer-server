@@ -12,8 +12,9 @@ import java.time.LocalDateTime;
 public class CommentResponse {
     private Long id;
     private String content;
+    private String name;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-    private Board board;
-    private Account account;
+    //private Board board;
+    //private Account account;
 }

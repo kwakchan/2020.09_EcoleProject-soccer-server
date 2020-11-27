@@ -1,13 +1,13 @@
-package com.ksu.soccerserver.application.dto;
+package com.ksu.soccerserver.match.dto;
 
-import com.ksu.soccerserver.application.ApplicationTeam;
+import com.ksu.soccerserver.match.Match;
 import com.ksu.soccerserver.team.Team;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ApplicationHomeTeamRequest {
+public class MatchCreateRequest {
 
     private Long homeTeamId;
     private String date;
@@ -16,9 +16,8 @@ public class ApplicationHomeTeamRequest {
     private String countMember;
     private String description;
 
-
-    public ApplicationTeam toEntity(Team homeTeam){
-        return ApplicationTeam.builder().
+    public Match toEntity(Team homeTeam){
+        return Match.builder().
                 homeTeam(homeTeam).
                 date(this.date).
                 state(this.state).
@@ -27,4 +26,5 @@ public class ApplicationHomeTeamRequest {
                 description(this.description).
                 build();
     }
+
 }

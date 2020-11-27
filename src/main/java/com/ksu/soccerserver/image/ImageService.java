@@ -124,18 +124,6 @@ public class ImageService {
         }
     }
     // 유저 기본 이미지
-    public ResponseEntity<?> setuserImage(Long accountId, HttpServletRequest request) {
-        ServletUriComponentsBuilder defaultPath = ServletUriComponentsBuilder.fromCurrentContextPath();
-        String image = defaultPath.toUriString() + request.getRequestURI() + "/images/default.jpg";
-
-        Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
-
-        findAccount.setImage(image);
-        Account updatedAccount = accountRepository.save(findAccount);
-
-        return new ResponseEntity<>(updatedAccount, HttpStatus.OK);
-    }
-
     Path load(String imageName) {
         return this.rootLocation.resolve(imageName).normalize();
     }

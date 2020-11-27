@@ -39,7 +39,7 @@ public class TeamController {
                                         @RequestBody TeamRequest teamRequest){
 
         ServletUriComponentsBuilder defaultPath = ServletUriComponentsBuilder.fromCurrentContextPath();
-        String requestUri = defaultPath.toUriString() + request.getRequestURI() + "/images/default.jpg";
+        String requestUri = defaultPath.toUriString() + request.getRequestURI() + "/images/team_default.jpg";
 
         Account currentAccount = accountRepository.findByEmail(nowAccount.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));

@@ -39,7 +39,7 @@ public class AccountController {
         Optional<Account> isJoinedAccount = accountRepository.findByEmail(accountRequest.getEmail());
 
         ServletUriComponentsBuilder defaultPath = ServletUriComponentsBuilder.fromCurrentContextPath();
-        String image = defaultPath.toUriString() + request.getRequestURI() + "/images/default.jpg";
+        String image = defaultPath.toUriString() + request.getRequestURI() + "/images/account_default.jpg";
 
         if(!isJoinedAccount.isPresent()){
             Account account = accountRequest.toEntity(passwordEncoder, image);

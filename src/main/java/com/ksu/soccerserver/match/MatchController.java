@@ -61,7 +61,6 @@ public class MatchController {
         }
     }
 
-
     //경기방 개설
     @PostMapping
     public ResponseEntity<?> createMatch(@RequestBody MatchCreateRequest matchCreateRequest,

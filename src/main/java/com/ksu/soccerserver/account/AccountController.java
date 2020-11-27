@@ -1,18 +1,12 @@
 package com.ksu.soccerserver.account;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ksu.soccerserver.account.dto.AccountModifyRequest;
 import com.ksu.soccerserver.account.dto.AccountPasswordRequest;
 import com.ksu.soccerserver.account.dto.AccountRequest;
 import com.ksu.soccerserver.account.dto.AccountResponse;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import java.util.Optional;
-import com.ksu.soccerserver.image.AccountImageService;
+import com.ksu.soccerserver.image.ImageService;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +30,8 @@ public class AccountController {
     private final AccountRepository accountRepository;
     private final TeamRepository teamRepository;
     private final ModelMapper modelMapper;
-    private  final AccountImageService accountImageService;
+    private final ImageService imageService;
+    private final ObjectMapper objectMapper;
 
     // 회원가입
     @PostMapping
@@ -98,28 +93,20 @@ public class AccountController {
 
     // 회원정보 수정
     @PutMapping("/{accountId}")
-    public ResponseEntity<?> modifyAccount(@PathVariable Long accountId, @RequestPart("image") MultipartFile image,
+    public ResponseEntity<?> modifyAccount(@PathVariable Long accountId, @RequestPart(value = "image", required = false) MultipartFile image,
                                            @RequestPart("data") String modifyRequest, HttpServletRequest request,
-                                           @CurrentAccount Account currentAccount) {
+                                           @CurrentAccount Account currentAccount) throws JsonProcessingException {
         Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
-
-        AccountModifyRequest request1 = null;
-        try {
-            request1 = new ObjectMapper().readValue(modifyRequest, AccountModifyRequest.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         if(!currentAccount.getId().equals(findAccount.getId())) {
             return new ResponseEntity<>("권한이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        String imagePath = accountImageService.saveImage(image, request);
+        AccountModifyRequest accountModifyRequest = objectMapper.readValue(modifyRequest, AccountModifyRequest.class);
+        String imagePath = imageService.saveImage(image, request);
 
-        findAccount.updateMyInfo(request1, imagePath);
+        findAccount.updateMyInfo(accountModifyRequest, imagePath);
         Account updatedAccount = accountRepository.save(findAccount);
-
-        updatedAccount.setImage(imagePath);
         AccountResponse response = modelMapper.map(updatedAccount, AccountResponse.class);
 
         return new ResponseEntity<>(response, HttpStatus.OK);

@@ -1,13 +1,7 @@
 package com.ksu.soccerserver.image;
 
-import com.ksu.soccerserver.account.Account;
-import com.ksu.soccerserver.account.AccountRepository;
-import com.ksu.soccerserver.account.CurrentAccount;
+import com.ksu.soccerserver.account.*;
 import com.ksu.soccerserver.config.JwtTokenProvider;
-import com.ksu.soccerserver.team.Team;
-import com.ksu.soccerserver.team.TeamRepository;
-import com.ksu.soccerserver.team.dto.TeamModifyRequest;
-import com.ksu.soccerserver.team.dto.TeamResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -16,16 +10,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,18 +25,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class TeamImageService {
+public class ImageService {
 
     private final Path rootLocation;
 
     private final JwtTokenProvider jwtProvider;
 
-    private final TeamRepository teamRepository;
-
     private final AccountRepository accountRepository;
 
-    public TeamImageService(ImageProperties imageProperties, JwtTokenProvider jwtProvider,
-                            TeamRepository teamRepository, AccountRepository accountRepository) {
+    public ImageService(ImageProperties imageProperties, JwtTokenProvider jwtProvider,
+                        AccountRepository accountRepository) {
         this.rootLocation = Paths.get(imageProperties.getLocation()).toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.rootLocation);
@@ -54,50 +42,47 @@ public class TeamImageService {
             System.out.println(e.getMessage());
         }
         this.jwtProvider = jwtProvider;
-        this.teamRepository = teamRepository;
         this.accountRepository = accountRepository;
     }
 
+    public String saveImage(MultipartFile image, HttpServletRequest request) {
+        ServletUriComponentsBuilder defaultPath = ServletUriComponentsBuilder.fromCurrentContextPath();
+        String defaultImage = defaultPath.toUriString() + request.getRequestURI() + "/images/default.jpg";
 
-    public ResponseEntity<?> saveImage(MultipartFile image, HttpServletRequest request) {
         String imageName = UUID.randomUUID().toString() + "_" + StringUtils.cleanPath(image.getOriginalFilename());
         String extension = FilenameUtils.getExtension(imageName);
 
         try {
-            // image null 여부 확인
             if(image.isEmpty()){
-                return new ResponseEntity<>("imageNullError", HttpStatus.BAD_REQUEST);
+                return defaultImage;
             }
 
             if (!"jpg".equals(extension) && !"jpeg".equals(extension) && !"png".equals(extension)) {
-                return new ResponseEntity<>("TypeError", HttpStatus.BAD_REQUEST);
+                return defaultImage;
             }
-            // message-body로 넘어온 parmeter 확인
             try (InputStream inputStream = image.getInputStream()) {
                 Path targetLocation = this.rootLocation.resolve(imageName);
                 Files.copy(inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING);
             }
 
         }catch (IOException e){
-            return new ResponseEntity<>("Failed to Store file" + imageName,HttpStatus.BAD_REQUEST);
+            return defaultImage;
         }
 
         String email = jwtProvider.getUserPk(request.getHeader(HttpHeaders.AUTHORIZATION));
         Optional<Account> accountOptional = accountRepository.findByEmail(email);
         if (!accountOptional.isPresent()) {
-            return new ResponseEntity<>("userError", HttpStatus.BAD_REQUEST);
+            return defaultImage;
         }
 
-        String requestUri = request.getRequestURI() + "/";
-        Team team = accountOptional.get().getTeam();
-        String newLogoPath = ServletUriComponentsBuilder
+        String requestUri = request.getRequestURI() + "/images/";
+        String newImagePath = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path(requestUri)
                 .path(imageName)
                 .toUriString();
 
-        team.setLogo(newLogoPath);
-        return new ResponseEntity<>(teamRepository.save(team), HttpStatus.CREATED);
+        return newImagePath;
     }
 
     public ResponseEntity<?> loadAsResource(String imageName, HttpServletRequest request) {
@@ -121,35 +106,38 @@ public class TeamImageService {
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                         .body(resource);
             } else {
-                // 데이터가 존재 하지 않을 경우 오류 출력
-                return new ResponseEntity<>("Nullerror", HttpStatus.BAD_REQUEST);
+                // 데이터가 존재 하지 않을 경우 기본 이미지 주소 전달
+                String requestUri = request.getRequestURI() + "/";
+                Account account = new Account();
+                String newImagePath = ServletUriComponentsBuilder
+                        .fromCurrentContextPath()
+                        .path(requestUri)
+                        .path("default.jpg")
+                        .toUriString();
+                account.setImage(newImagePath);
+                // 기본 이미지 출력
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "default.jpg" + "\"")
+                        .body(resource);
             }
         } catch (MalformedURLException e) {
             return new ResponseEntity<>("findError", HttpStatus.BAD_REQUEST);
         }
     }
-    // 이미지 초기화(팀장 권한)
-    public ResponseEntity<?> setTeamLogo(@PathVariable Long teamId, @CurrentAccount Account nowAccount,
-                                         HttpServletRequest request) {
-
+    // 유저 기본 이미지
+    public ResponseEntity<?> setuserImage(Long accountId, HttpServletRequest request) {
         ServletUriComponentsBuilder defaultPath = ServletUriComponentsBuilder.fromCurrentContextPath();
         String image = defaultPath.toUriString() + request.getRequestURI() + "/images/default.jpg";
 
-        Team findTeam = teamRepository.findById(teamId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다"));
+        Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
-        if(!findTeam.getOwner().getId().equals(nowAccount.getId())){
-            return new ResponseEntity<>("해당 유저는 팀장이 아닙니다.", HttpStatus.BAD_REQUEST);
-        } else{
-            findTeam.setLogo(image);
+        findAccount.setImage(image);
+        Account updatedAccount = accountRepository.save(findAccount);
 
-            Team updatedTeam = teamRepository.save(findTeam);
-
-            return new ResponseEntity<>(updatedTeam, HttpStatus.OK);
-        }
+        return new ResponseEntity<>(updatedAccount, HttpStatus.OK);
     }
 
-    private Path load(String imageName) {
+    Path load(String imageName) {
         return this.rootLocation.resolve(imageName).normalize();
     }
     

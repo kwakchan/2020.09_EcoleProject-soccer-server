@@ -34,8 +34,8 @@ public class Board {
     @Column
     private LocalDateTime modifiedAt;
 
-    @Enumerated(value =  EnumType.STRING)
-    private BoardType boardType;
+    @Column
+    private String boardType;
 
     @OneToMany(mappedBy = "board")
     private final Set<Comment> comment = new HashSet<>();
@@ -53,7 +53,7 @@ public class Board {
         this.modifiedAt = localDateTime;
     }
 
-    public void setBoardtype(BoardType boardType) {
+    public void setBoardtype(String boardType) {
         this.boardType = boardType;
     }
 

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class BoardRequest {
     private String title;
     private String content;
-    private BoardType boardType;
+    private String boardType;
 
     public Board toEntity(Account account) {
         return Board.builder()

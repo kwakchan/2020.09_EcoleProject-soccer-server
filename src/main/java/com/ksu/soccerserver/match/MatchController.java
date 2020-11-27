@@ -12,6 +12,7 @@ import com.ksu.soccerserver.match.dto.MatchCreateRequest;
 import com.ksu.soccerserver.match.dto.MatchModifyRequest;
 import com.ksu.soccerserver.match.dto.MatchRequest;
 import com.ksu.soccerserver.match.dto.MatchResponse;
+import com.ksu.soccerserver.match.enums.MatchStatus;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,37 +36,70 @@ public class MatchController {
     private final ModelMapper modelMapper;
 
     // 개설된 모든 경기방 및 필터링된 경기방 GET
+//    @GetMapping
+//    public ResponseEntity<?> loadApplications(@RequestParam(required = false) String teamName,
+//                                              @RequestParam(required = false) String state,
+//                                              @RequestParam(required = false) String district){
+
+//        List<MatchResponse> matches;
+
+        //(광역시, 시, 도)가 전체라면, 모든 팀을 검색
+//        if(state.equals("All")) {
+//            matches = matchRepository.findAllByNameContaining(teamName)
+//                    .stream()
+//                    .map(match -> modelMapper.map(match, MatchResponse.class))
+//                    .collect(Collectors.toList());
+//        }
+//        //(광역시, 시, 도)가 선택되었고, (구, 면, 읍)이 전체라면
+//        else if(district.equals("All")){
+//            matches = matchRepository.findAllByStateAndNameContaining(state, teamName)
+//                    .stream()
+//                    .map(match -> modelMapper.map(match, MatchResponse.class))
+//                    .collect(Collectors.toList());
+//        }
+//        //(광역시, 시, 도)가 선택되었고, (구, 면, 읍)또한 선택 시
+//        else {
+//            matches = matchRepository.findAllByStateAndDistrictAndNameContaining(state, district, teamName)
+//                    .stream()
+//                    .map(match -> modelMapper.map(match, MatchResponse.class))
+//                    .collect(Collectors.toList());
+//        }
+
+//        return new ResponseEntity<>(matches, HttpStatus.OK);
+//    }
+
     @GetMapping
     public ResponseEntity<?> loadApplications(@RequestParam(required = false) String teamName,
                                               @RequestParam(required = false) String state,
                                               @RequestParam(required = false) String district){
 
-        List<MatchResponse> matches;
+        List<MatchResponse> matchResponses;
 
-        //(광역시, 시, 도)가 전체라면, 모든 팀을 검색
-        if(state.equals("All")) {
-            matches = matchRepository.findAllByNameContaining(teamName)
+        if("ALL".equals(state)) {
+            matchResponses = matchRepository.findByMatchStatus(MatchStatus.PENDING)
                     .stream()
+                    .filter(match -> match.getHomeTeam().getName().equals(teamName))
+                    .map(match -> modelMapper.map(match, MatchResponse.class))
+                    .collect(Collectors.toList());
+        } else if ("ALL".equals(district)){
+            matchResponses = matchRepository.findByMatchStatus(MatchStatus.PENDING)
+                    .stream()
+                    .filter(match -> match.getHomeTeam().getName().equals(teamName)
+                        && match.getState().equals(state))
+                    .map(match -> modelMapper.map(match, MatchResponse.class))
+                    .collect(Collectors.toList());
+        } else {
+            matchResponses = matchRepository.findByMatchStatus(MatchStatus.PENDING)
+                    .stream()
+                    .filter(match -> match.getHomeTeam().getName().equals(teamName)
+                        && match.getState().equals(state)
+                        && match.getDistrict().equals(district))
                     .map(match -> modelMapper.map(match, MatchResponse.class))
                     .collect(Collectors.toList());
         }
-        //(광역시, 시, 도)가 선택되었고, (구, 면, 읍)이 전체라면
-        else if(district.equals("All")){
-            matches = matchRepository.findAllByStateAndNameContaining(state, teamName)
-                    .stream()
-                    .map(match -> modelMapper.map(match, MatchResponse.class))
-                    .collect(Collectors.toList());
-        }
-        //(광역시, 시, 도)가 선택되었고, (구, 면, 읍)또한 선택 시
-        else {
-            matches = matchRepository.findAllByStateAndDistrictAndNameContaining(state, district, teamName)
-                    .stream()
-                    .map(match -> modelMapper.map(match, MatchResponse.class))
-                    .collect(Collectors.toList());
-        }
-
-        return new ResponseEntity<>(matches, HttpStatus.OK);
+        return new ResponseEntity<>(matchResponses, HttpStatus.OK);
     }
+
 
     //특정 경기방 상세 정보 보기
     @GetMapping("/{matchId}")
@@ -182,11 +216,9 @@ public class MatchController {
 
             MatchResponse response = modelMapper.map(findMatch, MatchResponse.class);
 
-            return new ResponseEntity(response, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("해당 유저는 팀장이 아닙니다.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
-
+        return new ResponseEntity<>("해당 유저는 팀장이 아닙니다.", HttpStatus.BAD_REQUEST);
     }
 
 

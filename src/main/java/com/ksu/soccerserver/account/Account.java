@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.*;
 import com.ksu.soccerserver.application.ApplicationAccount;
-import com.ksu.soccerserver.invitation.InvitationAccount;
 import com.ksu.soccerserver.team.Team;
 
 @Builder
@@ -75,9 +74,6 @@ public class Account {
 
     @OneToOne
     Team leadingTeam;
-
-    @OneToMany(mappedBy = "account")
-    private final Set<InvitationAccount> invitationAccount = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default

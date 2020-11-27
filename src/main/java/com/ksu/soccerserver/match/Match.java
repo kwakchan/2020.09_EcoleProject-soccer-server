@@ -3,6 +3,7 @@ package com.ksu.soccerserver.match;
 import com.ksu.soccerserver.application.ApplicationTeam;
 import com.ksu.soccerserver.application.enums.HomeStatus;
 import com.ksu.soccerserver.match.dto.MatchModifyRequest;
+import com.ksu.soccerserver.match.enums.MatchStatus;
 import com.ksu.soccerserver.team.Team;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,6 +41,9 @@ public class Match {
     @Enumerated(value = EnumType.STRING)
     private HomeStatus homeStatus;
 
+    @Enumerated(value = EnumType.STRING)
+    private MatchStatus matchStatus;
+
     @ManyToOne
     private Team homeTeam;
 
@@ -61,7 +65,10 @@ public class Match {
         this.homeStatus = homeStatus;
     }
 
-    public void successMatch(Team awayTeam) { this.awayTeam = awayTeam; }
+    public void successMatch(Team awayTeam) {
+        this.awayTeam = awayTeam;
+        this.matchStatus = MatchStatus.PROGRESSING;
+    }
 
 
 }

@@ -1,5 +1,6 @@
 package com.ksu.soccerserver.account;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ksu.soccerserver.account.dto.AccountModifyRequest;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -17,7 +18,7 @@ import com.ksu.soccerserver.team.Team;
 @Entity @Table
 @Getter
 @NoArgsConstructor @AllArgsConstructor
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Account {
 
     @Id
@@ -29,7 +30,7 @@ public class Account {
     private String email;
 
     //Password 길이=400, UNIQUE, Not NULL
-    //@JsonIgnore
+    @JsonIgnore
     @Column(length = 400, nullable = false)
     private String password;
 
@@ -83,7 +84,7 @@ public class Account {
     private List<String> roles = new ArrayList<>();
 
     public void updateMyInfo(AccountModifyRequest modifyRequest) {
-        this.password = modifyRequest.getPassword();
+        //this.password = modifyRequest.getPassword();
         this.position = modifyRequest.getPosition();
         this.state = modifyRequest.getState();
         this.district = modifyRequest.getDistrict();
@@ -99,5 +100,9 @@ public class Account {
     public void setLeadingTeam(Team team) { this.leadingTeam = team; }
 
     public void setTeam(Team team) { this.team = team; }
+
+    public void withdrawTeam() { this.team = null;}
+
+    public void addRoles(String roles) { this.roles.add(roles);}
 
 }

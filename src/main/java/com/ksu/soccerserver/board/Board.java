@@ -11,11 +11,10 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter @Builder
+@Getter @Builder @Setter
 @Entity
 @Table
 @NoArgsConstructor @AllArgsConstructor
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Board {
 
     @Id
@@ -44,10 +43,6 @@ public class Board {
     private final Set<Comment> comment = new HashSet<>();
 
 
-    public void boardaccount (Account account){
-        this.account = account;
-    }
-
     public void setTitle(String title) {
         this.title = title;
     }
@@ -63,6 +58,13 @@ public class Board {
     public void setBoardtype(BoardType boardType) {
         this.boardType = boardType;
     }
+
+
+    /*public Account getAccount(){
+        return this.account;
+    }
+    */
+
 
     /*
     조회수

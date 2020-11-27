@@ -1,6 +1,7 @@
 package com.ksu.soccerserver.comment;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.board.Board;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Table
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 
 public class Comment {
     @Id
@@ -25,6 +26,7 @@ public class Comment {
     @ManyToOne
     private Account account;
 
+    @JsonIgnore
     @ManyToOne
     private Board board;
 
@@ -36,9 +38,6 @@ public class Comment {
 
     @Column
     private LocalDateTime modifiedAt;
-
-    public void commentAccount (Account account) { this.account = account;}
-    public void commentBoard (Board board) { this.board = board;}
 
     public void setContent(String content) {
         this.content = content;

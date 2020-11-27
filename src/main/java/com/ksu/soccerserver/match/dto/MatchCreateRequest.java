@@ -11,7 +11,6 @@ import lombok.Setter;
 @Setter
 public class MatchCreateRequest {
 
-    private Long homeTeamId;
     private String date;
     private String state;
     private String district;

@@ -7,7 +7,6 @@ import com.ksu.soccerserver.image.ImageService;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,7 +25,6 @@ public class AccountController {
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
     private final TeamRepository teamRepository;
-    private final ModelMapper modelMapper;
     private final ImageService imageService;
     private final ObjectMapper objectMapper;
 

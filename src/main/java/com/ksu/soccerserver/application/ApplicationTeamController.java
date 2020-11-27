@@ -12,7 +12,6 @@ import com.ksu.soccerserver.match.MatchRepository;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +28,6 @@ public class ApplicationTeamController {
     private final ApplicationTeamRepository applicationTeamRepository;
     private final TeamRepository teamRepository;
     private final MatchRepository matchRepository;
-    private final ModelMapper modelMapper;
 
     // 자신의 팀에서 신청한 경기에 대해 리스트를 보는 api
     @GetMapping("/away/{teamId}")
@@ -42,7 +40,6 @@ public class ApplicationTeamController {
 
             List<ApplicationTeamResponse> findApplies = applicationTeamRepository.findByApplyTeamsId(awayTeam.getId())
                     .stream().map(applicationTeam ->
-//                            modelMapper.map(applicationTeam, ApplicationTeamResponse.class)
                             new ApplicationTeamResponse(applicationTeam)
                     )
                     .collect(Collectors.toList());

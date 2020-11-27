@@ -19,7 +19,6 @@ public class ApplicationTeamMatchDTO {
     private String description;
     private HomeStatus homeStatus;
     private MatchStatus matchStatus;
-    @ManyToOne
     private TeamDTO homeTeam;
     public ApplicationTeamMatchDTO(Match match) {
         this.id = match.getId();

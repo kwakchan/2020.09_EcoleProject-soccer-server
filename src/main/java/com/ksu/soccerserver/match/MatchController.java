@@ -99,7 +99,7 @@ public class MatchController {
     public ResponseEntity<?> createMatch(@RequestBody MatchCreateRequest matchCreateRequest,
                                          @CurrentAccount Account nowAccount){
 
-        Team homeTeam = teamRepository.findById(nowAccount.getTeam().getId())
+        Team homeTeam = teamRepository.findById(nowAccount.getLeadingTeam().getId())
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
 
         if(homeTeam.getOwner().getId().equals(nowAccount.getId())) {

@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface MatchRepository extends JpaRepository<Match, Long> {
 
-    List<Match> findByMatchStatus(MatchStatus matchStatus);
+    List<Match> findAllByMatchStatus(MatchStatus matchStatus);
 
 }

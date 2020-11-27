@@ -4,7 +4,6 @@ import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.CurrentAccount;
 import com.ksu.soccerserver.application.ApplicationTeam;
 import com.ksu.soccerserver.application.ApplicationTeamRepository;
-import com.ksu.soccerserver.application.dto.ApplicationTeamResponse;
 import com.ksu.soccerserver.application.enums.AwayStatus;
 import com.ksu.soccerserver.application.enums.HomeStatus;
 import com.ksu.soccerserver.match.dto.MatchCreateRequest;
@@ -41,21 +40,21 @@ public class MatchController {
 
         List<MatchResponse> matchResponses;
 
-        if("ALL".equals(state)) {
-            matchResponses = matchRepository.findByMatchStatus(MatchStatus.PENDING)
+        if("All".equals(state)) {
+            matchResponses = matchRepository.findAllByMatchStatus(MatchStatus.PENDING)
                     .stream()
                     .filter(match -> match.getHomeTeam().getName().contains(teamName))
                     .map(match -> modelMapper.map(match, MatchResponse.class))
                     .collect(Collectors.toList());
-        } else if ("ALL".equals(district)){
-            matchResponses = matchRepository.findByMatchStatus(MatchStatus.PENDING)
+        } else if ("All".equals(district)){
+            matchResponses = matchRepository.findAllByMatchStatus(MatchStatus.PENDING)
                     .stream()
                     .filter(match -> match.getHomeTeam().getName().contains(teamName)
                         && match.getState().equals(state))
                     .map(match -> modelMapper.map(match, MatchResponse.class))
                     .collect(Collectors.toList());
         } else {
-            matchResponses = matchRepository.findByMatchStatus(MatchStatus.PENDING)
+            matchResponses = matchRepository.findAllByMatchStatus(MatchStatus.PENDING)
                     .stream()
                     .filter(match -> match.getHomeTeam().getName().contains(teamName)
                         && match.getState().equals(state)
@@ -86,7 +85,7 @@ public class MatchController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
 
         if(homeTeam.getOwner().getId().equals(nowAccount.getId())){
-            List<ApplicationTeam> applies = applicationTeamRepository.findByMatchId(matchId);
+            List<ApplicationTeam> applies = applicationTeamRepository.findAllByMatchId(matchId);
 
             return new ResponseEntity<>(applies, HttpStatus.OK);
         } else {
@@ -129,7 +128,7 @@ public class MatchController {
 
             Match modifyMatch = matchRepository.save(room);
 
-            ApplicationTeamResponse response = modelMapper.map(modifyMatch, ApplicationTeamResponse.class);
+            MatchResponse response = modelMapper.map(modifyMatch, MatchResponse.class);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
@@ -139,8 +138,9 @@ public class MatchController {
 
     // HomeTeam에서의 수락 / 거절, 수락시 경기성사 => ROLE_LEADER
     @PutMapping("/{matchId}/home/{applyTeamId}")
-    public ResponseEntity<?> modifyHomeStatus(@PathVariable Long matchId, @PathVariable Long applyTeamId, @RequestBody MatchRequest matchRequest,
-                                               @CurrentAccount Account nowAccount){
+    public ResponseEntity<?> modifyHomeStatus(@PathVariable Long matchId, @PathVariable Long applyTeamId,
+                                              @RequestBody MatchRequest matchRequest,
+                                              @CurrentAccount Account nowAccount){
         Match room = matchRepository.findById(matchId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 요청입니다."));
 
@@ -148,6 +148,7 @@ public class MatchController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 요청입니다."));
 
         if(room.getHomeTeam().getOwner().getId().equals(nowAccount.getId())){
+
             room.updateHomeStatus(HomeStatus.valueOf(matchRequest.getHomeStatus().name()));
 
             if(applyTeam.getAwayStatus().name().equals(AwayStatus.PENDING.name()) &&
@@ -161,9 +162,10 @@ public class MatchController {
                 Match saveMatch = matchRepository.save(room);
                 MatchResponse response = modelMapper.map(saveMatch, MatchResponse.class);
 
-                List<ApplicationTeam> appliedTeams = applicationTeamRepository.findByMatchId(matchId);
-
-
+                applicationTeamRepository.findAllByMatchId(matchId)
+                        .stream()
+                        .filter(applicationTeam -> !applicationTeam.getApplyTeams().getId().equals(awayTeam.getId()))
+                        .map(ApplicationTeam::cancelApplication);
 
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }

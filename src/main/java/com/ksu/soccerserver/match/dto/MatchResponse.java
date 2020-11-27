@@ -1,8 +1,8 @@
 package com.ksu.soccerserver.match.dto;
 
 
+import com.ksu.soccerserver.match.Match;
 import com.ksu.soccerserver.match.enums.MatchStatus;
-import com.ksu.soccerserver.team.Team;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,11 +10,20 @@ import lombok.Setter;
 @Setter
 public class MatchResponse {
     private Long id;
-    private Team homeTeam;
-    private Team awayTeam;
+    private HomeTeamDTO homeTeam;
     private String date;
     private String state;
     private String district;
     private String countMember;
     private MatchStatus matchStatus;
+
+    public MatchResponse (Match match){
+        this.homeTeam = new HomeTeamDTO(match.getHomeTeam());
+        this.id = match.getId();
+        this.date = match.getDate();
+        this.state = match.getState();
+        this.district = match.getDistrict();
+        this.countMember = match.getCountMember();
+        this.matchStatus = match.getMatchStatus();
+    }
 }

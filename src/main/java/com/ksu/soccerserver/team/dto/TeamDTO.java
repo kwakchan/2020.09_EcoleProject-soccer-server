@@ -32,6 +32,15 @@ public class TeamDTO {
         this.description = team.getDescription();
         this.owner = new TeamsAccountDTO(team.getOwner());
         this.accounts = new TeamsAccountsDTO(accounts);
+    }
 
+    public TeamDTO(Team team) {
+        this.id = team.getId();
+        this.name = team.getName();
+        this.state = team.getState();
+        this.logopath = team.getLogopath();
+        this.district = team.getDistrict();
+        this.description = team.getDescription();
+        this.owner = new TeamsAccountDTO(team.getOwner());
     }
 }

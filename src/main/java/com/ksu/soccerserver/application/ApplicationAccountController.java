@@ -114,7 +114,7 @@ public class ApplicationAccountController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // AccountStatus가 PENDING이면서 Team에서 수락을하면 account가 Team에 가입하는 api
+    // AccountStatus가 PENDING이면서 Team에서 수락을하면 account가 Team에 가입하는 api => ROLE_LEADER
     @PutMapping("/{applicationId}/team")
     public ResponseEntity<?> modifyTeamStatus(@PathVariable Long applicationId, @RequestParam String status,
                                               @CurrentAccount Account nowAccount){

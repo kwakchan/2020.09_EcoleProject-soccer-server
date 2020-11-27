@@ -7,7 +7,6 @@ import com.ksu.soccerserver.image.ImageService;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,7 +25,6 @@ public class AccountController {
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
     private final TeamRepository teamRepository;
-    private final ModelMapper modelMapper;
     private final ImageService imageService;
     private final ObjectMapper objectMapper;
 
@@ -132,14 +130,13 @@ public class AccountController {
     }
 
     // 팀 탈퇴
-    @PutMapping("/withdrawal/{teamId}")
-    public ResponseEntity<?> withdrawalTeam(@CurrentAccount Account currentAccount, @PathVariable Long teamId) {
+    @PutMapping("/withdrawal")
+    public ResponseEntity<?> withdrawalTeam(@CurrentAccount Account currentAccount) {
 
         Account findAccount = accountRepository.findById(currentAccount.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
-        Team findTeam = teamRepository.findById(teamId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
+        Team findTeam = accountRepository.findById(currentAccount.getId()).get().getTeam();
 
         if(teamRepository.findByAccounts(findAccount).isPresent()){
             findTeam.getAccounts().remove(findAccount);

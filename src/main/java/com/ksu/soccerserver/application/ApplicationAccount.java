@@ -3,6 +3,8 @@ package com.ksu.soccerserver.application;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.ksu.soccerserver.account.Account;
+import com.ksu.soccerserver.application.enums.AccountStatus;
+import com.ksu.soccerserver.application.enums.TeamStatus;
 import com.ksu.soccerserver.team.Team;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +23,10 @@ public class ApplicationAccount {
     private Long id;
 
     @Enumerated(value = EnumType.STRING)
-    private ApplicationStatus applicationStatus;
+    private AccountStatus accountStatus;
+
+    @Enumerated(value = EnumType.STRING)
+    private TeamStatus teamStatus;
 
     @ManyToOne
     private Account account;
@@ -29,6 +34,7 @@ public class ApplicationAccount {
     @ManyToOne
     private Team team;
 
-    public void updateStatus(ApplicationStatus applicationStatus) {this.applicationStatus = applicationStatus;}
+    public void updateAccountStatus(AccountStatus accountStatus) {this.accountStatus = accountStatus;}
+    public void updateTeamStatus(TeamStatus teamStatus) { this.teamStatus = teamStatus; }
 
 }

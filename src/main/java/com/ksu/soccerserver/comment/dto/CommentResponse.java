@@ -2,7 +2,6 @@ package com.ksu.soccerserver.comment.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,6 +13,4 @@ public class CommentResponse {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private String image;
-    //private Board board;
-    //private Account account;
 }

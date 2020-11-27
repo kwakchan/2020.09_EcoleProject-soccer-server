@@ -3,7 +3,6 @@ package com.ksu.soccerserver.board;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.comment.Comment;
 import lombok.*;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -56,13 +55,6 @@ public class Board {
     public void setBoardtype(String boardType) {
         this.boardType = boardType;
     }
-
-
-    /*public Account getAccount(){
-        return this.account;
-    }
-    */
-
 
     /*
     조회수

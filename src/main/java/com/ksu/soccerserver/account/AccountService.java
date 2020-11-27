@@ -1,8 +1,5 @@
 package com.ksu.soccerserver.account;
 
-import com.ksu.soccerserver.account.Account;
-import com.ksu.soccerserver.account.AccountAdapter;
-import com.ksu.soccerserver.account.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

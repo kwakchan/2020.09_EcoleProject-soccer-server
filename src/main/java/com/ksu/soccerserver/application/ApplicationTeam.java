@@ -1,14 +1,14 @@
 package com.ksu.soccerserver.application;
 
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.ksu.soccerserver.application.enums.AwayStatus;
+import com.ksu.soccerserver.match.Match;
 import com.ksu.soccerserver.team.Team;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 
 @Entity @Table
@@ -22,14 +22,16 @@ public class ApplicationTeam {
     private Long id;
 
     @Enumerated(value = EnumType.STRING)
-    private ApplicationStatus applicationStatus;
+    private AwayStatus awayStatus;
 
     @ManyToOne
-    Team applicationHomeTeam;
+    private Team applyTeams;
 
     @ManyToOne
-    Team applicationAwayTeam;
+    private Match match;
 
-    public void updateStatus(ApplicationStatus applicationStatus) { this.applicationStatus = applicationStatus; }
+    public void updateAwayStatus(AwayStatus awayStatus){
+        this.awayStatus = awayStatus;
+    }
 
 }

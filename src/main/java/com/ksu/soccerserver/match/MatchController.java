@@ -99,7 +99,7 @@ public class MatchController {
     public ResponseEntity<?> createMatch(@RequestBody MatchCreateRequest matchCreateRequest,
                                          @CurrentAccount Account nowAccount){
 
-        Team homeTeam = teamRepository.findById(matchCreateRequest.getHomeTeamId())
+        Team homeTeam = teamRepository.findById(nowAccount.getTeam().getId())
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
 
         if(homeTeam.getOwner().getId().equals(nowAccount.getId())) {
@@ -107,7 +107,7 @@ public class MatchController {
             Match createMatch = matchCreateRequest.toEntity(homeTeam);
             Match savedMatch = matchRepository.save(createMatch);
 
-            ApplicationTeamResponse response = modelMapper.map(savedMatch, ApplicationTeamResponse.class);
+            MatchResponse response = modelMapper.map(savedMatch, MatchResponse.class);
 
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } else{
@@ -160,6 +160,10 @@ public class MatchController {
 
                 Match saveMatch = matchRepository.save(room);
                 MatchResponse response = modelMapper.map(saveMatch, MatchResponse.class);
+
+                List<ApplicationTeam> appliedTeams = applicationTeamRepository.findByMatchId(matchId);
+
+
 
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }

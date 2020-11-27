@@ -4,14 +4,12 @@ import com.ksu.soccerserver.account.dto.AccountModifyRequest;
 import com.ksu.soccerserver.account.dto.AccountPasswordRequest;
 import com.ksu.soccerserver.account.dto.AccountRequest;
 import com.ksu.soccerserver.account.dto.AccountResponse;
-import com.ksu.soccerserver.config.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.Collections;
 import java.util.Optional;
 
 import com.ksu.soccerserver.team.Team;

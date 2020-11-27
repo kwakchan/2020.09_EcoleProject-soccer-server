@@ -40,6 +40,7 @@ public class BoardController {
         Board saveBoard = boardRepository.save(postBoard);
         BoardDetailResponse response = modelMapper.map(saveBoard, BoardDetailResponse.class);
         response.setName(account.getName());
+        response.setImage(account.getImage());
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -76,10 +77,12 @@ public class BoardController {
 
         for (int i=0; i< commentResponses.size(); i++) {
             commentResponses.get(i).setName(comment.get(i).getAccount().getName());
+            commentResponses.get(i).setImage(comment.get(i).getAccount().getImage());
         }
 
         BoardDetailResponse response = modelMapper.map(findBoard, BoardDetailResponse.class);
         response.setName(findBoard.getAccount().getName());
+        response.setImage(findBoard.getAccount().getImage());
 
         for (int i=0;i<comment.size(); i++) {
             response.addComment(commentResponses.get(i));
@@ -206,6 +209,7 @@ public class BoardController {
 
         for (int i=0; i< commentResponses.size(); i++) {
             commentResponses.get(i).setName(comment.get(i).getAccount().getName());
+            commentResponses.get(i).setImage(comment.get(i).getAccount().getImage());
         }
 
         if(!currentAccount.getId().equals(findBoard.getAccount().getId())){
@@ -219,6 +223,7 @@ public class BoardController {
 
             BoardDetailResponse response = modelMapper.map(findBoard, BoardDetailResponse.class);
             response.setName(findBoard.getAccount().getName());
+            response.setImage(findBoard.getAccount().getImage());
 
             for (int i=0;i<comment.size(); i++) {
                 response.addComment(commentResponses.get(i));
@@ -240,6 +245,7 @@ public class BoardController {
             boardRepository.delete(board);
             BoardDetailResponse response = modelMapper.map(board, BoardDetailResponse.class);
             response.setName(board.getAccount().getName());
+            response.setImage(board.getAccount().getImage());
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         }

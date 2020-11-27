@@ -1,15 +1,13 @@
 package com.ksu.soccerserver.board.dto;
 
-import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.board.BoardType;
-import com.ksu.soccerserver.comment.Comment;
 import com.ksu.soccerserver.comment.dto.CommentResponse;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,7 +19,8 @@ public class BoardDetailResponse {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private BoardType boardType;
-    private Set<CommentResponse> comments = new HashSet<>();
+    private String image;
+    private List<CommentResponse> comments = new ArrayList<>();
 
     public void addComment(CommentResponse commentResponse) {
         this.comments.add(commentResponse);

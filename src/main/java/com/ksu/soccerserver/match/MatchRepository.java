@@ -6,7 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface MatchRepository extends JpaRepository<Match, Long> {
-    List<Match> findAllByState(String state);
-    List<Match> findAllByStateAndDistrict(String state, String district);
-    List<Match> findAllByHomeTeamContaining(String name);
+
+    List<Match> findAllByNameContaining(String name);
+    List<Match> findAllByStateAndNameContaining(String state, String name);
+    List<Match> findAllByStateAndDistrictAndNameContaining(String state, String district, String name);
 }

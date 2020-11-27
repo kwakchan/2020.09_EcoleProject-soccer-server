@@ -71,41 +71,12 @@ public class TeamController {
         }
     }
 
-//    TestCode
-//    @GetMapping("/getAccount")
-//    public ResponseEntity<?> getAccounts() {
-//        List<Account> accounts =accountRepository.findAllByTeam(teamRepository.findById((long)1).get());
-//
-//        return new ResponseEntity<>(accounts, HttpStatus.OK);
-//    }
-//
-//    /* 프론트 앤드 팀 리스트 담당자의 테스트를 위한 목적으로 임시 팀원 삽입 메소드 구현 */
-//    @PostMapping("/{teamId}")
-//    public ResponseEntity<?> practiceTeam(@CurrentAccount Account joiningAccount, @PathVariable Long teamId){
-//        Team team = teamRepository.findById(teamId).get();
-//        team.joinMember(joiningAccount);
-//
-//        joiningAccount.setTeam(team);
-//        accountRepository.save(joiningAccount);
-//
-//        return new ResponseEntity<>(teamRepository.save(team), HttpStatus.OK);
-//    }
-
-
     //모든팀 Get
     @GetMapping
     public ResponseEntity<?> loadFilteredTeam(@RequestParam(required = false) String teamName,
                                               @RequestParam(required = false) String state,
                                               @RequestParam(required = false) String district){
         List<Team> teams;
-
-        //TeamName 검색 시,
-        if(!"".equals(teamName.trim())){
-            teams = teamRepository.findAllByNameContaining(teamName);
-        }
-        //전부 읽기
-        else if(state == null)
-            teams = teamRepository.findAll();
 
         //(광역시, 시, 도)가 전체라면, 모든 팀을 검색
         if(state.equals("All")) {

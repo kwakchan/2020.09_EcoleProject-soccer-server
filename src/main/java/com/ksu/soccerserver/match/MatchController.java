@@ -42,35 +42,23 @@ public class MatchController {
 
         List<MatchResponse> matches;
 
-        if(!"".equals(teamName.trim())) {
-            matches = matchRepository.findAllByHomeTeamContaining(teamName)
-            .stream()
-            .map(match -> modelMapper.map(match, MatchResponse.class))
-            .collect(Collectors.toList());
-        }
-        //전부 읽기
-        else if(!"".equals(state.trim()))
-            matches = matchRepository.findAll()
-                    .stream()
-                    .map(match -> modelMapper.map(match, MatchResponse.class))
-                    .collect(Collectors.toList());
         //(광역시, 시, 도)가 전체라면, 모든 팀을 검색
-        else if(state.equals("All")) {
-            matches = matchRepository.findAll()
+        if(state.equals("All")) {
+            matches = matchRepository.findAllByNameContaining(teamName)
                     .stream()
                     .map(match -> modelMapper.map(match, MatchResponse.class))
                     .collect(Collectors.toList());
         }
         //(광역시, 시, 도)가 선택되었고, (구, 면, 읍)이 전체라면
         else if(district.equals("All")){
-            matches = matchRepository.findAllByState(state)
+            matches = matchRepository.findAllByStateAndNameContaining(state, teamName)
                     .stream()
                     .map(match -> modelMapper.map(match, MatchResponse.class))
                     .collect(Collectors.toList());
         }
         //(광역시, 시, 도)가 선택되었고, (구, 면, 읍)또한 선택 시
         else {
-            matches = matchRepository.findAllByStateAndDistrict(state, district)
+            matches = matchRepository.findAllByStateAndDistrictAndNameContaining(state, district, teamName)
                     .stream()
                     .map(match -> modelMapper.map(match, MatchResponse.class))
                     .collect(Collectors.toList());

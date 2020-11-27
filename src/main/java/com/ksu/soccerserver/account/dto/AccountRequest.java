@@ -4,7 +4,6 @@ import com.ksu.soccerserver.account.Account;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.util.Collections;
 
 @Getter

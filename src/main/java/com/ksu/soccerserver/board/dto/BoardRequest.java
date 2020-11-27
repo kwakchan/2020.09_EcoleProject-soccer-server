@@ -1,11 +1,9 @@
 package com.ksu.soccerserver.board.dto;
 
-
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.board.Board;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 
 @Getter

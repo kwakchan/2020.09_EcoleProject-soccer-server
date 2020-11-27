@@ -5,7 +5,6 @@ import com.ksu.soccerserver.board.Board;
 import com.ksu.soccerserver.comment.Comment;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 
 @Getter

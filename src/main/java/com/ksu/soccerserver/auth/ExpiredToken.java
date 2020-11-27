@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.Authentication;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 

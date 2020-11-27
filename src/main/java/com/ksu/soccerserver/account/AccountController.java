@@ -5,6 +5,13 @@ import com.ksu.soccerserver.account.dto.AccountModifyRequest;
 import com.ksu.soccerserver.account.dto.AccountPasswordRequest;
 import com.ksu.soccerserver.account.dto.AccountRequest;
 import com.ksu.soccerserver.account.dto.AccountResponse;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.Optional;
 import com.ksu.soccerserver.image.AccountImageService;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
@@ -29,7 +36,6 @@ public class AccountController {
     private final AccountRepository accountRepository;
     private final TeamRepository teamRepository;
     private final ModelMapper modelMapper;
-
     private  final AccountImageService accountImageService;
 
     // 회원가입
@@ -111,7 +117,6 @@ public class AccountController {
         String imagePath = accountImageService.saveImage(image, request);
 
         findAccount.updateMyInfo(request1, imagePath);
-//        findAccount.updateMyInfo(modifyRequest);
         Account updatedAccount = accountRepository.save(findAccount);
 
         updatedAccount.setImage(imagePath);

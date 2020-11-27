@@ -1,6 +1,7 @@
 package com.ksu.soccerserver.team.dto;
 
 import com.ksu.soccerserver.account.Account;
+import com.ksu.soccerserver.account.AccountRepository;
 import com.ksu.soccerserver.team.Team;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,32 +19,20 @@ public class TeamDTO {
     private String district;
     private String description;
     private TeamsAccountDTO owner;
-    //private List<TeamsAccountDTO> accounts;
     private TeamsAccountsDTO accounts;
-/*
-    public void setOwner(Account owner) {
-        this.owner.setId(owner.getId());
-        this.owner.setBirth(owner.getBirth());
-        this.owner.setEmail(owner.getEmail());
-        this.owner.setDistrict(owner.getDistrict());
-        this.owner.setFoot(owner.getFoot());
-        this.owner.setPhoneNum(owner.getPhoneNum());
-        this.owner.setGender(owner.getGender());
-        this.owner.setName(owner.getName());
-        this.owner.setState(owner.getState());
-        this.owner.setHeight(owner.getHeight());
-        this.owner.setWeight(owner.getWeight());
-        this.owner.setPosition(owner.getPosition());
-        this.owner.setImage(owner.getImage());
-    }
-*/
-    /*
-    public void setAccounts(List<Account> accounts){
-        for(int i=0; i<accounts.size(); i++) {
-            TeamsAccountDTO tempAccount = new TeamsAccountDTO(accounts.get(i));
-            this.accounts.add(tempAccount);
-        }
-    }
 
-     */
+    public TeamDTO() {}
+
+    public TeamDTO(Team team, List<Account> accounts){
+        final AccountRepository accountRepository;
+        this.id = team.getId();
+        this.name = team.getName();
+        this.state = team.getState();
+        this.logopath = team.getLogopath();
+        this.district = team.getDistrict();
+        this.description = team.getDescription();
+        this.owner = new TeamsAccountDTO(team.getOwner());
+        this.accounts = new TeamsAccountsDTO(accounts);
+
+    }
 }

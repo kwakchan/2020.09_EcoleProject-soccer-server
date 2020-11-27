@@ -73,7 +73,7 @@ public class ApplicationAccountController {
             return new ResponseEntity<>("이미 가입신청한 팀입니다.", HttpStatus.BAD_REQUEST);
         }
 
-        if(findTeam.getId().equals(nowAccount.getId())){
+        if(findTeam.getOwner().getId().equals(nowAccount.getId())){
             return new ResponseEntity<>("해당 유저는 팀장입니다.", HttpStatus.BAD_REQUEST);
         }
 

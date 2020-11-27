@@ -30,7 +30,6 @@ public class AccountController {
     private final AccountRepository accountRepository;
     private final TeamRepository teamRepository;
     private final ModelMapper modelMapper;
-
     private final ImageService imageService;
     private final ObjectMapper objectMapper;
 
@@ -104,12 +103,10 @@ public class AccountController {
         }
 
         AccountModifyRequest accountModifyRequest = objectMapper.readValue(modifyRequest, AccountModifyRequest.class);
-
         String imagePath = imageService.saveImage(image, request);
 
         findAccount.updateMyInfo(accountModifyRequest, imagePath);
         Account updatedAccount = accountRepository.save(findAccount);
-
         AccountResponse response = modelMapper.map(updatedAccount, AccountResponse.class);
 
         return new ResponseEntity<>(response, HttpStatus.OK);

@@ -97,29 +97,19 @@ public class TeamController {
                                               @RequestParam(required = false) String district){
         List<Team> teams;
 
-        //TeamName 검색 시,
-        if(teamName != null) {
-            teams = teamRepository.findAllByNameContaining(teamName);
-        }
-        //전부 읽기
-        else if(state == null)
-            teams = teamRepository.findAll();
         //(광역시, 시, 도)가 전체라면, 모든 팀을 검색
-        else if(state.equals("All")) {
-            teams = teamRepository.findAll();
+        if(state.equals("All")) {
+            teams = teamRepository.findAllByNameContaining(teamName);
         }
         //(광역시, 시, 도)가 선택되었고, (구, 면, 읍)이 전체라면
         else if(district.equals("All")){
-            teams = teamRepository.findAllByState(state);
+            teams = teamRepository.findAllByStateAndNameContaining(state, teamName);
         }
         //(광역시, 시, 도)가 선택되었고, (구, 면, 읍)또한 선택 시
         else {
-            teams = teamRepository.findAllByStateAndDistrict(state, district);
+            teams = teamRepository.findAllByStateAndDistrictAndNameContaining(state, district, teamName);
         }
 
-
-
-        //
         //TeamDTO List
         List<TeamDTO> tempDTOS = new ArrayList<>();
         FilteredTeamsDTO filteredTeamsDTO = new FilteredTeamsDTO();

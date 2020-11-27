@@ -12,7 +12,7 @@ import lombok.Setter;
 public class ApplicationAccountResponse {
     private Long id;
     Account account;
-    Team team;
     AccountStatus accountStatus;
+    Team team;
     TeamStatus teamStatus;
 }

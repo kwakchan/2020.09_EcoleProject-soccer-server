@@ -24,7 +24,6 @@ public class TeamDTO {
     public TeamDTO() {}
 
     public TeamDTO(Team team, List<Account> accounts){
-        final AccountRepository accountRepository;
         this.id = team.getId();
         this.name = team.getName();
         this.state = team.getState();

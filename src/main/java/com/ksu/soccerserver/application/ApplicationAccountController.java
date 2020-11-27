@@ -3,6 +3,7 @@ package com.ksu.soccerserver.application;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.AccountRepository;
 import com.ksu.soccerserver.account.CurrentAccount;
+import com.ksu.soccerserver.application.dto.ApplicationAccountDTO;
 import com.ksu.soccerserver.application.dto.ApplicationAccountRequest;
 import com.ksu.soccerserver.application.dto.ApplicationAccountResponse;
 import com.ksu.soccerserver.application.enums.AccountStatus;
@@ -49,8 +50,11 @@ public class ApplicationAccountController {
         Team findTeam = teamRepository.findByOwner(ownerAccount)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 유저는 팀장이 아닙니다."));
 
-        List<ApplicationAccountResponse> applies = applicationAccountRepository.findByTeam(findTeam)
-                .stream().map(applicationAccount -> modelMapper.map(applicationAccount, ApplicationAccountResponse.class))
+        List<ApplicationAccountDTO> applies = applicationAccountRepository.findByTeam(findTeam)
+                .stream()
+                .map(applicationAccount ->
+                        new ApplicationAccountDTO(applicationAccount)
+                    )
                 .collect(Collectors.toList());
 
         return new ResponseEntity<>(applies, HttpStatus.OK);

@@ -31,11 +31,23 @@ public class ApplicationAccountController {
     private final ModelMapper modelMapper;
 
     // 유저가 자신이 지원한 팀 목록을 가져오는 API
+//    @GetMapping
+//    public ResponseEntity<?> loadApplicationAccount(@CurrentAccount Account nowAccount){
+//
+//        List<ApplicationAccountResponse> applicationLists = applicationAccountRepository.findByAccount(nowAccount)
+//                .stream().map(applicationAccount -> modelMapper.map(applicationAccount, ApplicationAccountResponse.class))
+//                .collect(Collectors.toList());
+//
+//        return new ResponseEntity<>(applicationLists, HttpStatus.OK);
+//    }
     @GetMapping
     public ResponseEntity<?> loadApplicationAccount(@CurrentAccount Account nowAccount){
 
-        List<ApplicationAccountResponse> applicationLists = applicationAccountRepository.findByAccount(nowAccount)
-                .stream().map(applicationAccount -> modelMapper.map(applicationAccount, ApplicationAccountResponse.class))
+        List<ApplicationAccountDTO> applicationLists = applicationAccountRepository.findByAccount(nowAccount)
+                .stream()
+                .map(applicationAccount ->
+                                new ApplicationAccountDTO(applicationAccount)
+                        )
                 .collect(Collectors.toList());
 
         return new ResponseEntity<>(applicationLists, HttpStatus.OK);

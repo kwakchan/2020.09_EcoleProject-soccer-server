@@ -14,30 +14,22 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter @Setter
 public class ApplicationAccountDTO {
-//    private String name;
-//    private String image;
-//    private Long accountId;
-//    private Long teamId;
-
-//    public ApplicationAccountDTO(ApplicationAccount applicationAccount){
-//        this.accountId = applicationAccount.getAccount().getId();
-//        this.name = applicationAccount.getAccount().getName();
-//        this.image = applicationAccount.getAccount().getImage();
-//        this.teamId = applicationAccount.getTeam().getId();
-//    }
-
-    private Long id;
-    Account account;             // 신청 유저 정보
-    AccountStatus accountStatus; // 유저 수락 여부
-    Team team;                   // 신청 팀 정보
-    TeamStatus teamStatus;       // 팀에서 수락 여부
+    private String name;
+    private String image;
+    private Long accountId;
+    private Long teamId;
+    private String logopath;
+    private AccountStatus accountStatus;
+    private TeamStatus teamStatus;
 
     public ApplicationAccountDTO(ApplicationAccount applicationAccount){
-        this.id = applicationAccount.getId();
-        this.account = applicationAccount.getAccount();
+        this.name = applicationAccount.getAccount().getName();
+        this.accountId = applicationAccount.getAccount().getId();
+        this.name = applicationAccount.getAccount().getName();
+        this.image = applicationAccount.getAccount().getImage();
+        this.teamId = applicationAccount.getTeam().getId();
+        this.logopath = applicationAccount.getTeam().getLogopath();
         this.accountStatus = applicationAccount.getAccountStatus();
-        this.team = applicationAccount.getTeam();
         this.teamStatus = applicationAccount.getTeamStatus();
     }
-
 }

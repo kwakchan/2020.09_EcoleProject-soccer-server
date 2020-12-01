@@ -7,10 +7,7 @@ import com.ksu.soccerserver.application.ApplicationTeamRepository;
 import com.ksu.soccerserver.application.dto.ApplicationTeamResponse;
 import com.ksu.soccerserver.application.enums.AwayStatus;
 import com.ksu.soccerserver.application.enums.HomeStatus;
-import com.ksu.soccerserver.match.dto.MatchCreateRequest;
-import com.ksu.soccerserver.match.dto.MatchModifyRequest;
-import com.ksu.soccerserver.match.dto.MatchRequest;
-import com.ksu.soccerserver.match.dto.MatchResponse;
+import com.ksu.soccerserver.match.dto.*;
 import com.ksu.soccerserver.match.enums.MatchStatus;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
@@ -76,6 +73,13 @@ public class MatchController {
         List<MatchResponse> myMatching = matchRepository.findAllByHomeTeam(homeTeam)
                     .stream().map(match -> new MatchResponse(match)).collect(Collectors.toList());
 
+        if (homeTeam.getOwner().getId().equals(nowAccount.getId())){
+            OwnerMatchResponse response = new OwnerMatchResponse(myMatching);
+            response.setOwner(true);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
         return new ResponseEntity<>(myMatching, HttpStatus.OK);
     }
 
@@ -98,10 +102,18 @@ public class MatchController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 경기방 입니다."));
 
         if(findMatch.getHomeTeam().getId().equals(nowAccount.getTeam().getId())) {
-            List<ApplicationTeamResponse> applies = applicationTeamRepository.findAllByMatchId(matchId)
-                    .stream().map(apply -> new ApplicationTeamResponse(apply)).collect(Collectors.toList());
+            if (findMatch.getHomeTeam().getOwner().getId().equals(nowAccount.getId())) {
+                //개설한 경기방에 지원한 List출력
+                List<ApplicationTeamResponse> applies = applicationTeamRepository.findAllByMatchId(findMatch.getId())
+                        .stream().map(applicationTeam -> new ApplicationTeamResponse(applicationTeam)).collect(Collectors.toList());
 
-            return new ResponseEntity<>(applies, HttpStatus.OK);
+                MatchesResponse response = new MatchesResponse(applies);
+
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("해당 유저는 팀장이 아닙니다.", HttpStatus.BAD_REQUEST);
+            }
+
         } else{
             return new ResponseEntity<>("해당 경기 개설 팀의 소속인원이 아닙니다.", HttpStatus.BAD_REQUEST);
         }

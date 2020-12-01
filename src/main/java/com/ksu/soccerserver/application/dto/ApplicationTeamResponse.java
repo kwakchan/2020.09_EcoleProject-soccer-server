@@ -20,4 +20,5 @@ public class ApplicationTeamResponse {
         this.applyTeam = new TeamDTO(applicationTeam.getApplyTeams());
         this.awayStatus = applicationTeam.getAwayStatus();
     }
+
 }

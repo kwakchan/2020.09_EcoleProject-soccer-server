@@ -28,4 +28,5 @@ public class ApplicationAccountDTO {
         this.accountStatus = applicationAccount.getAccountStatus();
         this.teamStatus = applicationAccount.getTeamStatus();
     }
+    
 }

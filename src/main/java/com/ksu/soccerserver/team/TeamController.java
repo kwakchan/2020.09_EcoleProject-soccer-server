@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.AccountRepository;
 import com.ksu.soccerserver.account.CurrentAccount;
+import com.ksu.soccerserver.application.ApplicationAccountRepository;
+import com.ksu.soccerserver.application.dto.ApplicationAccountDTO;
 import com.ksu.soccerserver.image.ImageService;
 import com.ksu.soccerserver.team.dto.*;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +16,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/teams")
@@ -29,6 +31,7 @@ public class TeamController {
     private final AccountRepository accountRepository;
     private final ImageService imageService;
     private final ObjectMapper objectMapper;
+    private final ApplicationAccountRepository applicationAccountRepository;
 
     // 팀 생성
     @PostMapping
@@ -58,6 +61,7 @@ public class TeamController {
                 //TeamResponse response = modelMapper.map(madeTeam, TeamResponse.class);
                 List<Account> accounts = accountRepository.findAllByTeam(madeTeam);
                 TeamDTO response = new TeamDTO(madeTeam, accounts);
+                response.setIsOwner(true);
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
             }
             else {
@@ -71,7 +75,8 @@ public class TeamController {
 
     //모든팀 Get
     @GetMapping
-    public ResponseEntity<?> loadFilteredTeam(@RequestParam(required = false) String teamName,
+    public ResponseEntity<?> loadFilteredTeam(@CurrentAccount Account nowAccount,
+                                              @RequestParam(required = false) String teamName,
                                               @RequestParam(required = false) String state,
                                               @RequestParam(required = false) String district){
         List<Team> teams;
@@ -107,6 +112,7 @@ public class TeamController {
             teamDTO.setAccounts(
                     new TeamsAccountsDTO(accountRepository.findAllByTeam(teams.get(i)))
             );
+            if(teams.get(i).getOwner().equals(nowAccount)) teamDTO.setIsOwner(true);
 
             tempDTOS.add(teamDTO);
         }
@@ -126,9 +132,17 @@ public class TeamController {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
-            //TeamMemberResponse response = modelMapper.map(findTeam, TeamMemberResponse.class);
             List<Account> accounts = accountRepository.findAllByTeam(findTeam);
-            TeamDTO response = new TeamDTO(findTeam, accounts);
+            //applies = 팀 가입 신청 List
+            List<ApplicationAccountDTO> applies = applicationAccountRepository.findByTeam(findTeam)
+                    .stream()
+                    .map(applicationAccount ->
+                            new ApplicationAccountDTO(applicationAccount)
+                    )
+                    .collect(Collectors.toList());
+
+            TeamDTO response = new TeamDTO(findTeam, accounts, applies);
+
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         //TeamResponse response = modelMapper.map(findTeam, TeamResponse.class);
@@ -141,7 +155,7 @@ public class TeamController {
     // 해당 팀의 정보 수정 => ROLE_LEADER
     @PutMapping("/{teamId}")
     public ResponseEntity<?> putTeam(@PathVariable Long teamId, @CurrentAccount Account nowAccount,
-                                     @RequestPart(value = "logo", required = false) MultipartFile image,
+                                     @RequestPart(value = "logopath", required = false) MultipartFile image,
                                      @RequestPart(value = "data") String modifyTeam, HttpServletRequest request) throws JsonProcessingException {
         Team findTeam = teamRepository.findById(teamId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다"));
@@ -158,9 +172,11 @@ public class TeamController {
 
         findTeam.updateTeamInfo(teamModifyRequest);
         Team updatedTeam = teamRepository.save(findTeam);
-        //TeamResponse response = modelMapper.map(updatedTeam, TeamResponse.class);
         List<Account> accounts = accountRepository.findAllByTeam(updatedTeam);
+        
         TeamDTO response = new TeamDTO(updatedTeam, accounts);
+        response.setIsOwner(true);
+      
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -177,6 +193,7 @@ public class TeamController {
             //TeamResponse response = modelMapper.map(findTeam, TeamResponse.class);
             List<Account> accounts = accountRepository.findAllByTeam(findTeam);
             TeamDTO response = new TeamDTO(findTeam, accounts);
+            response.setIsOwner(true);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }

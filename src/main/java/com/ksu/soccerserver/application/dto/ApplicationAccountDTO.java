@@ -14,6 +14,7 @@ public class ApplicationAccountDTO {
     private String image;
     private Long accountId;
     private Long teamId;
+    private String teamName;
     private String logopath;
     private AccountStatus accountStatus;
     private TeamStatus teamStatus;
@@ -23,6 +24,7 @@ public class ApplicationAccountDTO {
         this.accountId = applicationAccount.getAccount().getId();
         this.name = applicationAccount.getAccount().getName();
         this.image = applicationAccount.getAccount().getImage();
+        this.teamName = applicationAccount.getTeam().getName();
         this.teamId = applicationAccount.getTeam().getId();
         this.logopath = applicationAccount.getTeam().getLogopath();
         this.accountStatus = applicationAccount.getAccountStatus();

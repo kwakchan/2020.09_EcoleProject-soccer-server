@@ -4,12 +4,10 @@ import com.ksu.soccerserver.account.Account;
 import com.ksu.soccerserver.account.CurrentAccount;
 import com.ksu.soccerserver.application.ApplicationTeam;
 import com.ksu.soccerserver.application.ApplicationTeamRepository;
+import com.ksu.soccerserver.application.dto.ApplicationTeamResponse;
 import com.ksu.soccerserver.application.enums.AwayStatus;
 import com.ksu.soccerserver.application.enums.HomeStatus;
-import com.ksu.soccerserver.match.dto.MatchCreateRequest;
-import com.ksu.soccerserver.match.dto.MatchModifyRequest;
-import com.ksu.soccerserver.match.dto.MatchRequest;
-import com.ksu.soccerserver.match.dto.MatchResponse;
+import com.ksu.soccerserver.match.dto.*;
 import com.ksu.soccerserver.match.enums.MatchStatus;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
@@ -43,8 +41,7 @@ public class MatchController {
                     .stream()
                     .filter(match -> match.getHomeTeam().getName().contains(teamName))
                     .map(match ->
-                            new MatchResponse(match)
-                    )
+                            new MatchResponse(match))
                     .collect(Collectors.toList());
         } else if ("All".equals(district)){
             matchResponses = matchRepository.findAllByMatchStatus(MatchStatus.PENDING)
@@ -52,8 +49,7 @@ public class MatchController {
                     .filter(match -> match.getHomeTeam().getName().contains(teamName)
                         && match.getState().equals(state))
                     .map(match ->
-                            new MatchResponse(match)
-                    )
+                            new MatchResponse(match))
                     .collect(Collectors.toList());
         } else {
             matchResponses = matchRepository.findAllByMatchStatus(MatchStatus.PENDING)
@@ -62,11 +58,29 @@ public class MatchController {
                         && match.getState().equals(state)
                         && match.getDistrict().equals(district))
                     .map(match ->
-                            new MatchResponse(match)
-                    )
+                            new MatchResponse(match))
                     .collect(Collectors.toList());
         }
         return new ResponseEntity<>(matchResponses, HttpStatus.OK);
+    }
+
+    // 내가 만든 (우리팀의) 경기방 목록
+    @GetMapping("/homeTeam/matchList")
+    public ResponseEntity<?> loadMyMatching( @CurrentAccount Account nowAccount) {
+        Team homeTeam = teamRepository.findByAccounts(nowAccount)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않거나 팀에 소속되어 있지 않습니다."));
+
+        List<MatchResponse> myMatching = matchRepository.findAllByHomeTeam(homeTeam)
+                    .stream().map(match -> new MatchResponse(match)).collect(Collectors.toList());
+
+        if (homeTeam.getOwner().getId().equals(nowAccount.getId())){
+            OwnerMatchResponse response = new OwnerMatchResponse(myMatching);
+            response.setOwner(true);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(myMatching, HttpStatus.OK);
     }
 
     //특정 경기방 상세 정보 보기
@@ -75,27 +89,35 @@ public class MatchController {
         Match application = matchRepository.findById(matchId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 방입니다."));
 
-        MatchResponse response =
-                new MatchResponse(application);
+        MatchResponse response = new MatchResponse(application);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // 자신의 팀에서 요청받은 경기에 대해 리스트를 보는 api => ROLE_LEADER
-    @GetMapping("{teamId}/home/{matchId}")
-    public ResponseEntity<?> loadApplicationHomes(@PathVariable Long teamId,
-                                                  @PathVariable Long matchId,
+    @GetMapping("home/{matchId}")
+    public ResponseEntity<?> loadApplicationHomes(@PathVariable Long matchId,
                                                   @CurrentAccount Account nowAccount){
-        Team homeTeam = teamRepository.findById(teamId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다."));
+        Match findMatch = matchRepository.findById(matchId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 경기방 입니다."));
 
-        if(homeTeam.getOwner().getId().equals(nowAccount.getId())){
-            List<ApplicationTeam> applies = applicationTeamRepository.findAllByMatchId(matchId);
+        if(findMatch.getHomeTeam().getId().equals(nowAccount.getTeam().getId())) {
+            if (findMatch.getHomeTeam().getOwner().getId().equals(nowAccount.getId())) {
+                //개설한 경기방에 지원한 List출력
+                List<ApplicationTeamResponse> applies = applicationTeamRepository.findAllByMatchId(findMatch.getId())
+                        .stream().map(applicationTeam -> new ApplicationTeamResponse(applicationTeam)).collect(Collectors.toList());
 
-            return new ResponseEntity<>(applies, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("해당 유저는 팀장이 아닙니다.", HttpStatus.BAD_REQUEST);
+                MatchesResponse response = new MatchesResponse(applies);
+
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("해당 유저는 팀장이 아닙니다.", HttpStatus.BAD_REQUEST);
+            }
+
+        } else{
+            return new ResponseEntity<>("해당 경기 개설 팀의 소속인원이 아닙니다.", HttpStatus.BAD_REQUEST);
         }
+
     }
 
     //경기방 개설 => ROLE_LEADER
@@ -111,12 +133,11 @@ public class MatchController {
             Match createMatch = matchCreateRequest.toEntity(homeTeam);
             Match savedMatch = matchRepository.save(createMatch);
 
-            MatchResponse response =
-                    new MatchResponse(savedMatch);
+            MatchResponse response = new MatchResponse(savedMatch);
 
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } else{
-            return new ResponseEntity<>("해당 유저는 주장이 아닙니다.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("해당 유저는 팀팀장이 아닙니다.", HttpStatus.BAD_REQUEST);
         }
     }
 

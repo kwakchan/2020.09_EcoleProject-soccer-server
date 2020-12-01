@@ -10,9 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ApplicationAwayTeamRequest {
-    private Long matchId;
     private Long awayTeamId;
-    private AwayStatus awayStatus;
 
     public ApplicationTeam toEntity(Match match, Team applyTeam){
         return ApplicationTeam.builder()

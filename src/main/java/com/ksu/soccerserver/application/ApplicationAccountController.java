@@ -5,13 +5,13 @@ import com.ksu.soccerserver.account.AccountRepository;
 import com.ksu.soccerserver.account.CurrentAccount;
 import com.ksu.soccerserver.application.dto.ApplicationAccountDTO;
 import com.ksu.soccerserver.application.dto.ApplicationAccountRequest;
-import com.ksu.soccerserver.application.dto.ApplicationAccountResponse;
+import com.ksu.soccerserver.application.dto.ApplicationAccountTeamRequest;
 import com.ksu.soccerserver.application.enums.AccountStatus;
+import com.ksu.soccerserver.application.enums.HomeStatus;
 import com.ksu.soccerserver.application.enums.TeamStatus;
 import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,25 +28,14 @@ public class ApplicationAccountController {
     private final ApplicationAccountRepository applicationAccountRepository;
     private final AccountRepository accountRepository;
     private final TeamRepository teamRepository;
-    private final ModelMapper modelMapper;
 
     // 유저가 자신이 지원한 팀 목록을 가져오는 API
-//    @GetMapping
-//    public ResponseEntity<?> loadApplicationAccount(@CurrentAccount Account nowAccount){
-//
-//        List<ApplicationAccountResponse> applicationLists = applicationAccountRepository.findByAccount(nowAccount)
-//                .stream().map(applicationAccount -> modelMapper.map(applicationAccount, ApplicationAccountResponse.class))
-//                .collect(Collectors.toList());
-//
-//        return new ResponseEntity<>(applicationLists, HttpStatus.OK);
-//    }
     @GetMapping
     public ResponseEntity<?> loadApplicationAccount(@CurrentAccount Account nowAccount){
 
         List<ApplicationAccountDTO> applicationLists = applicationAccountRepository.findByAccount(nowAccount)
                 .stream()
-                .map(applicationAccount ->
-                                new ApplicationAccountDTO(applicationAccount)
+                .map(applicationAccount -> new ApplicationAccountDTO(applicationAccount)
                         )
                 .collect(Collectors.toList());
 
@@ -64,8 +53,7 @@ public class ApplicationAccountController {
 
         List<ApplicationAccountDTO> applies = applicationAccountRepository.findByTeam(findTeam)
                 .stream()
-                .map(applicationAccount ->
-                        new ApplicationAccountDTO(applicationAccount)
+                .map(applicationAccount -> new ApplicationAccountDTO(applicationAccount)
                     )
                 .collect(Collectors.toList());
 
@@ -97,7 +85,7 @@ public class ApplicationAccountController {
 
         ApplicationAccount applied = applicationAccountRepository.save(apply);
 
-        ApplicationAccountResponse response = modelMapper.map(applied, ApplicationAccountResponse.class);
+        ApplicationAccountDTO response = new ApplicationAccountDTO(applied);
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
 
@@ -119,16 +107,16 @@ public class ApplicationAccountController {
             return new ResponseEntity<>("불가능한 요청입니다.",HttpStatus.BAD_REQUEST);
         }
 
-        applicationAccountRepository.save(apply);
+        ApplicationAccount applied = applicationAccountRepository.save(apply);
 
-        ApplicationAccountResponse response = modelMapper.map(apply, ApplicationAccountResponse.class);
+        ApplicationAccountDTO response = new ApplicationAccountDTO(applied);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // AccountStatus가 PENDING이면서 Team에서 수락을하면 account가 Team에 가입하는 api => ROLE_LEADER
     @PutMapping("/{applicationId}/team")
-    public ResponseEntity<?> modifyTeamStatus(@PathVariable Long applicationId, @RequestParam String status,
+    public ResponseEntity<?> modifyTeamStatus(@PathVariable Long applicationId, @RequestBody ApplicationAccountTeamRequest applicationAccountTeamRequest,
                                               @CurrentAccount Account nowAccount){
 
         ApplicationAccount apply = applicationAccountRepository.findById(applicationId)
@@ -136,7 +124,8 @@ public class ApplicationAccountController {
 
         //현재 application에 저장된 팀의 주장의 ID와 현재 접속한 유저의 ID를 판별
         if(apply.getTeam().getOwner().getId().equals(nowAccount.getId())){
-            apply.updateTeamStatus(TeamStatus.valueOf(status));
+
+            apply.updateTeamStatus(TeamStatus.valueOf(applicationAccountTeamRequest.getTeamStatus().name()));
 
             // 현재 application에 Account의 상태가 PENDING중이면서 Team의 상태가 ACCEPT이면 가입완료
             if (apply.getAccountStatus().name().equals(AccountStatus.PENDING.name())
@@ -153,8 +142,7 @@ public class ApplicationAccountController {
 
                 teamRepository.save(findTeam);
                 accountRepository.save(findAccount);
-            }
-            else if(apply.getAccountStatus().equals(AccountStatus.CANCEL)){
+            } else if(apply.getAccountStatus().equals(AccountStatus.CANCEL)){
                 return new ResponseEntity<>("이미 유저가 취소한 가입요청입니다.", HttpStatus.BAD_REQUEST);
             }
 
@@ -164,7 +152,7 @@ public class ApplicationAccountController {
 
         applicationAccountRepository.save(apply);
 
-        ApplicationAccountResponse response = modelMapper.map(apply, ApplicationAccountResponse.class);
+        ApplicationAccountDTO response = new ApplicationAccountDTO();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

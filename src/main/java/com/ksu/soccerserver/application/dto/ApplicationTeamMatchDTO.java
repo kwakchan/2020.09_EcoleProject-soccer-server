@@ -1,15 +1,14 @@
 package com.ksu.soccerserver.application.dto;
 
-import com.ksu.soccerserver.application.ApplicationTeam;
 import com.ksu.soccerserver.application.enums.HomeStatus;
 import com.ksu.soccerserver.match.Match;
 import com.ksu.soccerserver.match.enums.MatchStatus;
-import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.dto.TeamDTO;
+import lombok.Getter;
+import lombok.Setter;
 
-import javax.persistence.*;
-import java.util.Set;
-
+@Getter
+@Setter
 public class ApplicationTeamMatchDTO {
     private Long id;
     private String date;
@@ -20,6 +19,7 @@ public class ApplicationTeamMatchDTO {
     private HomeStatus homeStatus;
     private MatchStatus matchStatus;
     private TeamDTO homeTeam;
+
     public ApplicationTeamMatchDTO(Match match) {
         this.id = match.getId();
         this.date = match.getDate();

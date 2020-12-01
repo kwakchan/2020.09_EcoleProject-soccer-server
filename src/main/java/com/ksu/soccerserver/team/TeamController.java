@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
@@ -134,9 +133,7 @@ public class TeamController {
             if(!findTeam.getOwner().getId().equals(nowAccount.getId())) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-            //TeamMemberResponse response = modelMapper.map(findTeam, TeamMemberResponse.class);
 
-            //accounts = 팀 소속 인원
             List<Account> accounts = accountRepository.findAllByTeam(findTeam);
             //applies = 팀 가입 신청 List
             List<ApplicationAccountDTO> applies = applicationAccountRepository.findByTeam(findTeam)
@@ -159,7 +156,7 @@ public class TeamController {
     // 해당 팀의 정보 수정 => ROLE_LEADER
     @PutMapping("/{teamId}")
     public ResponseEntity<?> putTeam(@PathVariable Long teamId, @CurrentAccount Account nowAccount,
-                                     @RequestPart(value = "logo", required = false) MultipartFile image,
+                                     @RequestPart(value = "logopath", required = false) MultipartFile image,
                                      @RequestPart(value = "data") String modifyTeam, HttpServletRequest request) throws JsonProcessingException {
         Team findTeam = teamRepository.findById(teamId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 팀입니다"));
@@ -176,10 +173,11 @@ public class TeamController {
 
         findTeam.updateTeamInfo(teamModifyRequest);
         Team updatedTeam = teamRepository.save(findTeam);
-        //TeamResponse response = modelMapper.map(updatedTeam, TeamResponse.class);
         List<Account> accounts = accountRepository.findAllByTeam(updatedTeam);
+        
         TeamDTO response = new TeamDTO(updatedTeam, accounts);
         response.setIsOwner(true);
+      
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

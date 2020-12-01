@@ -2,8 +2,6 @@ package com.ksu.soccerserver.application.dto;
 
 import com.ksu.soccerserver.application.ApplicationTeam;
 import com.ksu.soccerserver.application.enums.AwayStatus;
-import com.ksu.soccerserver.match.Match;
-import com.ksu.soccerserver.team.Team;
 import com.ksu.soccerserver.team.dto.TeamDTO;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,8 +16,8 @@ public class ApplicationTeamResponse {
 
     public ApplicationTeamResponse(ApplicationTeam applicationTeam) {
         this.id = applicationTeam.getId();
-        this.applyTeam = new TeamDTO(applicationTeam.getApplyTeams());
         this.match = new ApplicationTeamMatchDTO(applicationTeam.getMatch());
+        this.applyTeam = new TeamDTO(applicationTeam.getApplyTeams());
         this.awayStatus = applicationTeam.getAwayStatus();
     }
 }

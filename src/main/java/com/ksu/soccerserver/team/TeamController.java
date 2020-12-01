@@ -8,7 +8,6 @@ import com.ksu.soccerserver.account.CurrentAccount;
 import com.ksu.soccerserver.image.ImageService;
 import com.ksu.soccerserver.team.dto.*;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +28,6 @@ public class TeamController {
     private final TeamRepository teamRepository;
     private final AccountRepository accountRepository;
     private final ImageService imageService;
-    private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
 
     // 팀 생성
@@ -136,6 +134,7 @@ public class TeamController {
         //TeamResponse response = modelMapper.map(findTeam, TeamResponse.class);
         List<Account> accounts = accountRepository.findAllByTeam(findTeam);
         TeamDTO response = new TeamDTO(findTeam, accounts);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

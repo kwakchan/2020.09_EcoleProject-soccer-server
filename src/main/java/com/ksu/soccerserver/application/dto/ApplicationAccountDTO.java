@@ -10,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter @Setter
 public class ApplicationAccountDTO {
+    private Long id;
     private String name;
     private String image;
     private Long accountId;
@@ -20,6 +21,7 @@ public class ApplicationAccountDTO {
     private TeamStatus teamStatus;
 
     public ApplicationAccountDTO(ApplicationAccount applicationAccount){
+        this.id = applicationAccount.getId();
         this.name = applicationAccount.getAccount().getName();
         this.accountId = applicationAccount.getAccount().getId();
         this.name = applicationAccount.getAccount().getName();
